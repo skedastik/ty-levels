@@ -6,6 +6,9 @@ LIB_DIR := $(SRC_ROOT)/lib
 LIB_BSPS_DIR := $(LIB_DIR)/bsps
 COMMON_DIR := common
 
+# regex to exclude sets from bundle
+EXCLUDE := discovery
+
 # main .alf files
 SRC_ALFS := $(shell find $(SETS_DIR) -regex '$(SETS_DIR)/[^/][^/]*/alf/[^/][^/]*\.alf')
 OUT_ALFS := $(subst $(SETS_DIR),$(DIST_DIR),$(SRC_ALFS))
@@ -71,6 +74,7 @@ $(APP_LEVELS_PATH)/%: $(DIST_DIR)/%
 symlinks: $(SET_SYMLINKS)
 
 bundle: all
+	find $(DIST_DIR) -regex '^$(DIST_DIR)/[^/][^/]*' | grep -E '$(EXCLUDE)' | xargs rm -r
 	mv $(DIST_DIR) $(BUNDLE_PREFIX)
 	zip -r $(BUNDLE_PREFIX).zip $(BUNDLE_PREFIX)
 	mv $(BUNDLE_PREFIX) $(DIST_DIR)
