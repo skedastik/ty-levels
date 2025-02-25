@@ -22,7 +22,7 @@ implement logic. This is the case with TDM's logic. Bearing this in mind, the
 `rules` macro exposes three optional arguments: xLogic, zLogic, yLogic. Logic-
 related actors are hidden away around that origin. If needed you can override
 the defaults to place them where they will be out of the way. Their positioning
-will will affect the level preview.
+will affect the level preview.
 
 [TODO] The requirement that incarnators be placed in inaccessible spots is
 pretty limiting. It's also potentially buggy. Players get knocked around and end
