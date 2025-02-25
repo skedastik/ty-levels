@@ -1,0 +1,26 @@
+<map>
+    <set designer="Ty" />
+    
+    <Walker cx="-3" cz="5" angle="0" team="1" />
+    <Hologram shape="bspGroundStar" scale="0.5" color="#ff0000" cx="-3" cz="5" />
+
+    <Walker cx="0" cz="5" angle="0" team="1" />
+    <Hologram shape="bspGroundStar" scale="0.5" color="#00ff00" cx="0" cz="5" />
+
+    <Walker cx="3" cz="5" angle="0" team="1" />
+    <Hologram shape="bspGroundStar" scale="0.5" color="#0000ff" cx="3" cz="5" />
+    
+    <Incarnator cx="0" cz="0" angle="180" />
+    <Hologram shape="bspGroundStar" scale="0.5" color="#ffffff" cx="0" cz="0" />
+    
+    <!--
+    Walkers determine *initial* placement of players. Each Walker can only serve 
+    one player. They can be assigned to a team. Walkers are utilized in the
+    reverse order of the ALF file. Try starting a game on team one. You will
+    spawn on the blue star.
+
+    Incarnators spawn dead players or are used for initial placement of players
+    when no Walker of the same team is available. Try starting a game on team
+    two. You will spawn on the white star.
+    -->
+</map>

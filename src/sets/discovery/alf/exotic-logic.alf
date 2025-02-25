@@ -1,0 +1,94 @@
+<map>
+
+{% from 'lib/logic.alf' import equilibrium %}
+{% from 'lib/common.alf' import goody %}
+
+<Incarnator cx="0" cz="10" y="0" angle="0" />
+{{ goody(x=0, z=10, power=100, cooldown=0.5, color="rgba(0, 0, 0, 0%)", sound=0) }}
+
+{{ equilibrium(y=1, increment='@increment', decrement='@decrement', out='@zero', debug=True) }}
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+{# {% set segments = range(0, 8) %}
+
+<unique vars="mZero mFreeze" />
+<unique vars="{{ segments | map('sformat', 'mOpenSegment{}') | join(' ') }}" />
+<unique vars="{{ segments | map('sformat', 'mCloseSegment{}') | join(' ') }}" />
+
+<FreeSolid
+    cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 1.5 }}"
+    shape="bspStandardWall" scale="0.5"
+    mass="50" accel="1" customGravity="5"
+    {% if debug %}
+        color="#0f0"
+    {% else %}
+        color="rgba(0, 0, 0, 0%)" yon="0.001"
+    {% endif %}
+    targetGroup="targ1"
+    stop="mFreeze"
+    start="{{ decrement }}"
+/>
+<And in="@start" out="mFreeze" restart="false" />
+<And in="mZero" out="mFreeze" restart="false" />
+
+{% for i in segments %}
+    <WallDoor
+        x="{{ 0.45 - i * 1/len(segments) }}" z="{{ z + instancePadding }}" y="{{ y - 1 }}"
+        w="{{ 1/len(segments) }}" d="1" h="1"
+        deltaY="1"
+        shape="bspStandardWall" scale="0.5"
+        openSound="0" closeSound="0" stopSound="0"
+        openSpeed="100" closeSpeed="100"
+        guardDelay="0"
+        {% if debug %}
+            color="#f00"
+        {% else %}
+            color="rgba(0, 0, 0, 0%)" yon="0.001"
+        {% endif %}
+        open="mOpenSegment{{ i }}"
+        close="mCloseSegment{{ i }}"
+    />
+{% endfor %}
+
+<Distributor in="{{ increment }}" restart="false"
+    {% for i in segments %}
+        out.{{ i }}="mOpenSegment{{ i }}"
+    {% endfor %}
+/>
+
+<Distributor in="{{ decrement }}" restart="false"
+    {% for i in segments %}
+        out.{{ i }}="mCloseSegment{{ i }}"
+    {% endfor %}
+/>
+
+<Field
+    cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 0.5 }}"
+    shape="bspStandardWall" scale="0.5"
+    {% if debug %}
+        color="rgba(64, 64, 0, 50%)" visible="true"
+    {% endif %}
+    watch="targ1"
+    enter="mZero"
+/>
+<And in="mZero" out="{{ out }}" restart="false" /> #}
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<Switch cx="1" cz="2" y="1.25" angle="0" out="@increment" />
+<Switch cx="-1" cz="2" y="1.25" angle="0" out="@decrement" />
+
+<Switch cx="1" cz="2" y="2.5" angle="0" scale="1.25" out="@incTwice" />
+<Switch cx="-1" cz="2" y="2.5" angle="0" scale="1.25" out="@decTwice" />
+<And in="@incTwice" out.0="@increment" out.1="@increment" />
+<And in="@decTwice" out.0="@decrement" out.1="@decrement" />
+
+<Switch cx="1" cz="2" y="4" angle="0" scale="1.5" out="@incThrice" />
+<Switch cx="-1" cz="2" y="4" angle="0" scale="1.5" out="@decThrice" />
+<And in="@incThrice" out.0="@increment" out.1="@increment" out.2="@increment" />
+<And in="@decThrice" out.0="@decrement" out.1="@decrement" out.2="@decrement" />
+
+<Text text="We have equilibrium." in="@zero" showEveryone="true" />
+
+</map>

@@ -1,0 +1,41 @@
+<map>
+    <set designer="Ty" />
+
+    <Incarnator cx="8" cz="12" angle="0" />
+    
+    <Teleporter cx="0" cz="-5" group="0" destGroup="1" spin="false" activeRange="3" shape="0" />
+    <Hologram cx="0" cz="-5" shape="bspGroundStar" scale="0.5" color="#ffffff" />
+
+    <Teleporter cx="0" cz="-30" group="1" destGroup="0" spin="false" activeRange="3" shape="0" />
+    <Hologram cx="0" cz="-30" shape="bspGroundStar" scale="0.5" color="#ffffff" />
+
+    <Field x="0" z="8" w="2" d="2" h="3" deltaZ="-1" />
+    <Hologram cx="0" cz="8" shape="bspGroundArrow" scale="0.5" color="#ff0000" angle="0" />
+
+    {#
+    Teleporters do not preserve player velocity during teleportation. Lame.
+    #}
+
+    <Teleporter cx="8" cz="-5" group="2" destGroup="3" spin="false" activeRange="3" shape="0" />
+    <Hologram cx="8" cz="-5" shape="bspGroundStar" scale="0.5" color="#ffffff" />
+
+    <Teleporter
+        cx="8"
+        cz="-15"
+        group="3"
+        destGroup="2"
+        spin="true"
+        activeRange="3"
+        scale="0.5"
+        speed="0"
+        shape="bspGroundArrow"
+        angle="90"
+    />
+
+    {#
+    Spin is not random. If a player enters at angle X they will always exit and
+    stop spinning at angle Y. The direction the teleporter is facing and the
+    spin speed has no effect on the exit angle. In short, there is no way to
+    control the direction the players faces when they exit the teleporter.
+    #}
+</map>

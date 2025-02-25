@@ -1,0 +1,317 @@
+<map>
+    {% from 'lib/rulesets/tdm.alf' import info, rules, walkerGroup, incarnator, healthCheck %}
+    {% include 'lib/boilerplate.alf' %}
+    {% from 'lib/common.alf' import ref, bubbleTeleporter %}
+    {% include 'lib/teamColors.alf' %}
+    {% include './tantalus/colors.alf' %}
+    {% from './tantalus/structures.alf' import hill, tower %}
+    {% from '../common/portals.alf' import portalPair %}
+
+    {% set maxRespawns = 6 %}
+    {% set maxPlayersPerTeam = 4 %}
+    {% set centerGoodyCooldown = 90 %}
+    {% set centerGoodyCooldownReduction = 15 %}
+    {% set goodyWave1Delay = 8 %}
+    {% set goodyWave2Delay = goodyWave1Delay + 16 %}
+    {% set goodyWave3Delay = goodyWave2Delay + 20 %}
+    {% set centerGoodyBoostTime = 8 %}
+    {% set teamPortalOpenTime = 30 %}
+    {% set centerGoodyFirstAppearance = 6 %}
+    {% set bubbleTeleStartTime = 8 %}
+    {% set bubbleTeleDeadRange = 165 %}
+    {% set bubbleTeleActiveRange = bubbleTeleDeadRange + 30 %}
+    {% set debug = False %}
+
+    <set
+        designer="Ty"
+        information="{{ info(respawns=maxRespawns) }}4 players/team max. Red/blue and green/yellow provide the fairest match. &#13;&#13;The center goody triggers waves of other goodies to appear, among other things. Every kill decreases its cooldown."
+    />
+
+    {{ rules(respawns=maxRespawns, debug=debug, xLogic=bubbleTeleActiveRange+20, zLogic=0, yLogic=16) }}
+
+    {% set bspLightBeam = 4003 %}
+    {% set snCenterGoodyTaken = 3002 %}
+    {% set snCenterGoodyAppears = 3003 %}
+    {% set snPortalClose = 3004 %}
+
+    {% set blockWidth = 10 %}
+    {% set blockSkewWidth = math.sqrt(2 * blockWidth * blockWidth) %}
+    {% set blockHeight = 2.2 %}
+    {% set rampSlope = blockHeight / blockWidth %}
+    {% set supportW = 4 %}
+    {% set towerPortalOffset = 0.75 %}
+
+    {# center #}
+
+        <unique vars="mStartBubbleTele" />
+        <Timer wait="{{ toTicks(bubbleTeleStartTime) }}" in="@start" out="mStartBubbleTele" />
+        {{ bubbleTeleporter(y=30, r=bubbleTeleDeadRange, r2=bubbleTeleActiveRange, start="mStartBubbleTele") }}
+
+        <unique vars="mCenterTaken mCenterRefresh mCueCenterGoody mStopLightning" />
+        <Timer wait="{{ toTicks(centerGoodyFirstAppearance) }}" in="@start" out="mCueCenterGoody" />
+        <Timer in="mCueCenterGoody" out="mCenterRefresh" wait="{{ toTicks(0.6) }}" />
+        <Timer in="mCueCenterGoody" out="mStopLightning" wait="{{ toTicks(0.125) }}" />
+        <Goody
+            cx="0" cz="0" y="{{ PLAYER_RIDE_HEIGHT }}" grenades="12" missiles="8" boostTime="{{ toTicks(centerGoodyBoostTime) }}" speed="0" angle="45" sound="0" shape="bspAvaraA" color="cHorizon"
+            start="mCenterRefresh" out="mCenterTaken"
+        />
+        <Sound cx="0" cz="0" y="0" isAmbient="false" sound="{{ snCenterGoodyTaken }}" start="mCenterTaken" />
+        <Sound cx="0" cz="0" y="-32" sound="snArcticWind" volume="10" loopCount="-1" start="mCenterRefresh" stop="mCenterTaken" />
+        <Sound cx="0" cz="0" y="32" sound="{{ snCenterGoodyAppears }}" volume="360" start="mCueCenterGoody" />
+        <Teleporter cx="0" cz="0" y="0" shape="{{ bspLightBeam }}" mask="0" speed="-400" isAmbient="true" color="cLightBeam" start="mStopLightning" stop="mCenterTaken" />
+        <Teleporter cx="0" cz="0" y="{{ -PLANCK }}" shape="bspGroundStar" scale="1.2" mask="0" speed="-1" isAmbient="true" color="cAccent" start="mStopLightning" stop="mCenterTaken" />
+        <Teleporter cx="0" cz="0" y="0" shape="bspCrack" scale="30" mask="0" speed="40" angle="120" isAmbient="true" color="cLightning" start="mCueCenterGoody" stop="mStopLightning"  />
+        <Teleporter cx="0" cz="0" y="0" shape="bspCrack" scale="50" mask="0" speed="40" angle="-120" isAmbient="true" color="cLightning" start="mCueCenterGoody" stop="mStopLightning" />
+        <Teleporter cx="0" cz="0" y="0" shape="bspCrack" scale="60" mask="0" speed="40" angle="0" isAmbient="true" color="cLightning" start="mCueCenterGoody" stop="mStopLightning" />
+
+        {% set teams = range(1, 9) %}
+        <unique vars="{{ teams | map('sformat', 'mOpenTeam{}Portal') | join(' ') }} mOpenTeamPortal mCloseTeamPortal mStartTeamPortalSound" />
+        <And in="mCueCenterGoody" out="mCloseTeamPortal" />
+        <Counter n="1" restart="true"
+            {% for t in teams %}
+                in.{{ t - 1 }}="mOpenTeam{{ t }}Portal"
+            {% endfor %}
+            out="mOpenTeamPortal"
+        />
+        <Timer wait="{{ toTicks(teamPortalOpenTime) }}" in="mOpenTeamPortal" out="mCloseTeamPortal" />
+        <Timer wait="{{ toTicks(0.3) }}" in="mOpenTeamPortal" out="mStartTeamPortalSound" />
+        {% for t in teams %}
+            {% set mask = 'T' + str(t) %}
+            {% set startMsg = 'mOpenTeam' + str(t) + 'Portal' %}
+            {% set colorOuter = 't' + str(t) + 'ColorNeon' %}
+            <Field cx="0" cz="0" y="{{ PLAYER_RIDE_HEIGHT }}" angle="45" shape="bspAvaraA" watch="playerMask" mask="{{ mask }}" start="mCenterRefresh" stop="mCloseTeamPortal" enter="mOpenTeam{{ t }}Portal" />
+            {{ portalPair(x1=12.25, z1=12.25, y1=blockHeight, a1=135, x2=8, z2=8, y2=11, a2=315, force=0.7, oneWay=True, visible2=False, mask=mask, startMsg=startMsg, stopMsg="mCloseTeamPortal", rotateSpeed="-15", colorOuter=colorOuter, colorInner="rgba(0, 0, 0, 0%)") }}
+            {{ portalPair(x1=-12.25, z1=-12.25, y1=blockHeight, a1=315, x2=-8, z2=-8, y2=11, a2=135, force=0.7, oneWay=True, visible2=False, mask=mask, startMsg=startMsg, stopMsg="mCloseTeamPortal", rotateSpeed="15", colorOuter=colorOuter, colorInner="rgba(0, 0, 0, 0%)") }}
+        {% endfor %}
+        <Sound cx="{{ 12.25 }}" cz="{{ 12.25 }}" y="{{ blockHeight }}" sound="snArcticWind" rate="1.5" volume="1" loopCount="-1" start="mStartTeamPortalSound" stop="mCloseTeamPortal" />
+        <Sound cx="{{ 12.25 }}" cz="{{ 12.25 }}" y="{{ blockHeight }}" sound="{{ snPortalClose }}" volume="4" start="mCloseTeamPortal" />
+        <Sound cx="{{ -12.25 }}" cz="{{ -12.25 }}" y="{{ blockHeight }}" sound="snArcticWind" rate="1.5" volume="1" loopCount="-1" start="mStartTeamPortalSound" stop="mCloseTeamPortal" />
+        <Sound cx="{{ -12.25 }}" cz="{{ -12.25 }}" y="{{ blockHeight }}" sound="{{ snPortalClose }}" volume="4" start="mCloseTeamPortal" />
+
+    {# center hills & connectors #}
+
+        {% set hillSpacing = 30 %}
+        {{ hill(x=hillSpacing, z=0, w=blockWidth, h=blockHeight) }}
+        {{ hill(x=-hillSpacing, z=0, w=blockWidth, h=blockHeight) }}
+        {{ hill(x=0, z=hillSpacing, w=blockWidth, h=blockHeight) }}
+        {{ hill(x=0, z=-hillSpacing, w=blockWidth, h=blockHeight) }}
+
+        <WallDoor x="{{ hillSpacing/2 }}" z="{{ hillSpacing/2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ blockSkewWidth }}"   h="{{ blockHeight }}" midYaw="45" color="cWall2" />
+        <WallDoor x="{{ -hillSpacing/2 }}" z="{{ hillSpacing/2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ blockSkewWidth }}"  h="{{ blockHeight }}" midYaw="45" color="cWall2" />
+        <WallDoor x="{{ hillSpacing/2 }}" z="{{ -hillSpacing/2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ blockSkewWidth }}"  h="{{ blockHeight }}" midYaw="45" color="cWall2" />
+        <WallDoor x="{{ -hillSpacing/2 }}" z="{{ -hillSpacing/2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ blockSkewWidth }}" h="{{ blockHeight }}" midYaw="45" color="cWall2" />
+
+    {# tower line #}
+
+        {{ tower(x=45, z=45, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+        <Wall x="45" z="45" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" color="cWall2" />
+        {{ portalPair(x1=36-towerPortalOffset, z1=36-towerPortalOffset, y1=14, a1=315, x2=24.2+towerPortalOffset, z2=24.2+towerPortalOffset, y2=11, a2=135, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        {{ tower(x=hillSpacing/2, z=hillSpacing/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=11, supportW=3, supportColor="cSupport2", platformColor="cWall4") }}
+        {{ portalPair(x1=6-towerPortalOffset, z1=6-towerPortalOffset, y1=11, a1=315, x2=-6+towerPortalOffset, z2=-6+towerPortalOffset, y2=11, a2=135, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+        {{ portalPair(x1=24.1+towerPortalOffset, z1=5.9-towerPortalOffset, y1=11, a1=45, x2=38.3-towerPortalOffset, z2=-8.3+towerPortalOffset, y2=14, a2=225, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+        {{ portalPair(x1=5.9-towerPortalOffset, z1=24.1+towerPortalOffset, y1=11, a1=225, x2=-8.3+towerPortalOffset, z2=38.3-towerPortalOffset, y2=14, a2=45, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        {{ tower(x=-hillSpacing/2, z=-hillSpacing/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=11, supportW=3, supportColor="cSupport2", platformColor="cWall4") }}
+        {{ portalPair(x1=-24-towerPortalOffset, z1=-6+towerPortalOffset, y1=11, a1=225, x2=-38.5+towerPortalOffset, z2=8.5-towerPortalOffset, y2=14, a2=45, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+        {{ portalPair(x1=-6+towerPortalOffset, z1=-24-towerPortalOffset, y1=11, a1=45, x2=8.5-towerPortalOffset, z2=-38.5+towerPortalOffset, y2=14, a2=225, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        {{ tower(x=-45, z=-45, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+        <Wall x="-45" z="-45" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" color="cWall2" />
+        {{ portalPair(x1=-36+towerPortalOffset, z1=-36+towerPortalOffset, y1=14, a1=135, x2=-24.2-towerPortalOffset, z2=-24.2-towerPortalOffset, y2=11, a2=315, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+    {# hill branches & outer towers #}
+
+        {% set fringeLength = blockSkewWidth * 1.5 %}
+
+        <WallDoor x="{{ -12.5 - blockWidth / 2 }}" z="{{ -42.5 - blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="45" color="cWall2"/>
+        <WallDoor x="{{ -42.5 - blockWidth / 2 }}" z="{{ -12.5 - blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="45" color="cWall2"/>
+        
+        <WallDoor x="{{ 12.5 + blockWidth / 2 }}" z="{{ 42.5 + blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="45" color="cWall2"/>
+        <WallDoor x="{{ 42.5 + blockWidth / 2 }}" z="{{ 12.5 + blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="45" color="cWall2"/>
+
+        <WallDoor x="{{ 42.5 + blockWidth / 2 }}" z="{{ -12.5 - blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="-45" color="cWall2"/>
+        {{ tower(x=42.5+blockWidth/2, z=-12.5-blockWidth/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+
+        <WallDoor x="{{ 12.5 + blockWidth / 2 }}" z="{{ -42.5 - blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="-45" color="cWall2"/>
+        {{ tower(x= 12.5+blockWidth/2, z=-42.5-blockWidth/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+        {{ portalPair(x1=26.5+towerPortalOffset, z1=-38.5+towerPortalOffset, y1=14, a1=135, x2=38.3-towerPortalOffset, z2=-26.7-towerPortalOffset, y2=14, a2=315, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        <WallDoor x="{{ -12.5 - blockWidth / 2 }}" z="{{ 42.5 + blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="-45" color="cWall2"/>
+        {{ tower(x=-12.5-blockWidth/2, z=42.5+blockWidth/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+        {{ portalPair(x1=-26.5-towerPortalOffset, z1=38.5-towerPortalOffset, y1=14, a1=315, x2=-38.5+towerPortalOffset, z2=26.5+towerPortalOffset, y2=14, a2=135, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        <WallDoor x="{{ -42.5 - blockWidth / 2 }}" z="{{ 12.5 + blockWidth / 2 }}" y="0" w="{{ blockSkewWidth }}" d="{{ fringeLength }}" h="{{ blockHeight }}" midYaw="-45" color="cWall2"/>
+        {{ tower(x=-42.5-blockWidth/2, z=12.5+blockWidth/2, w=blockSkewWidth*1.3, d=blockSkewWidth*1.3, h=14) }}
+    
+    {# outer structures #}
+
+        {% set platformY = 6.5 %}
+        {% set platformH = 1.5 %}
+        {% set rampLen = 19.5 %}
+        {% set rampH = 0.0625 %}
+
+        <Wall x="78" z="0.5" y="0" w="10" d="20" h="{{ blockHeight }}" color="cWall" />
+        <Ramp x="78" z="{{ 30 - rampLen/2}}" y="{{ blockHeight - rampH }}" w="10" d="{{ rampLen }}" deltaY="{{ platformY - blockHeight + rampH }}" h="{{ rampH }}" angle="0" yon="{{ YON_MAX }}" color="cRamp2" />
+        <Wall x="78" z="40" y="{{ platformY - platformH }}" w="10" d="20" h="{{ platformH }}" color="cWall" />
+        <WallDoor x="78" z="35" y="0" w="{{ supportW }}" d="{{ supportW }}" h="{{ platformY - platformH }}" midYaw="45" color="cSupport" />
+        <WallDoor x="78" z="35" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" midYaw="45" color="cWall" />
+        {{ portalPair(x1=73+1.75, z1=45, y1=platformY, a1=270, x2=54.2+towerPortalOffset, z2=45, y2=14, a2=90, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        <Wall x="0.5" z="78" y="0" w="20" d="10" h="{{ blockHeight }}" color="cWall" />
+        <Ramp x="{{ 30 - rampLen/2}}" z="78" y="{{ blockHeight - rampH }}" w="{{ rampLen }}" d="10" deltaY="{{ platformY - blockHeight + rampH }}" h="{{ rampH }}" angle="270" yon="{{ YON_MAX }}" color="cRamp2" />
+        <Wall x="40" z="78" y="{{ platformY - platformH }}" w="20" d="10" h="{{ platformH }}" color="cWall" />
+        <WallDoor x="35" z="78" y="0" w="{{ supportW }}" d="{{ supportW }}" h="{{ platformY - platformH }}" midYaw="45" color="cSupport" />
+        <WallDoor x="35" z="78" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" midYaw="45" color="cWall" />
+        {{ portalPair(x1=45, z1=73+1.75, y1=platformY, a1=0, x2=45, z2=54.2+towerPortalOffset, y2=14, a2=180, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        <Wall x="-78" z="-0.5" y="0" w="10" d="20" h="{{ blockHeight }}" color="cWall" />
+        <Ramp x="-78" z="{{ -30 + rampLen/2}}" y="{{ blockHeight - rampH }}" w="10" d="{{ rampLen }}" deltaY="{{ platformY - blockHeight + rampH }}" h="{{ rampH }}" angle="180" yon="{{ YON_MAX }}" color="cRamp2" />
+        <Wall x="-78" z="-40" y="{{ platformY - platformH }}" w="10" d="20" h="{{ platformH }}" color="cWall" />
+        <WallDoor x="-78" z="-35" y="0" w="{{ supportW }}" d="{{ supportW }}" h="{{ platformY - platformH }}" midYaw="45" color="cSupport" />
+        <WallDoor x="-78" z="-35" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" midYaw="45" color="cWall" />
+        {{ portalPair(x1=-73-1.75, z1=-45, y1=platformY, a1=90, x2=-54.2-towerPortalOffset, z2=-45, y2=14, a2=270, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        <Wall x="-0.5" z="-78" y="0" w="20" d="10" h="{{ blockHeight }}" color="cWall" />
+        <Ramp x="{{ -30 + rampLen/2}}" z="-78" y="{{ blockHeight - rampH }}" w="{{ rampLen }}" d="10" deltaY="{{ platformY - blockHeight + rampH }}" h="{{ rampH }}" angle="90" yon="{{ YON_MAX }}" color="cRamp2" />
+        <Wall x="-40" z="-78" y="{{ platformY - platformH }}" w="20" d="10" h="{{ platformH }}" color="cWall" />
+        <WallDoor x="-35" z="-78" y="0" w="{{ supportW }}" d="{{ supportW }}" h="{{ platformY - platformH }}" midYaw="45" color="cSupport" />
+        <WallDoor x="-35" z="-78" y="0" w="{{ supportW + 0.5 }}" d="{{ supportW + 0.5 }}" h="{{ blockHeight }}" midYaw="45" color="cWall" />
+        {{ portalPair(x1=-45, z1=-73-1.75, y1=platformY, a1=180, x2=-45, z2=-54.2-towerPortalOffset , y2=14, a2=0, colorOuter="cPortalOuter", colorInner="cPortalInner") }}
+
+        {% set rx = 50 %}
+        {% set rz = -50 %}
+        {% set ry = 5 %}
+
+        {# {{ ref(x=rx, z=rz, y=0, w=2, d=2, h=8) }} #}
+        <Wall x="{{ rx + 3 }}" z="{{ rz }}" y="{{ ry }}" w="8" d="2" h="2" color="cGround2" />
+        <Wall x="{{ rx + 6 }}" z="{{ rz }}" y="0" w="2" d="2" h="6" color="cGround2" />
+        <Wall x="{{ rx }}" z="{{ rz - 3 }}" y="{{ ry }}" w="2" d="8" h="2" color="cGround2" />
+        <Wall x="{{ rx }}" z="{{ rz - 6 }}" y="0" w="2" d="2" h="6" color="cGround2" />
+
+        {% set rx = -50 %}
+        {% set rz = 50 %}
+        {% set ry = 5 %}
+        
+        {# {{ ref(x=rx, z=rz, y=0, w=2, d=2, h=ry) }} #}
+        <Wall x="{{ rx - 3 }}" z="{{ rz }}" y="{{ ry }}" w="8" d="2" h="2" color="cGround2" />
+        <Wall x="{{ rx - 6 }}" z="{{ rz }}" y="0" w="2" d="2" h="6" color="cGround2" />
+        <Wall x="{{ rx }}" z="{{ rz + 3 }}" y="{{ ry }}" w="2" d="8" h="2" color="cGround2" />
+        <Wall x="{{ rx }}" z="{{ rz + 6 }}" y="0" w="2" d="2" h="6" color="cGround2" />
+
+    {# goodies #}
+
+        {# center goody cooldown logic #}
+
+        <unique vars="mReduceCenterCooldown" />
+        <And in="mCenterTaken" out="mReduceCenterCooldown" />
+        <Counter n="{{ int(centerGoodyCooldown / centerGoodyCooldownReduction) + 1 }}" in="mReduceCenterCooldown" out="mCueCenterGoody" />
+        <Timer wait="{{ toTicks(centerGoodyCooldownReduction) }}" in="mReduceCenterCooldown" out="mReduceCenterCooldown" stop="mCenterRefresh" />
+
+        {# other goodies #}
+
+        <unique vars="mGoodyWave0 mGoodyWave1 mGoodyWave2 mGoodyWave3 mTowerLineGoodyWave" />
+
+        {# <And in="@start" out.0="mGoodyWave0" out.1="mGoodyWave1" out.2="mGoodyWave2" out.3="mGoodyWave3" /> #}
+
+        <And in="mCenterTaken" out="mGoodyWave0" />
+        <Timer wait="{{ toTicks(goodyWave1Delay) }}" in="mCenterTaken" out="mGoodyWave1" />
+        <Timer wait="{{ toTicks(goodyWave2Delay) }}" in="mCenterTaken" out="mGoodyWave2" />
+        <Timer wait="{{ toTicks(goodyWave3Delay) }}" in="mCenterTaken" out="mGoodyWave3" />
+        <Counter n="1" in.0="mGoodyWave0" in.1="mGoodyWave3" out="mTowerLineGoodyWave" />
+
+        {% if debug %}
+            <Text text="mCenterRefresh" in="mCenterRefresh" showEveryone="true" />
+            <Text text="mReduceCenterCooldown" in="mReduceCenterCooldown" showEveryone="true" />
+            <Text text="mGoodyWave0" in="mGoodyWave0" showEveryone="true" />
+            <Text text="mGoodyWave1" in="mGoodyWave1" showEveryone="true" />
+            <Text text="mGoodyWave2" in="mGoodyWave2" showEveryone="true" />
+            <Text text="mGoodyWave3" in="mGoodyWave3" showEveryone="true" />
+        {% endif %}
+
+        {# ground level #}
+
+            {# wave 1 #}
+            
+            <Goody start="mGoodyWave1" cx="{{ hillSpacing }}" cz="0" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave1" cx="{{ -hillSpacing }}" cz="0" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave1" cx="0" cz="{{ hillSpacing }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave1" cx="0" cz="{{ -hillSpacing }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+
+            <Goody start="mGoodyWave1" cx="30" cz="30" y="{{ PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave1" cx="-30" cz="-30" y="{{ PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave1" cx="-30" cz="30" y="{{ PLAYER_RIDE_HEIGHT }}" missiles="8" color.1="cSky" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave1" cx="30" cz="-30" y="{{ PLAYER_RIDE_HEIGHT }}" missiles="8" color.1="cSky" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+
+            {#  wave 2  #}
+
+            <Goody start="mGoodyWave2" cx="{{ -42.5 - blockWidth / 2 }}" cz="{{ -12.5 - blockWidth / 2 }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave2" cx="{{ -12.5 - blockWidth / 2 }}" cz="{{ -42.5 - blockWidth / 2 }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave2" cx="{{ 42.5 + blockWidth / 2 }}" cz="{{ 12.5 + blockWidth / 2 }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave2" cx="{{ 12.5 + blockWidth / 2 }}" cz="{{ 42.5 + blockWidth / 2 }}" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="12" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+
+            {# wave 3 #}
+
+            <Goody start="mGoodyWave3" cx="-78" cz="-22" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="-22" cz="-78" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="78" cz="22" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="22" cz="78" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="50" cz="-50" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="-50" cz="50" y="0" missiles="1" power="10" shield="1.25" color="cPowerGoody1" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+
+            <Goody start="mGoodyWave3" cx="78" cz="0" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave3" cx="-78" cz="0" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave3" cx="0" cz="78" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mGoodyWave3" cx="0" cz="-78" y="{{ blockHeight + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+
+        {# canopy #}
+
+            {# immediately after center goody, also wave 3 #}
+            
+            <Goody start="mTowerLineGoodyWave" cx="{{ hillSpacing/2 }}" cz="{{ hillSpacing/2 }}" y="{{ 11 + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mTowerLineGoodyWave" cx="{{ -hillSpacing/2 }}" cz="{{ -hillSpacing/2 }}" y="{{ 11 + PLAYER_RIDE_HEIGHT }}" grenades="3" speed="{{ GOODY_SPIN_SPEED }}" shape="bspGrenade" />
+            <Goody start="mTowerLineGoodyWave" cx="45" cz="45" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mTowerLineGoodyWave" cx="-45" cz="-45" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+
+            {# wave 2 #}
+
+            <Goody start="mGoodyWave2" cx="{{ 12.5 + blockWidth / 2 }}" cz="{{ -42.5 - blockWidth / 2 }}" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave2" cx="{{ -12.5 - blockWidth / 2 }}" cz="{{ 42.5 + blockWidth / 2 }}" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave2" cx="{{ 42.5 + blockWidth / 2 }}" cz="{{ -12.5 - blockWidth / 2 }}" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+            <Goody start="mGoodyWave2" cx="{{ -42.5 - blockWidth / 2 }}" cz="{{ 12.5 + blockWidth / 2 }}" y="{{ 14 + PLAYER_RIDE_HEIGHT }}" missiles="8" speed="{{ GOODY_SPIN_SPEED }}" shape="bspMissile" />
+
+            {# wave 3 #}
+
+            <Goody start="mGoodyWave3" cx="{{ -12.5 - blockWidth / 2 }}" cz="{{ 42.5 + blockWidth / 2 }}" y="14" missiles="1" power="10" shield="1.25" color="cWall2" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="{{ -42.5 - blockWidth / 2 }}" cz="{{ 12.5 + blockWidth / 2 }}" y="14" missiles="1" power="10" shield="1.25" color="cWall2" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="{{ 12.5 + blockWidth / 2 }}" cz="{{ -42.5 - blockWidth / 2 }}" y="14" missiles="1" power="10" shield="1.25" color="cWall2" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+            <Goody start="mGoodyWave3" cx="{{ 42.5 + blockWidth / 2 }}" cz="{{ -12.5 - blockWidth / 2 }}" y="14" missiles="1" power="10" shield="1.25" color="cWall2" color.1="cPowerGoody2" shape="bspMushroom" scale="1.5" />
+
+    {# spawns #}
+
+    {% set spawnY = 16 %}
+
+    {{ walkerGroup(x=-68, z=68, y=spawnY, angle=45, team=3, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=68, z=-68, y=spawnY, angle=225, team=6, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=62, z=62, y=spawnY, angle=315, team=1, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=-62, z=-62, y=spawnY, angle=135, team=2, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=0, z=-92, y=spawnY, angle=180, team=4, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=0, z=92, y=spawnY, angle=0, team=5, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam, debug=debug) }}
+    {{ walkerGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam, debug=debug) }}
+
+    {{ incarnator(x=-59, z=59, y=spawnY, angle=45, debug=debug) }}
+    {{ incarnator(x=59, z=-59, y=spawnY, angle=225, debug=debug) }}
+    {{ incarnator(x=65, z=-65, y=spawnY, angle=225, debug=debug) }}
+    {{ incarnator(x=-65, z=-65, y=spawnY, angle=135, debug=debug) }}
+    {{ incarnator(x=0, z=-94, y=spawnY, angle=180, debug=debug) }}
+    {{ incarnator(x=0, z=94, y=spawnY, angle=0, debug=debug) }}
+    {{ incarnator(x=-94, z=0, y=spawnY, angle=90, debug=debug) }}
+    {{ incarnator(x=94, z=0, y=spawnY, angle=270, debug=debug) }}
+    {{ incarnator(x=89, z=35, y=spawnY+6, angle=291.75, debug=debug) }}
+    {{ incarnator(x=35, z=89, y=spawnY+6, angle=338.75, debug=debug) }}
+    {{ incarnator(x=-35, z=-89, y=spawnY+6, angle=158.75, debug=debug) }}
+    {{ incarnator(x=-89, z=-35, y=spawnY+6, angle=111, debug=debug) }}
+
+    {{ healthCheck() }}
+</map>

@@ -1,0 +1,17 @@
+<set t1Color='"#007600"' />
+<set t2Color='"#d7d200"' />
+<set t3Color='"#ea0000"' />
+<set t4Color='"#ea00ad"' />
+<set t5Color='"#ba1ddd"' />
+<set t6Color='"#00acda"' />
+<set t7Color='"#3e3e3e"' />
+<set t8Color='"#e6e6e6"' />
+
+<set t1ColorNeon='"rgba(0, 118, 0, 60%)"' />
+<set t2ColorNeon='"rgba(215, 210, 0, 50%)"' />
+<set t3ColorNeon='"rgba(234, 0, 0, 35%)"' />
+<set t4ColorNeon='"rgba(234, 0, 173, 50%)"' />
+<set t5ColorNeon='"rgba(126, 0, 251, 65%)"' />
+<set t6ColorNeon='"rgba(0, 112, 158, 60%)"' />
+<set t7ColorNeon='"rgba(62, 62, 62, 100%)"' />
+<set t8ColorNeon='"rgba(230, 230, 230, 0%)"' />

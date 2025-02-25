@@ -1,0 +1,121 @@
+{#
+A counter of sorts that can be incremented, then decremented, via messages. It
+starts with a value of zero. It can be incremented up to 8 times. It can then be
+decremented. Once it is decremented to zero its out message is triggered (after
+a 1-tick delay).
+
+Behavior is undefined if you increment after decrementing.
+
+Note that its default position is x/y/z (0,0,60). Position it elsewhere if it
+gets in the way. Multiple instances are automatically offset from eachother, so
+use the same x/z/y value for all of them.
+#}
+{% macro equilibrium(increment, decrement, out, x=0, z=0, y=60, debug=False) %}
+
+    {% set kInstances = 'tylib_equilibrium_instances' %}
+    {% set instance = getScratch(kInstances) %}
+
+    {% if instance is not none %}
+        {% set instance = setScratch(kInstances, instance + 1) %}
+    {% else %}
+        {% set instance = setScratch(kInstances, 0) %}
+    {% endif %}
+    {% set instancePadding = instance*1 %}
+
+    {% set segments = range(0, 8) %}
+
+    <unique vars="mZero mFreeze" />
+    <unique vars="{{ segments | map('sformat', 'mOpenSegment{}') | join(' ') }}" />
+    <unique vars="{{ segments | map('sformat', 'mCloseSegment{}') | join(' ') }}" />
+
+    <FreeSolid
+        cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 1.5 }}"
+        shape="bspStandardWall" scale="0.5"
+        mass="0" accel="1" customGravity="5"
+        {% if debug %}
+            color="#0f0"
+        {% else %}
+            color="rgba(0, 0, 0, 0%)" yon="0.001"
+        {% endif %}
+        targetGroup="targ1"
+        stop="mFreeze"
+        start="{{ decrement }}"
+    />
+    <And in="@start" out="mFreeze" restart="false" />
+    <And in="mZero" out="mFreeze" restart="false" />
+
+    {% for i in segments %}
+        <WallDoor
+            x="{{ x + 0.45 - i * 1/len(segments) }}" z="{{ z + instancePadding }}" y="{{ y - 1 }}"
+            w="{{ 1/len(segments) }}" d="1" h="1"
+            deltaY="1"
+            shape="bspStandardWall" scale="0.5"
+            openSound="0" closeSound="0" stopSound="0"
+            openSpeed="100" closeSpeed="100"
+            guardDelay="0"
+            {% if debug %}
+                color="{{ '#f00' if i % 2 == 0 else '#fff' }}"
+            {% else %}
+                color="rgba(0, 0, 0, 0%)" yon="0.001"
+            {% endif %}
+            open="mOpenSegment{{ i }}"
+            close="mCloseSegment{{ i }}"
+        />
+    {% endfor %}
+
+    <Distributor in="{{ increment }}" restart="false"
+        {% for i in segments %}
+            out.{{ i }}="mOpenSegment{{ i }}"
+        {% endfor %}
+    />
+
+    <Distributor in="{{ decrement }}" restart="false"
+        {% for i in segments %}
+            out.{{ i }}="mCloseSegment{{ i }}"
+        {% endfor %}
+    />
+
+    <Field
+        cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 0.5 }}"
+        shape="bspStandardWall" scale="0.5"
+        {% if debug %}
+            color="rgba(64, 64, 0, 50%)" visible="true"
+        {% endif %}
+        watch="targ1"
+        enter="mZero"
+    />
+    <And in="mZero" out="{{ out }}" restart="false" />
+
+{% endmacro %}
+
+{# a stoppable Area actor (note that this introduces a 2 tick delay before enter/exit messages are triggered) #}
+{% macro area(x, z, y, r, watch=None, mask=None, freq=None, enter=None, exit=None, stop=None) %}
+    {% if stop is not none %}
+        <unique vars="mEnter mExit mSuppress" />
+        <Timer wait="2" in="mEnter" out="{{ enter }}" stop="mSuppress" />
+        <Timer wait="2" in="mExit" out="{{ exit }}" stop="mSuppress" />
+        <And in="{{ stop }}" out="mSuppress" restart="false" />
+        <Timer wait="1" in="mSuppress" out="mSuppress" start="{{ stop }}" stop="@start"  />
+    {% endif %}
+    <Area
+        cx="{{ x }}"
+        cz="{{ z }}"
+        y="{{ y }}"
+        r="{{ adjustedRadius(r) }}"
+        {% if watch is not none %}
+            watch="{{ watch }}"
+        {% endif %}
+        {% if mask is not none %}
+            mask="{{ mask }}"
+        {% endif %}
+        {% if freq is not none %}
+            freq="{{ freq }}"
+        {% endif %}
+        {% if enter is not none %}
+            enter="{{ enter if stop is none else 'mEnter' }}"
+        {% endif %}
+        {% if exit is not none %}
+            exit="{{ exit if stop is none else 'mExit' }}"
+        {% endif %}
+    />
+{% endmacro %}

@@ -1,0 +1,8 @@
+{% macro pad(x, z, w) %}
+{% set h = 0.5 %}
+<Wall x="{{ x - w/2 }}" z="{{ z - w/2 }}" y="0" w="{{ w }}" d="{{ w }}" h="{{ h }}" color="#ffcccc" />
+<Wall x="{{ x - w/2 }}" z="{{ z + w/2 }}" y="0" w="{{ w }}" d="{{ w }}" h="{{ h }}" color="#ffaaaa" />
+<Wall x="{{ x + w/2 }}" z="{{ z - w/2 }}" y="0" w="{{ w }}" d="{{ w }}" h="{{ h }}" color="#ffaaaa" />
+<Wall x="{{ x + w/2 }}" z="{{ z + w/2 }}" y="0" w="{{ w }}" d="{{ w }}" h="{{ h }}" color="#ffcccc" />
+<WallDoor x="{{ x }}" z="{{ z }}" y="0" w="1" d="1" h="{{ h + PLANCK }}" color="#004444" midYaw="45" />
+{% endmacro %}

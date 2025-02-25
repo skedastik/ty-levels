@@ -1,0 +1,39 @@
+{
+    "LEDI": [
+      {
+        "Alf": "init.alf",
+        "Name": "Init",
+        "Message": "Just get the thing running."
+      },
+      {
+        "Alf": "basics.alf",
+        "Name": "Basics",
+        "Message": "Coordinates, lights, colors, alpha..."
+      },
+      {
+        "Alf": "composition.alf",
+        "Name": "Composition",
+        "Message": "Exploring level composition through reusable templates."
+      },
+      {
+        "Alf": "alignment.alf",
+        "Name": "Alignment",
+        "Message": "Are things where they should be?"
+      },
+      {
+        "Alf": "spawning.alf",
+        "Name": "Spawning",
+        "Message": "Incarnators and walkers. How do they work?"
+      },
+      {
+        "Alf": "teleporters.alf",
+        "Name": "Teleporters",
+        "Message": "Zip zoom."
+      },
+      {
+        "Alf": "exotic-logic.alf",
+        "Name": "Exotic Logic",
+        "Messages": "Not your everyday logic actors."
+      }
+    ]
+}

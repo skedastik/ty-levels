@@ -1,0 +1,37 @@
+<set cSky='"#F26F82"' />
+<set cHorizon='"#E8D5C1"' />
+<set cGround='"#42133E"' />
+<set cGround2='"#330f30"' />
+<set cWall='"#9A6189"' />
+<set cWall2='"#8E4F7B"' />
+<set cWall3='"#70315C"' />
+<set cWall4='"#501C40"' />
+<set cRamp='"#ff6980"' />
+<set cRamp2='"#F26F82"' />
+<set cSupport='"#E7C1DD"' />
+<set cSupport2='"#D8B4E4"' />
+<set cPortalOuter='"rgba(86, 76, 66, 30%)"' />
+<set cPortalInner='"rgba(86, 76, 66, 60%)"' />
+<set cAccent='"#FF1F40"' />
+<set cLightBeam='"rgba(255, 0, 0, 0%)"' />
+<set cLightning='"rgba(255, 255, 255, 0%)"' />
+
+<set cPowerGoody1='"#70315C"' />
+<set cPowerGoody2='"#5A296B"' />
+
+<SkyColor color="cHorizon" color.1="cSky" />
+<GroundColor color="cGround" />
+
+<set
+    ambient.i="0.75"
+
+    light.0.i="0.35"
+    light.0.a="50"
+    light.0.b="35"
+    light.0.c="#FfaFc2"
+
+    light.1.i="0.2"
+    light.1.a="-25"
+    light.1.b="175"
+    light.1.c="#f8f5e1"
+/>

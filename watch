@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Watch for changes and automatically run `make`. This requires `fswatch` to be
+# installed.
+#
+# Pass -l to enable automatic live reloading.
+
+while getopts ":l" opt
+do
+    case $opt in
+    (l) live_reload=1 ;;
+    esac
+done
+
+if  [[ live_reload -eq 1 ]]; then
+    echo 'Watching for changes to source files (live reload enabled)...'
+    fswatch -o -l 0.1 src alf_globals.py | xargs -n1 -I{} sh -c "make OPTS='$*' && python live_reload.py"
+else
+    echo 'Watching for changes to source files...'
+    fswatch -o -l 0.1 src alf_globals.py | xargs -n1 -I{} sh -c "make OPTS='$*'"
+fi

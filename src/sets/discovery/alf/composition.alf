@@ -1,0 +1,24 @@
+<map>
+    <set designer="Ty" />
+    
+    {% from 'lib/common.alf' import goody %}
+    {% include './composition/colors.alf' %}
+    {% from './composition/structures.alf' import summit, pillar %}
+
+    <Incarnator y="0" cx="0" cz="0" angle="0" />
+
+    {% set summitWidth = 8 %}
+    {% set summitHeight = summitWidth / 3 %}
+    {% set summitSpacing = 24 %}
+    {{ summit(x=summitSpacing, z=0, width=summitWidth, height=summitHeight) }}
+    {{ summit(x=-summitSpacing, z=0, width=summitWidth, height=summitHeight) }}
+    {{ summit(x=0, z=summitSpacing, width=summitWidth, height=summitHeight) }}
+    {{ summit(x=0, z=-summitSpacing, width=summitWidth, height=summitHeight) }}
+    {{ goody(x=summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ goody(x=-summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ goody(x=0, z=summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ goody(x=0, z=-summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+
+    {% set pillarWidth = math.sqrt(2 * summitWidth * summitWidth) %}
+    {{ pillar(x=summitSpacing/2, z=summitSpacing/2, width=pillarWidth, height=10) }}
+</map>

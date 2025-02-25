@@ -1,0 +1,114 @@
+{% set bspPortalFrame = 4000 %}
+{% set bspPortalWindow = 4001 %}
+{% set bspForceHitbox = 4002 %}
+{% set snPortalEnter = 3001 %}
+{% set snPortalExit = 3000 %}
+
+{# A pair of teleportation portals that forcefully eject players #}
+{% macro portalPair(x1, z1, y1, a1, x2, z2, y2, a2, force=0.8, forceY=0.2, colorOuter="#fff", colorInner="rgba(0, 50, 255, 20%)", rotateSpeed=0, oneWay=False, visible1=True, visible2=True, mask=None, startMsg=None, stopMsg=None, debug=False) %}
+
+    {% set portalActiveRange = 1.75 %}
+
+    {% set dx1 = round(math.sin(math.radians(a1)), 3) %}
+    {% set dz1 = -round(math.cos(math.radians(a1)), 3) %}
+    {% set dx2 = round(math.sin(math.radians(a2)), 3) %}
+    {% set dz2 = -round(math.cos(math.radians(a2)), 3) %}
+
+    {% set fx1 = force * dx1 %}
+    {% set fz1 = force * dz1 %}
+    {% set fx2 = force * dx2 %}
+    {% set fz2 = force * dz2 %}
+
+    <unique vars="uTel1Group mTel1Out uTel2Group mTel2Out mPush1Stop mPush2Stop mTel1Open mTel1Close mTel2Open mTel2Close" />
+
+    <And
+        in="@start"
+        out.0="mPush1Stop"
+        out.1="mPush2Stop"
+        out.2="mTel1Open"
+        out.3="mTel2Open"
+    />
+
+    {# close portal while teleporter "go timer" is running #}
+    <And in="mTel1Out" out="mTel2Close" />
+    {% if not oneWay %}
+        <And in="mTel2Out" out="mTel1Close" />
+    {% endif %}
+
+    {# when "go timer" resets show active portal window #}
+    <Timer wait="{{ TELE_GO_TIME }}" in="mTel1Out" out="mTel2Open" />
+    {% if not oneWay %}
+        <Timer wait="{{ TELE_GO_TIME }}" in="mTel2Out" out="mTel1Open" />
+    {% endif %}
+
+    {% if debug %}
+    <Hologram cx="{{ x1 + fx1 }}" cz="{{ z1 + fz1 }}" y="{{ y1 + 1 }}" shape="bspGroundArrow" scale="0.5" angle="{{ a1 }}" color="#0f0" />
+    <Hologram cx="{{ x2 + fx2 }}" cz="{{ z2 + fz2 }}" y="{{ y2 + 1 }}" shape="bspGroundArrow" scale="0.5" angle="{{ a2 }}" color="#f00" />
+    {% endif %}
+
+    <Teleporter
+        cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" shape="{{ bspPortalFrame }}" angle="{{ a1 }}" speed="{{ rotateSpeed }}" mask="0" color="{{ colorOuter }}"
+        {{ 'start="' + startMsg + '"' if startMsg is not none }}
+        {{ 'stop="' + stopMsg + '"' if startMsg is not none }}
+    />
+    <Teleporter
+        cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" shape="{{ bspPortalWindow }}" angle="{{ a1 }}" speed="0" mask="0" color="{{ colorInner }}"
+        start="mTel1Close" stop="mTel1Open"
+    />
+    <Teleporter
+        cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" shape="0" spin="false" activeRange="{{ portalActiveRange }}" sound="0"
+        group="uTel1Group" destGroup="uTel2Group"
+        out="mTel1Out"
+        {{ 'mask="' + mask + '"' if mask }}
+        {{ 'start="' + startMsg + '"' if startMsg is not none }}
+        {{ 'stop="' + stopMsg + '"' if startMsg is not none }}
+    />
+    {% if not oneWay %}
+        <Field
+            cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" shape="{{ bspForceHitbox }}" deltaX="{{ fx2 }}" deltaZ="{{ fz2 }}" deltaY="{{ forceY }}" angle="{{ a1 }}"
+            {{ 'visible="true" color="rgba(0, 255, 0, 30%)"' if debug }}
+            watch="playerMask" start="mTel2Out" stop="mPush1Stop" enter="mPush1Stop"
+        />
+    {% endif %}
+    <Sound cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" isPlaced="true" restart="true" start="mTel1Out" sound="{{ snPortalEnter }}" volume="6" />
+    {% if not oneWay %}
+        <Sound cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" isPlaced="true" restart="true" start="mTel2Out" sound="{{ snPortalExit }}" volume="6" />
+    {% endif %}
+
+    {% if visible2 %}
+        <Teleporter
+            cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" shape="{{ bspPortalFrame }}" angle="{{ a2 }}" speed="{{ rotateSpeed }}" mask="0" color="{{ colorOuter }}"
+            {{ 'start="' + startMsg + '"' if startMsg is not none }}
+            {{ 'stop="' + stopMsg + '"' if startMsg is not none }}
+        />
+    {% endif %}
+    <Teleporter
+        cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" shape="{{ bspPortalWindow if visible2 else '0' }}" angle="{{ a2 }}" speed="0" mask="0" color="{{ colorInner }}"
+        {% if not oneWay %}
+            start="mTel2Close" stop="mTel2Open"
+        {% endif %}
+    />
+    <Teleporter
+        cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" shape="0" spin="false" sound="0"
+        {% if oneWay %}
+            mask="0"
+        {% else %}
+            activeRange="{{ portalActiveRange }}" destGroup="uTel1Group"
+            out="mTel2Out"
+            {{ 'mask="' + mask + '"' if mask }}
+            {{ 'start="' + startMsg + '"' if startMsg is not none }}
+            {{ 'stop="' + stopMsg + '"' if startMsg is not none }}
+        {% endif %}
+        group="uTel2Group"
+    />
+    <Field
+        cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" shape="{{ bspForceHitbox }}" deltaX="{{ fx1 }}" deltaZ="{{ fz1 }}" deltaY="{{ forceY }}" angle="{{ a2 }}"
+        {{ 'visible="true" color="rgba(255, 0, 0, 30%)"' if debug }}
+        watch="playerMask" start="mTel1Out" stop="mPush2Stop" enter="mPush2Stop"
+    />
+    {% if not oneWay %}
+        <Sound cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" isPlaced="true" restart="true" start="mTel2Out" sound="{{ snPortalEnter }}" volume="6" />
+    {% endif %}
+    <Sound cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" isPlaced="true" restart="true" start="mTel1Out" sound="{{ snPortalExit }}" volume="6" />
+
+{% endmacro %}

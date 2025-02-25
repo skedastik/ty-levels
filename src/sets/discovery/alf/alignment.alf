@@ -1,0 +1,60 @@
+<map>
+    <set designer="Ty" />
+
+    {% from './alignment/structures.alf' import pad %}
+
+    <set
+        ambient.i="0.250"
+
+        light.0.i="0.7"
+        light.0.a="-80"
+        light.0.b="0"
+
+        light.1.i="0.675"
+        light.1.a="60"
+        light.1.b="90"
+
+        light.2.i="0.65"
+        light.2.a="0"
+        light.2.b="180"
+
+        light.3.i="0.675"
+        light.3.a="0"
+        light.3.b="270"
+    />
+
+    <GroundColor color="#f3eee7" />
+    <SkyColor color="#e8e8e8" color.1="#c3e9e9" />
+
+    <Incarnator y="30" cx="5" cz="2" angle="0" />
+
+    {% set w = 1 %}
+
+    <!-- midYaw'ed objects are sometimes thrown out of alignment depending on
+    their x/z location. See below where all four midYaw'ed WallDoors should be
+    aligned with the check pattern, yet only two of them are. The only changing
+    parameter is x. -->
+
+    <!-- UPDATE 2025.02.06: These alignment issues have been fixed! -->
+
+    <!-- GOOD -->
+    <!-- The diamond is centered. -->
+    {{ pad(x=2, z=0, w=w) }}
+    <!-- BAD -->
+    <!-- The diamond is off center and appears to be subtly oblong. -->
+    {{ pad(x=4, z=0, w=w) }}
+    <!-- BAD -->
+    <!-- The diamond is off center and appears to be subtly oblong. -->
+    {{ pad(x=6, z=0, w=w) }}
+    <!-- GOOD -->
+    <!-- The diamond is centered. -->
+    {{ pad(x=8, z=0, w=w) }}
+
+    <!-- BSP units don't appear to match level units. -->
+
+    <!-- BAD -->
+    <!-- I would expect these to be identical in size as the wallTemplate BSP is
+    a 2x2 cube and the wall is also 2x2. -->
+    <Wall x="5" z="-5" y="0" w="2" d="2" h="2.001" color="#ffcccc" />
+    <Solid cx="5" cz="-5" y="1" shape="wallTemplate" color="#004444" />
+</map>

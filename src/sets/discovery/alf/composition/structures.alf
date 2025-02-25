@@ -1,0 +1,16 @@
+{% macro summit(x, z, width, height) %}
+<Ramp x="{{ x + width }}" z="{{ z }}" w="{{ width }}" d="{{ width }}" h="0" angle="90" y="0" deltaY="{{ height }}" color="cRamp" />
+<Ramp x="{{ x - width }}" z="{{ z }}" w="{{ width }}" d="{{ width }}" h="0" angle="270" y="0" deltaY="{{ height }}" color="cRamp" />
+<Ramp x="{{ x }}" z="{{ z + width }}" w="{{ width }}" d="{{ width }}" h="0" angle="180" y="0" deltaY="{{ height }}" color="cRamp" />
+<Ramp x="{{ x }}" z="{{ z - width }}" w="{{ width }}" d="{{ width }}" h="0" angle="0" y="0" deltaY="{{ height }}" color="cRamp" />
+<Wall x="{{ x + width }}" z="{{ z + width }}" w="{{ width }}" d="{{ width }}" h="{{ height }}" y="0" color="cWall" />
+<Wall x="{{ x - width }}" z="{{ z + width }}" w="{{ width }}" d="{{ width }}" h="{{ height }}" y="0" color="cWall" />
+<Wall x="{{ x + width }}" z="{{ z - width }}" w="{{ width }}" d="{{ width }}" h="{{ height }}" y="0" color="cWall" />
+<Wall x="{{ x - width }}" z="{{ z - width }}" w="{{ width }}" d="{{ width }}" h="{{ height }}" y="0" color="cWall" />
+<Wall x="{{ x }}" z="{{ z }}" w="{{ width }}" d="{{ width }}" h="{{ height }}" y="0" color="cRamp" />
+<Wall x="{{ x }}" z="{{ z }}" w="{{ width/3 }}" d="{{ width/3 }}" h="{{ PLANCK }}" y="{{ height + PLANCK }}" color="cRamp2" />
+{% endmacro %}
+
+{% macro pillar(x, z, width, height) %}
+<WallDoor x="{{ x }}" z="{{ z }}" y="0" w="{{ width }}" d="{{ width }}" h="{{ height }}" color="cWall" midYaw="45" />
+{% endmacro %}

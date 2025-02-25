@@ -1,0 +1,60 @@
+<map>
+    <set designer="Ty" />
+    
+    <set bspCompassCube="4001" />
+
+    <set
+        ambient.i="0.250"
+
+        light.0.i="0.7"
+        light.0.a="-80"
+        light.0.b="0"
+
+        light.1.i="0.675"
+        light.1.a="60"
+        light.1.b="90"
+
+        light.2.i="0.65"
+        light.2.a="0"
+        light.2.b="180"
+
+        light.3.i="0.675"
+        light.3.a="0"
+        light.3.b="270"
+    />
+    
+    <GroundColor color="#f3eee7" />
+    <SkyColor color="#e8e8e8" color.1="#c3e9e9" />
+
+    <Incarnator y="0" cx="0" cz="0" angle="0" />
+
+    <!--
+    - Angles in ALF increase in a clockwise direction.
+    - Z increases in the direction of angle 180.
+    - X increases in the direction of angle 90.
+    - Y increases in the direction of the sky.
+    - Width corresponds to thickness along the X dimension.
+    - Depth correspond to thickness along the Z dimension.
+    - Avara's unit cube (a wall with width/depth of 1) matches Blender's unit
+        cube when exported with `blender-avarabsp`. Note that transformations in
+        Blender are NOT applied. This means any scaling/rotation/translation
+        will not affect the exported mesh.
+    -->
+    <Hologram shape="bspCompassCube" color="#ee2222" color.1="#ffffff" cx="0" cz="-5" y="0.5" />
+
+    <Hologram shape="bspGroundStar" scale="0.5" color="#ee2222" cx="10" cz="-5" y="0" />
+
+    <!--
+    `x` and `z` correspond to the centers of walls and ramps.
+    -->
+    <Wall color="#f3eee7" x="-2" z="-5" w="1" d="1" h="1" />
+    <!-- 
+    Ramps slope down in the direction of the ramp angle.
+
+    Colors with alpha seem to blend additively, but with a twist. I'm guessing
+    the formula looks something like: Given value `X` return `2X - 255`.
+    Lighting interacts with the result enough that it's difficult to predict
+    what the final result will look like.
+    -->
+    <Ramp y="0" deltaY="1.5" color="rgba(180, 180, 180, 50%)" x="10" z="-5" w="8" d="4" h="0" angle="180" />
+</map>

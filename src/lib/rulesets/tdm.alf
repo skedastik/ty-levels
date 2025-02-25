@@ -1,0 +1,354 @@
+{#
+TEAM DEATHMATCH
+
+Each team has a pool of X respawns. When a team exhausts their pool, they face
+sudden death, meaning they will not be able to respawn. The last team standing
+wins.
+
+To use this ruleset, invoke the `rules` macro at the top of your ALF file. Make
+initial team placements by using the `walkerGroup` macro, once for each team.
+Use the `incarnator` macro to place a minimum of eight incarnators. Currently,
+team-specific incarnators are not supported.
+
+You must ensure incarnator locations are inaccesible to players, as players
+passing through an incarnator will interfere with logic-related actors leading
+to undefined behavior.
+
+Though not required, it is recommended to call the `healthCheck` macro at the
+bottom of your ALF file.
+
+It is an unfortunately reality that we sometimes have to use phyical actors to
+implement logic. This is the case with TDM's logic. Bearing this in mind, the
+`rules` macro exposes three optional arguments: xLogic, zLogic, yLogic. Logic-
+related actors are hidden away around that origin. If needed you can override
+the defaults to place them where they will be out of the way. Their positioning
+will will affect the level preview.
+
+[TODO] The requirement that incarnators be placed in inaccessible spots is
+pretty limiting. It's also potentially buggy. Players get knocked around and end
+up in unexpected places all the time. Consider fixing this by using teleporters:
+Spawn players outside the field of play and teleport them into it? This will
+break the Avara port's selective incarnator logic which tries to avoid spawning
+players next to other players. Another option is to detect when players are
+close (i.e. within a 10m radius) and disable the detection field. This is
+probably the best option.
+
+[TODO] Support team-specific incarnators.
+
+#}
+
+{% from 'lib/common.alf' import goody, walkerGroup as wg %}
+{% from 'lib/logic.alf' import equilibrium %}
+
+{% macro info(respawns=3) %}
+    [TDM] {{ respawns }} respawns per team. Last team standing wins.
+{% endmacro %}
+
+{# team numbers #}
+{% set ts = range(1, MAX_TEAMS + 1) %}
+
+{% set kIncarnCount = 'tylib_tdm_incarnator_count' %}
+{% set kWalkerGroupCount = 'tylib_tdm_walker_group_count' %}
+
+{% macro rules(respawns=3, drawGracePeriod=3, xLogic=220, zLogic=0, yLogic=16, debug=False) %}
+
+    {% if respawns < 1 or respawns > 9 %}
+        {{ throw('`respawns` must be in the range [1,9] inclusive.') }}
+    {% endif %}
+
+    {% set defaultLives = 99 if not debug else 2 %}
+
+    <unique vars="mDecisiveWin mTeleportWinner mDraw mGameOver" />
+
+    <Distributor out="mGameOver" in.0="mDecisiveWin" in.1="mDraw" />
+
+    <Timer wait="{{ toTicks(drawGracePeriod) }}" in="@winTeam" out="mDecisiveWin" stop="mDraw" />
+    <Timer wait="2" in="mDecisiveWin" out="mTeleportWinner" />
+
+    <set defaultLives="{{ defaultLives }}" />
+    <Teleporter start="mTeleportWinner" win="0" activeRange="500" shape="0" />
+    
+    <unique vars="{{ ts | map('sformat', 'mT{}Died') | join(' ') }}" />
+    <unique vars="{{ ts | map('sformat', 'mT{}Eliminated') | join(' ') }}" />
+    <unique vars="{{ ts | map('sformat', 'mT{}PlayerIn') | join(' ') }}" />
+    <unique vars="{{ ts | map('sformat', 'mT{}PlayerOut') | join(' ') }}" />
+    <unique vars="{{ ts | map('sformat', 'mT{}Wins') | join(' ') }}" />
+    {% for t in ts %}
+        <unique vars="{{ range(0, respawns + 1) | map('sformat', 'mT'+str(t)+'RespawnsLeft{}') | join(' ') }}" />
+    {% endfor %}
+
+    {% for t in ts %}
+        <Distributor in="mT{{ t }}Died" restart="false"
+            {% for x in range(0, respawns) %}
+                out.{{ x }}="mT{{ t }}RespawnsLeft{{ respawns - x - 1 }}"
+            {% endfor %}
+        />
+        <Timer wait="3" in="@start" out="mT{{ t }}Eliminated" stop="mT{{ t }}PlayerIn" />
+        <And out="mT{{ t }}Wins"
+            {% for tOther in range(1, MAX_TEAMS - 1) %}
+                in.{{ tOther - 1 }}="mT{{ tOther if tOther < t else tOther + 1 }}Eliminated"
+            {% endfor %}
+            in.{{ MAX_TEAMS }}="mDecisiveWin"
+        />
+    {% endfor %}
+
+    <And out="mDraw"
+        {% for t in ts %}
+            in.{{ t - 1 }}="mT{{ t }}Eliminated"
+        {% endfor %}
+    />
+
+    {% for t in ts %}
+        {{ equilibrium(x=xLogic, z=zLogic+20, y=yLogic, increment='mT'+str(t)+'PlayerIn', decrement='mT'+str(t)+'PlayerOut', out='mT'+str(t)+'Eliminated', debug=debug) }}
+    {% endfor %}
+
+    <!-- NARRATION LOGIC & ACTORS -->
+
+    <unique vars="mTdmIntroMessage" />
+
+    <!-- Text narration -->
+
+    <Timer wait="{{ toTicks(1) }}" in="@start" out="mTdmIntroMessage" />
+    <Text text="Each team has {{ respawns }} respawn{{ '' if respawns == 1 else 's' }} left." in="mTdmIntroMessage" showEveryone="true" />
+
+    {% for t in ts %}
+        {% for r in range(1, respawns) %}
+            <Text text="{{ TEAM_COLORS[t] }} has {{ r }} respawn{{ '' if r == 1 else 's'  }} left." in="mT{{ t }}RespawnsLeft{{ r }}" stop="mGameOver" showEveryone="true" />
+        {% endfor %}
+        <Text text="{{ TEAM_COLORS[t] }} faces sudden death!" in="mT{{ t }}RespawnsLeft0" stop="mGameOver" showEveryone="true" />
+        {# Decided not to show elimination messages in the text console as it's
+        too noisy. It's more important to display a record of how many respawns
+        each team has left. #}
+        {# <Text text="{{ TEAM_COLORS[t] }} has been eliminated!" restart="1000000" in="mT{{ t }}Eliminated" stop="mGameOver" showEveryone="true" start="mTdmIntroMessage" /> #}
+        <Text text="{{ TEAM_COLORS[t] }} wins!" in="mT{{ t }}Wins" stop="mT{{ t }}Eliminated" showEveryone="true" />
+    {% endfor %}
+
+    <Text text="It's a draw!" in="mDraw" stop="mDecisiveWin" showEveryone="true" />
+
+    <!-- Audio narration -->
+
+    <set snTdmEachTeam="3100" />
+    <set snTdmT1="3101" />
+    <set snTdmT2="3102" />
+    <set snTdmT3="3103" />
+    <set snTdmT4="3104" />
+    <set snTdmT5="3105" />
+    <set snTdmT6="3106" />
+    <set snTdmT7="3107" />
+    <set snTdmT8="3108" />
+
+    <set snTdm0Respawn="3110" />
+    <set snTdm1Respawn="3111" />
+    <set snTdm2Respawn="3112" />
+    <set snTdm3Respawn="3113" />
+    <set snTdm4Respawn="3114" />
+    <set snTdm5Respawn="3115" />
+    <set snTdm6Respawn="3116" />
+    <set snTdm7Respawn="3117" />
+    <set snTdm8Respawn="3118" />
+    <set snTdm9Respawn="3119" />
+
+    <set snTdmMayTheBest="3130" />
+    <set snTdmWins="3131" />
+    <set snTdmDraw="3132" />
+    <set snTdmEliminated="3133" />
+
+    {% set narratorH =  -100 %}
+    {% set narratorVol =  10000 %}
+
+    {% for t in ts %}
+        {# We need separate "play sound" messages for interruptable narration sounds. #}
+        <unique vars="{{ range(0, respawns) | map('sformat', 'mPlayT'+str(t)+'RespawnsLeft{}') | join(' ') }}" />
+        <unique vars="mPlayT{{ t }}Eliminated" />
+    {% endfor %}
+
+    <unique vars="mStopNarration" />
+
+    {# This is necessary to stop the initial wave of mT*Eliminated messages from
+    triggering their respective sounds. Basically we stop them about a tick
+    after they start playing. Yes, this is some jank logic, but c'est la vie. #}
+    <Timer wait="5" in="@start" out="mStopNarration" />
+
+    <Sound sound="snTdmEachTeam" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" start="mTdmIntroMessage" stop="mStopNarration" kill="mGameOver" />
+    <Sound sound="snTdm{{ respawns }}Respawn" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" start="mTdmIntroMessage" stop="mStopNarration" kill="mGameOver" />
+    <Sound sound="snTdmMayTheBest" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" start="mTdmIntroMessage" stop="mStopNarration" kill="mGameOver" />
+
+    {% for t in ts %}
+        {% for r in range(0, respawns) %}
+            {# These timers are necessary to enable narration interruption.
+            Without a 1 tick delay, the mStopNarration message will stop
+            narration messages starting in the current frame before they've had
+            a chance to play. #}
+            <Timer wait="1" in="mT{{ t }}RespawnsLeft{{ r }}" out="mPlayT{{ t }}RespawnsLeft{{ r }}" />
+        {% endfor %}
+        <Distributor out.0="mStopNarration"
+            {% for x in range(0, respawns) %}
+                in.{{ x }}="mT{{ t }}RespawnsLeft{{ respawns - x - 1 }}"
+            {% endfor %}
+        />
+        {% for r in range(0, respawns) %}
+            <Sound sound="snTdmT{{ t }}" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mPlayT{{ t }}RespawnsLeft{{ r }}" stop="mStopNarration" />
+            <Sound sound="snTdm{{ r }}Respawn" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mPlayT{{ t }}RespawnsLeft{{ r }}" stop="mStopNarration" />
+        {% endfor %}
+
+        <Timer wait="1" in="mT{{ t }}Eliminated" out="mPlayT{{ t }}Eliminated" />
+        <And in="mT{{ t }}Eliminated" out="mStopNarration" />
+        <Sound sound="snTdmT{{ t }}" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mPlayT{{ t }}Eliminated" stop="mStopNarration" kill="mGameOver" />
+        <Sound sound="snTdmEliminated" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mPlayT{{ t }}Eliminated" stop="mStopNarration" kill="mGameOver" />
+
+        <Timer wait="2" in="mT{{ t }}Wins" out="mStopNarration" />
+
+        <Sound sound="snTdmT{{ t }}" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mT{{ t }}Wins" />
+        <Sound sound="snTdmWins" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" restart="false" start="mT{{ t }}Wins" />
+    {% endfor %}
+
+    <Timer wait="2" in="mDraw" out="mStopNarration" />
+    
+    <Sound sound="snTdmDraw" cx="0" cz="0" y="{{ narratorH }}" volume="{{ narratorVol }}" isAmbient="true" start="mDraw" />
+
+    <!-- PLAYER ELIMINATION -->
+
+    <!-- Prevent players from escaping. -->
+    <Ramp
+        x="{{ xLogic }}" z="{{ zLogic }}" y="{{ yLogic }}" w="20" d="20" h="1"
+        traction="0" friction="0"
+        {% if debug %}
+            color="#f00"
+        {% else %}
+            color="rgba(0, 0, 0, 0%)" yon="0.001"
+        {% endif %}
+    />
+
+    <unique vars="{{ ts | map('sformat', 'mExecute{} mStopExecute{}') | join(' ') }}" />
+    {% for i in ts %}
+        {% set cx = xLogic - 6 + 2*(i-1) %}
+        <unique vars="mSpawned" />
+        <Field
+            x="{{ cx }}" z="{{ zLogic }}" y="{{ yLogic }}" w="1" d="1" h="4" watch="playerMask" enter="mSpawned"
+        />
+        <!-- The player's lives are reduced to 1 by this goody. -->
+        <Goody
+            cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 0.75 + PLAYER_RIDE_HEIGHT }}"
+            lives="{{ 2 - defaultLives }}"
+            shape='bspAvaraA'
+            {% if debug %}
+                color="#f00"
+            {% else %}
+                yon="0.001"
+                color="rgba(0, 0, 0, 0%)"
+            {% endif %}
+            sound="0" speed="0"
+            out="mExecute{{ i }}"
+            start="mSpawned"
+        />
+        <!-- The player is ghosted by this guard. Why guards? They don't trigger the kill feed, nor do they affect player score. -->
+        <Guard
+            cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 3.5 }}" speed="1000" shotPower="1000" shield="-1" freq="{{ toTicks(0.1) }}"
+            {% if debug %}
+                scale="0.25"
+            {% else %}
+                shape="bspSliver0" yon="0.001"
+            {% endif %}
+            start="mExecute{{ i }}" stop="mStopExecute{{ i }}"
+        />
+        <Timer wait="1" in="mExecute{{ i }}" out="mStopExecute{{ i }}" />
+        {% for t in ts %}
+            <!-- A player is spawned in the kill zone when their team has 0 respawns left. -->
+            <Incarnator cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic }}" angle="90" mask="T{{ t }}" start="mT{{ t }}RespawnsLeft0" stop="@start" />
+            <!-- They are detected by this field, decrementing their team presence. -->
+            {# It is important for these Fields to come after the above Guards
+            to ensure they detect players before the guards destroy them. #}
+            <Field
+                x="{{ cx }}" z="{{ zLogic }}" y="{{ yLogic }}" w="1" d="1" h="4" watch="playerMask" mask="T{{ t }}" enter="mT{{ t }}PlayerOut"
+                {% if debug %}
+                    color="rgba(64, 64, 0, 50%)"
+                    visible="true"
+                {% endif %}
+            />
+        {% endfor %}
+    {% endfor %}
+
+    <!-- DEBUG STUFF -->
+
+    {% if debug %}
+        {% for t in ts %}
+            <Text text="DEBUG: mT{{ t }}PlayerIn" in="mT{{ t }}PlayerIn" showEveryone="true" />
+            <Text text="DEBUG: mT{{ t }}PlayerOut" in="mT{{ t }}PlayerOut" showEveryone="true" />
+            <Text text="DEBUG: mT{{ t }}Eliminated" in="mT{{ t }}Eliminated" showEveryone="true" />
+            <Text text="DEBUG: mT{{ t }}Died" in="mT{{ t }}Died" showEveryone="true" />
+            <Text text="DEBUG: mT{{ t }}Wins" in="mT{{ t }}Wins" showEveryone="true" />
+        {% endfor %}
+        <Text text="DEBUG: mStopNarration" in="mStopNarration" showEveryone="true" />
+        <Text text="DEBUG: mDecisiveWin" in="mDecisiveWin" showEveryone="true" />
+        <Text text="DEBUG: mDraw" in="mDraw" showEveryone="true" />
+        <Text text="DEBUG: mGameOver" in="mGameOver" showEveryone="true" />
+    {% endif %}
+{% endmacro %}
+
+{% macro walkerGroup(x, z, y, angle, team, r=None, players=8, debug=False) %}
+    {% set walkerGroupCount = getScratch(kWalkerGroupCount) %}
+    {% if walkerGroupCount is not none %}
+        {% set walkerGroupCount = setScratch(kWalkerGroupCount, walkerGroupCount + 1) %}
+    {% else %}
+        {% set walkerGroupCount = setScratch(kWalkerGroupCount, 1) %}
+    {% endif %}
+
+    {{ wg(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, debug=debug) }}
+{% endmacro %}
+
+{% macro incarnator(x, z, y, angle, debug=False) %}
+    {% set incarnCount = getScratch(kIncarnCount) %}
+    {% if incarnCount is not none %}
+        {% set incarnCount = setScratch(kIncarnCount, incarnCount + 1) %}
+    {% else %}
+        {% set incarnCount = setScratch(kIncarnCount, 1) %}
+    {% endif %}
+
+    <unique vars="{{ ts | map('sformat', 'mT{}Spawned') | join(' ') }}" />
+    <unique vars="mSpawned mStartDetectingRespawns" />
+
+    {# Wait a bit before detecting respawns, otherwise the initial spawn will
+    trigger the mT*Died message. #}
+    <Timer wait="{{ toTicks(2) }}" in="@start" out="mStartDetectingRespawns" />
+    
+    {% for t in ts %}
+        <Incarnator cx="{{ x }}" cz="{{ z }}" y="{{ y }}" angle="{{ angle }}" mask="T{{ t }}" stop="mT{{ t }}RespawnsLeft0" />
+        <Field
+            x="{{ x }}" z="{{ z }}" y="{{ y }}" w="1" d="1" h="2"
+            watch="playerMask" mask="T{{ t }}"
+            start="mStartDetectingRespawns" enter="mT{{ t }}Spawned"
+        />
+        <Counter n="1" in="mT{{ t }}Spawned"
+            out.0="mT{{ t }}Died"
+            out.1="mSpawned"
+        />
+    {% endfor %}
+
+    {# Restore the player's lost life to maintain a constant life count. This is
+    necessary for when the player is later spawned in the kill zone after their
+    team has run out of respawns. #}
+    <Goody
+        cx="{{ x }}" cz="{{ z }}" y="{{ y+1 }}"
+        lives="1"
+        shape='bspAvaraA'
+        {% if debug %}
+            color="#f00"
+        {% else %}
+            yon="0.001"
+            color="rgba(0, 0, 0, 0%)"
+        {% endif %}
+        sound="0" speed="0"
+        start="mSpawned"
+    />
+{% endmacro %}
+
+{% macro healthCheck() %}
+    {% set walkerGroupCount = getScratch(kWalkerGroupCount) %}
+    {% set incarnCount = getScratch(kIncarnCount) %}
+    {% if walkerGroupCount is none or walkerGroupCount < 8 %}
+        {{ throw('You must place 8 walker groups using tdm.alf::walkerGroup.') }}
+    {% endif %}
+    {% if incarnCount is none or incarnCount < 8 %}
+        {{ throw('You must place at least 8 incarnators using tdm.alf::incarnator.') }}
+    {% endif %}
+{% endmacro %}

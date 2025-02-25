@@ -1,0 +1,26 @@
+<set cRamp='"rgba(238, 102, 85, 100%)"' />
+<set cRamp2='"rgba(255, 122, 115, 100%)"' />
+<set cWall='"#f0ebe4"' />
+
+<set
+    ambient.i="0.250"
+
+    light.0.i="0.7"
+    light.0.a="-80"
+    light.0.b="0"
+
+    light.1.i="0.675"
+    light.1.a="60"
+    light.1.b="90"
+
+    light.2.i="0.65"
+    light.2.a="0"
+    light.2.b="180"
+
+    light.3.i="0.675"
+    light.3.a="0"
+    light.3.b="270"
+/>
+
+<GroundColor color="#f3eee7" />
+<SkyColor color="#e8e8e8" color.1="#c3e9e9" />
