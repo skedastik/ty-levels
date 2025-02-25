@@ -302,7 +302,7 @@
 
     {{ incarnator(x=-59, z=59, y=spawnY, angle=45, debug=debug) }}
     {{ incarnator(x=59, z=-59, y=spawnY, angle=225, debug=debug) }}
-    {{ incarnator(x=65, z=-65, y=spawnY, angle=225, debug=debug) }}
+    {{ incarnator(x=65, z=65, y=spawnY, angle=315, debug=debug) }}
     {{ incarnator(x=-65, z=-65, y=spawnY, angle=135, debug=debug) }}
     {{ incarnator(x=0, z=-94, y=spawnY, angle=180, debug=debug) }}
     {{ incarnator(x=0, z=94, y=spawnY, angle=0, debug=debug) }}
