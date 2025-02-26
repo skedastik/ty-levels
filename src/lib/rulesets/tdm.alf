@@ -99,10 +99,10 @@ will affect the level preview.
     <Text text="Each team has {{ respawns }} respawn{{ '' if respawns == 1 else 's' }} left." in="mTdmIntroMessage" showEveryone="true" />
 
     {% for t in ts %}
+        <Text text="{{ TEAM_COLORS[t] }} faces sudden death!" in="mT{{ t }}RespawnsLeft0" stop="mGameOver" showEveryone="true" />
         {% for r in range(1, respawns) %}
             <Text text="{{ TEAM_COLORS[t] }} has {{ r }} respawn{{ '' if r == 1 else 's'  }} left." in="mT{{ t }}RespawnsLeft{{ r }}" stop="mGameOver" showEveryone="true" />
         {% endfor %}
-        <Text text="{{ TEAM_COLORS[t] }} faces sudden death!" in="mT{{ t }}RespawnsLeft0" stop="mGameOver" showEveryone="true" />
         {# Decided not to show elimination messages in the text console as it's
         too noisy. It's more important to display a record of how many respawns
         each team has left. #}
