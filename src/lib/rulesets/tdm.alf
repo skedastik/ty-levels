@@ -10,10 +10,6 @@ initial team placements by using the `walkerGroup` macro, once for each team.
 Use the `incarnator` macro to place a minimum of eight incarnators. Currently,
 team-specific incarnators are not supported.
 
-You must ensure incarnator locations are inaccesible to players, as players
-passing through an incarnator will interfere with logic-related actors leading
-to undefined behavior.
-
 Though not required, it is recommended to call the `healthCheck` macro at the
 bottom of your ALF file.
 
@@ -23,15 +19,6 @@ implement logic. This is the case with TDM's logic. Bearing this in mind, the
 related actors are hidden away around that origin. If needed you can override
 the defaults to place them where they will be out of the way. Their positioning
 will affect the level preview.
-
-[TODO] The requirement that incarnators be placed in inaccessible spots is
-pretty limiting. It's also potentially buggy. Players get knocked around and end
-up in unexpected places all the time. Consider fixing this by using teleporters:
-Spawn players outside the field of play and teleport them into it? This will
-break the Avara port's selective incarnator logic which tries to avoid spawning
-players next to other players. Another option is to detect when players are
-close (i.e. within a 10m radius) and disable the detection field. This is
-probably the best option.
 
 [TODO] Support team-specific incarnators.
 
@@ -228,9 +215,9 @@ probably the best option.
         />
         <!-- The player's lives are reduced to 1 by this goody. -->
         <Goody
-            cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 0.75 + PLAYER_RIDE_HEIGHT }}"
+            cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 2.5 }}"
             lives="{{ 2 - defaultLives }}"
-            shape='bspAvaraA'
+            shape="bspStandardWall" scale="0.7"
             {% if debug %}
                 color="#f00"
             {% else %}
@@ -255,9 +242,10 @@ probably the best option.
         {% for t in ts %}
             <!-- A player is spawned in the kill zone when their team has 0 respawns left. -->
             <Incarnator cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic }}" angle="90" mask="T{{ t }}" start="mT{{ t }}RespawnsLeft0" stop="@start" />
-            <!-- They are detected by this field, decrementing their team presence. -->
-            {# It is important for these Fields to come after the above Guards
-            to ensure they detect players before the guards destroy them. #}
+            <!-- They are detected by this field, decrementing their team
+            presence. It is important for these Fields to come after the above
+            Guards to ensure they detect players before the guards destroy them.
+            -->
             <Field
                 x="{{ cx }}" z="{{ zLogic }}" y="{{ yLogic }}" w="1" d="1" h="4" watch="playerMask" mask="T{{ t }}" enter="mT{{ t }}PlayerOut"
                 {% if debug %}
@@ -304,33 +292,18 @@ probably the best option.
         {% set incarnCount = setScratch(kIncarnCount, 1) %}
     {% endif %}
 
-    <unique vars="{{ ts | map('sformat', 'mT{}Spawned') | join(' ') }}" />
-    <unique vars="mSpawned mStartDetectingRespawns" />
+    <unique vars="mStartIncarnator mStopIncarnator mPlayersNear" />
+    <unique vars="{{ ts | map('sformat', 'mStopT{}Incarnator') | join(' ') }}" />
+    <unique vars="{{ ts | map('sformat', 'mKillT{}Incarnator') | join(' ') }}" />
 
-    {# Wait a bit before detecting respawns, otherwise the initial spawn will
-    trigger the mT*Died message. #}
-    <Timer wait="{{ toTicks(2) }}" in="@start" out="mStartDetectingRespawns" />
-    
-    {% for t in ts %}
-        <Incarnator cx="{{ x }}" cz="{{ z }}" y="{{ y }}" angle="{{ angle }}" mask="T{{ t }}" stop="mT{{ t }}RespawnsLeft0" />
-        <Field
-            x="{{ x }}" z="{{ z }}" y="{{ y }}" w="1" d="1" h="2"
-            watch="playerMask" mask="T{{ t }}"
-            start="mStartDetectingRespawns" enter="mT{{ t }}Spawned"
-        />
-        <Counter n="1" in="mT{{ t }}Spawned"
-            out.0="mT{{ t }}Died"
-            out.1="mSpawned"
-        />
-    {% endfor %}
+    <Timer wait="{{ toTicks(1) }}" in="@start" out="mStartIncarnator" stop="mStopIncarnator" />
 
-    {# Restore the player's lost life to maintain a constant life count. This is
-    necessary for when the player is later spawned in the kill zone after their
-    team has run out of respawns. #}
+    <!-- The life goody restores the player's lost life to maintain a constant
+    life count. -->
     <Goody
-        cx="{{ x }}" cz="{{ z }}" y="{{ y+1 }}"
+        cx="{{ x }}" cz="{{ z }}" y="{{ y+1.5 }}"
         lives="1"
-        shape='bspAvaraA'
+        shape="bspStandardWall" scale="0.7"
         {% if debug %}
             color="#f00"
         {% else %}
@@ -338,8 +311,48 @@ probably the best option.
             color="rgba(0, 0, 0, 0%)"
         {% endif %}
         sound="0" speed="0"
-        start="mSpawned"
+        start="mStartIncarnator" stop="mStopIncarnator"
     />
+
+    {% for t in ts %}
+        <Incarnator
+            cx="{{ x }}" cz="{{ z }}" y="{{ y }}"
+            angle="{{ angle }}"
+            mask="T{{ t }}"
+            start="mStartIncarnator" stop="mStopT{{ t }}Incarnator"
+        />
+        <And in="mStopIncarnator" out="mStopT{{ t }}Incarnator" />
+
+        <Field
+            x="{{ x }}" z="{{ z }}" y="{{ y }}" w="1" d="1" h="2"
+            watch="playerMask" mask="T{{ t }}"
+            start="mStartIncarnator" stop="mStopIncarnator" enter="mT{{ t }}Died"
+            {% if debug %}
+                color="#ff0" visible="true"
+            {% endif %}
+        />
+
+        <!-- Stop team incarnator for good if team has 0 respawns left. -->
+        <And in="mKillT{{ t }}Incarnator" out="mStopT{{ t }}Incarnator" />
+        <And in="mT{{ t }}RespawnsLeft0" out="mKillT{{ t }}Incarnator" />
+        <Timer wait="1" in="mKillT{{ t }}Incarnator" out="mKillT{{ t }}Incarnator" />
+    {% endfor %}
+
+    <!-- Inhibit the incarnator (and life goody / team detection field) when
+    players are near. -->
+    {% set r = 10 %}
+    <Field
+        x="{{ x }}" z="{{ z }}" y="{{ y-r+1 }}" w="{{ 2*r }}" d="{{ 2*r }}" h="{{ 2*r }}"
+        watch="playerMask"
+        enter="mPlayersNear" exit="mStartIncarnator"
+        {% if debug %}
+            color="rgba(0, 0, 32, 30%)" visible="true"
+        {% endif %}
+    />
+    <!-- Wait 1 tick before inhibiting, otherwise players who actually spawn at
+    this incarnator won't pick up the life goody and won't trigger the mT*Died
+    message. -->
+    <Timer wait="1" in="mPlayersNear" out="mStopIncarnator" />
 {% endmacro %}
 
 {% macro healthCheck() %}

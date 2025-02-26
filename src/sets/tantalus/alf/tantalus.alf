@@ -300,6 +300,8 @@
     {{ walkerGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam, debug=debug) }}
     {{ walkerGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam, debug=debug) }}
 
+    {% set spawnY = 4 %}
+
     {{ incarnator(x=-59, z=59, y=spawnY, angle=45, debug=debug) }}
     {{ incarnator(x=59, z=-59, y=spawnY, angle=225, debug=debug) }}
     {{ incarnator(x=65, z=65, y=spawnY, angle=315, debug=debug) }}
@@ -308,10 +310,10 @@
     {{ incarnator(x=0, z=94, y=spawnY, angle=0, debug=debug) }}
     {{ incarnator(x=-94, z=0, y=spawnY, angle=90, debug=debug) }}
     {{ incarnator(x=94, z=0, y=spawnY, angle=270, debug=debug) }}
-    {{ incarnator(x=89, z=35, y=spawnY+6, angle=291.75, debug=debug) }}
-    {{ incarnator(x=35, z=89, y=spawnY+6, angle=338.75, debug=debug) }}
-    {{ incarnator(x=-35, z=-89, y=spawnY+6, angle=158.75, debug=debug) }}
-    {{ incarnator(x=-89, z=-35, y=spawnY+6, angle=111, debug=debug) }}
+    {{ incarnator(x=89, z=35, y=spawnY, angle=291.75, debug=debug) }}
+    {{ incarnator(x=35, z=89, y=spawnY, angle=338.75, debug=debug) }}
+    {{ incarnator(x=-35, z=-89, y=spawnY, angle=158.75, debug=debug) }}
+    {{ incarnator(x=-89, z=-35, y=spawnY, angle=111, debug=debug) }}
 
     {{ healthCheck() }}
 </map>
