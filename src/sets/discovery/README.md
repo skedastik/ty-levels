@@ -14,7 +14,7 @@ Maybe not. Utilizing a templating engine like Jinja might help.
 
 ## Creating custom BSPs with Blender
 
-Download `https://github.com/avaraline/blender-avarabsp`.
+Download the Blender [Avara BSP exporter](https://github.com/skedastik/blender-avarabsp/tree/fix/rgb-range-error). This is actually a fork of the original that fixes an issue affecting colored meshes.
 
 Zip the folder containing `__init__.py` and accompanying scripts.
 
@@ -36,11 +36,14 @@ Expand the `Viewport Overlays` menu (3rd dropdown menu in the top right of the v
 
 ### Applying colors
 
-To apply colors to your mesh you'll need to first break up your mesh into separate objects for each different color. Then, for each object:
+To apply colors to your mesh I find it easiest to first break up your mesh into separate objects for each color. Then, for each object:
 
 - Select the object.
+- Open the `Data` tab on the right side of the screen.
+- Expand the `Color Attributes` section.
+- Click `+` to add a color attribute. Select domain `Vertex` and data type `Color`.
 - Press `tab` to enter `Edit Mode`.
-- Activate face selection mode (third button to the right of the `Edit Mode` menu at the top-left of the screen).
+- Enter face selection mode (third button to the right of the `Edit Mode` menu at the top-left of the screen).
 - Press `A` to select all faces.
 - From the `Edit Mode` menu, select `Vertex Paint`.
 - Activate face masking by clicking the first button to the right of the `Vertex Paint` menu.
@@ -50,10 +53,6 @@ To apply colors to your mesh you'll need to first break up your mesh into separa
 Once you have colored each section, select all objects and join them into a single mesh (cmd-J).
 
 The mesh is now ready for export.
-
-⚠️ **NOTE:** You may need to restart Avara for changes to BSP files to be reflected.
-
-⚠️ **UPDATE 2025.02.11:** The Avara BSP exporter Blender plugin seems to apply colors very unreliably. I've gotten it to work as expected once and it isn't clear why.
 
 #### Dynamic marker colors
 
