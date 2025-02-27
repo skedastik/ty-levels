@@ -117,11 +117,11 @@ r2 to define the active radius. #}
     />
 {% endmacro %}
 
-{# A team of eight walkers. The first walker spawned in each group faces the
-specified angle with remaining walkers arranged radially outward. You may pass
-a spawn message which will be triggered once for each player that spawns. This
-message is sent 1 tick after the start of the game. #}
-{% macro walkerGroup(x, z, y, angle, team, spawnMessage, r=None, players=8, debug=False) %}
+{# A group of team-specific incarnators. The first player spawned in each group
+faces the specified angle with remaining players arranged radially outward. You
+may pass a spawn message which will be triggered once for each player that
+spawns. This message is sent 1 tick after the start of the game. #}
+{% macro teamIncarnGroup(x, z, y, angle, team, spawnMessage, stop, r=None, players=8, debug=False) %}
     {% if r is none %}
         {% set r = 3 %}
     {% endif %}
@@ -159,17 +159,23 @@ message is sent 1 tick after the start of the game. #}
     {% set dz7 = r * -round(math.cos(math.radians(a7)), 3) %}
     {% set dx8 = r * round(math.sin(math.radians(a8)), 3) %}
     {% set dz8 = r * -round(math.cos(math.radians(a8)), 3) %}
-
-    {% set cxs = [x-dx4, x-dx8, x-dx7, x-dx6, x-dx5, x-dx2, x-dx1, x-dx3] %}
-    {% set czs = [z-dz4, z-dz8, z-dz7, z-dz6, z-dz5, z-dz2, z-dz1, z-dz3] %}
-    {% set angles = [angle+180, angle+135, angle-135, angle+45, angle-45, angle+90, angle-90, angle] %}
+    
+    {% set cxs = [x-dx3, x-dx1, x-dx2, x-dx5, x-dx6, x-dx7, x-dx8, x-dx4] %}
+    {% set czs = [z-dz3, z-dz1, z-dz2, z-dz5, z-dz6, z-dz7, z-dz8, z-dz4] %}
+    {% set angles = [angle, angle-90, angle+90, angle-45, angle+45, angle-135, angle+135, angle+180] %}
 
     <unique vars="mStartDetectingSpawn mStopDetectingSpawn" />
     <Timer wait="1" in="@start" out="mStartDetectingSpawn" />
     <Timer wait="2" in="@start" out="mStopDetectingSpawn" />
     
-    {% for i in range(MAX_PLAYERS - players, MAX_PLAYERS) %}
-        <Walker yon="{{ YON_MAX }}" cx="{{ cxs[i] }}" cz="{{ czs[i] }}" y="{{ y }}" angle="{{ angles[i] }}" team="{{ team }}" />
+    {% for i in range(0, players) %}
+        <Incarnator
+            cx="{{ cxs[i] }}" cz="{{ czs[i] }}" y="{{ y }}" angle="{{ angles[i] }}"
+            mask="T{{ team }}"
+            {% if stop is defined %}
+                stop="{{ stop }}"
+            {% endif %}
+        />
         {% if spawnMessage is defined %}
             <Goody
                 cx="{{ cxs[i] }}" cz="{{ czs[i] }}" y="{{ y + PLAYER_RIDE_HEIGHT }}" sound="0" shape="bspAvaraA"

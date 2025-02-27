@@ -6,9 +6,9 @@ sudden death, meaning they will not be able to respawn. The last team standing
 wins.
 
 To use this ruleset, invoke the `rules` macro at the top of your ALF file. Make
-initial team placements by using the `walkerGroup` macro, once for each team.
-Use the `incarnator` macro to place a minimum of eight incarnators. Currently,
-team-specific incarnators are not supported.
+initial team placements by using the `teamIncarnGroup` macro, once for each team.
+Use the `incarnator` macro to place a minimum of eight incarnators for
+subsequent spawns. Currently, team-specific incarnators are not supported.
 
 Though not required, it is recommended to call the `healthCheck` macro at the
 bottom of your ALF file.
@@ -20,11 +20,13 @@ related actors are hidden away around that origin. If needed you can override
 the defaults to place them where they will be out of the way. Their positioning
 will affect the level preview.
 
+[TODO] Enforce limit of four players per team.
+
 [TODO] Support team-specific incarnators.
 
 #}
 
-{% from 'lib/common.alf' import goody, walkerGroup as wg %}
+{% from 'lib/common.alf' import goody, teamIncarnGroup as tig %}
 {% from 'lib/logic.alf' import equilibrium %}
 
 {% macro info(respawns=3) %}
@@ -35,7 +37,9 @@ will affect the level preview.
 {% set ts = range(1, MAX_TEAMS + 1) %}
 
 {% set kIncarnCount = 'tylib_tdm_incarnator_count' %}
-{% set kWalkerGroupCount = 'tylib_tdm_walker_group_count' %}
+{% set kteamIncarnGroupCount = 'tylib_tdm_walker_group_count' %}
+
+{% set spawnSwitchTime = toTicks(1) %}
 
 {% macro rules(respawns=3, drawGracePeriod=3, xLogic=220, zLogic=0, yLogic=16, debug=False) %}
 
@@ -241,7 +245,7 @@ will affect the level preview.
         <Timer wait="1" in="mExecute{{ i }}" out="mStopExecute{{ i }}" />
         {% for t in ts %}
             <!-- A player is spawned in the kill zone when their team has 0 respawns left. -->
-            <Incarnator cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic }}" angle="90" mask="T{{ t }}" start="mT{{ t }}RespawnsLeft0" stop="@start" />
+            <Incarnator cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic }}" angle="90" mask="T{{ t }}" status="false" start="mT{{ t }}RespawnsLeft0" stop="@start" />
             <!-- They are detected by this field, decrementing their team
             presence. It is important for these Fields to come after the above
             Guards to ensure they detect players before the guards destroy them.
@@ -273,15 +277,17 @@ will affect the level preview.
     {% endif %}
 {% endmacro %}
 
-{% macro walkerGroup(x, z, y, angle, team, r=None, players=8, debug=False) %}
-    {% set walkerGroupCount = getScratch(kWalkerGroupCount) %}
-    {% if walkerGroupCount is not none %}
-        {% set walkerGroupCount = setScratch(kWalkerGroupCount, walkerGroupCount + 1) %}
+{% macro teamIncarnGroup(x, z, y, angle, team, r=None, players=8, debug=False) %}
+    {% set teamIncarnGroupCount = getScratch(kteamIncarnGroupCount) %}
+    {% if teamIncarnGroupCount is not none %}
+        {% set teamIncarnGroupCount = setScratch(kteamIncarnGroupCount, teamIncarnGroupCount + 1) %}
     {% else %}
-        {% set walkerGroupCount = setScratch(kWalkerGroupCount, 1) %}
+        {% set teamIncarnGroupCount = setScratch(kteamIncarnGroupCount, 1) %}
     {% endif %}
 
-    {{ wg(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, debug=debug) }}
+    <unique vars="mStopInitialIncarnators" />
+    <Timer wait="{{ spawnSwitchTime }}" in="@start" out="mStopInitialIncarnators" />
+    {{ tig(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, stop='mStopInitialIncarnators', debug=debug) }}
 {% endmacro %}
 
 {% macro incarnator(x, z, y, angle, debug=False) %}
@@ -296,7 +302,7 @@ will affect the level preview.
     <unique vars="{{ ts | map('sformat', 'mStopT{}Incarnator') | join(' ') }}" />
     <unique vars="{{ ts | map('sformat', 'mKillT{}Incarnator') | join(' ') }}" />
 
-    <Timer wait="{{ toTicks(1) }}" in="@start" out="mStartIncarnator" stop="mStopIncarnator" />
+    <Timer wait="{{ spawnSwitchTime }}" in="@start" out="mStartIncarnator" stop="mStopIncarnator" />
 
     <!-- The life goody restores the player's lost life to maintain a constant
     life count. -->
@@ -319,6 +325,7 @@ will affect the level preview.
             cx="{{ x }}" cz="{{ z }}" y="{{ y }}"
             angle="{{ angle }}"
             mask="T{{ t }}"
+            status="false"
             start="mStartIncarnator" stop="mStopT{{ t }}Incarnator"
         />
         <And in="mStopIncarnator" out="mStopT{{ t }}Incarnator" />
@@ -356,10 +363,10 @@ will affect the level preview.
 {% endmacro %}
 
 {% macro healthCheck() %}
-    {% set walkerGroupCount = getScratch(kWalkerGroupCount) %}
+    {% set teamIncarnGroupCount = getScratch(kteamIncarnGroupCount) %}
     {% set incarnCount = getScratch(kIncarnCount) %}
-    {% if walkerGroupCount is none or walkerGroupCount < 8 %}
-        {{ throw('You must place 8 walker groups using tdm.alf::walkerGroup.') }}
+    {% if teamIncarnGroupCount is none or teamIncarnGroupCount < 8 %}
+        {{ throw('You must place 8 walker groups using tdm.alf::teamIncarnGroup.') }}
     {% endif %}
     {% if incarnCount is none or incarnCount < 8 %}
         {{ throw('You must place at least 8 incarnators using tdm.alf::incarnator.') }}

@@ -1,5 +1,5 @@
 <map>
-    {% from 'lib/rulesets/tdm.alf' import info, rules, walkerGroup, incarnator, healthCheck %}
+    {% from 'lib/rulesets/tdm.alf' import info, rules, teamIncarnGroup, incarnator, healthCheck %}
     {% include 'lib/boilerplate.alf' %}
     {% from 'lib/common.alf' import ref, bubbleTeleporter %}
     {% include 'lib/teamColors.alf' %}
@@ -291,14 +291,14 @@
 
     {% set spawnY = 16 %}
 
-    {{ walkerGroup(x=-68, z=68, y=spawnY, angle=45, team=3, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=68, z=-68, y=spawnY, angle=225, team=6, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=62, z=62, y=spawnY, angle=315, team=1, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=-62, z=-62, y=spawnY, angle=135, team=2, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=0, z=-92, y=spawnY, angle=180, team=4, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=0, z=92, y=spawnY, angle=0, team=5, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam, debug=debug) }}
-    {{ walkerGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=-68, z=68, y=spawnY, angle=45, team=3, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=68, z=-68, y=spawnY, angle=225, team=6, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=62, z=62, y=spawnY, angle=315, team=1, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=-62, z=-62, y=spawnY, angle=135, team=2, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=0, z=-92, y=spawnY, angle=180, team=4, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=0, z=92, y=spawnY, angle=0, team=5, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam, debug=debug) }}
 
     {% set spawnY = 4 %}
 
