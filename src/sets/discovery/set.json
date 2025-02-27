@@ -33,7 +33,12 @@
       {
         "Alf": "exotic-logic.alf",
         "Name": "Exotic Logic",
-        "Messages": "Not your everyday logic actors."
+        "Message": "Not your everyday logic actors."
+      },
+      {
+        "Alf": "wall-decimator.alf",
+        "Name": "Wall Decimator",
+        "Message": "It's a strange beast."
       }
     ]
 }

@@ -1,0 +1,12 @@
+<map>
+    <Incarnator cx="0" cz="5" angle="0" />
+    <Wall x="0" z="-20" y="0" w="40" d="40" h="40" color="#fff" />
+
+    <!--
+    The wall decimator appears to decimate walls that are larger than 20 in
+    width or depth. Height doesn't seem to matter.
+
+    Activate the EHUD and inspect this wall. You'll see that it's split into
+    four 20x20x40 (WxDxH) chunks.
+    -->
+</map>
