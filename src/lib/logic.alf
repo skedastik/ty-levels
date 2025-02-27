@@ -1,10 +1,8 @@
 {#
 A counter of sorts that can be incremented, then decremented, via messages. It
-starts with a value of zero. It can be incremented up to 8 times. It can then be
-decremented. Once it is decremented to zero its out message is triggered (after
-a 1-tick delay).
-
-Behavior is undefined if you increment after decrementing.
+starts with a value of zero. Once it is decremented to zero its out message is
+triggered (after a 1-tick delay). The counter cannot be incremented past a value
+of 8. Once the out message is triggered, the counter is no longer usable.
 
 Note that its default position is x/y/z (0,0,60). Position it elsewhere if it
 gets in the way. Multiple instances are automatically offset from eachother, so
@@ -63,13 +61,13 @@ use the same x/z/y value for all of them.
         />
     {% endfor %}
 
-    <Distributor in="{{ increment }}" restart="false"
+    <Distributor in="{{ increment }}"
         {% for i in segments %}
             out.{{ i }}="mOpenSegment{{ i }}"
         {% endfor %}
     />
 
-    <Distributor in="{{ decrement }}" restart="false"
+    <Distributor in="{{ decrement }}"
         {% for i in segments %}
             out.{{ i }}="mCloseSegment{{ i }}"
         {% endfor %}
