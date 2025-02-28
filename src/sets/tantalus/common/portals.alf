@@ -5,7 +5,7 @@
 {% set snPortalExit = 3000 %}
 
 {# A pair of teleportation portals that forcefully eject players #}
-{% macro portalPair(x1, z1, y1, a1, x2, z2, y2, a2, force=0.8, forceY=0.2, colorOuter="#fff", colorInner="rgba(0, 50, 255, 20%)", rotateSpeed=0, oneWay=False, visible1=True, visible2=True, mask=None, startMsg=None, stopMsg=None, debug=False) %}
+{% macro portalPair(x1, z1, y1, a1, x2, z2, y2, a2, force=0.8, forceY=0.2, colorOuter="#fff", colorInner="rgba(0, 50, 255, 20%)", rotateSpeed=0, oneWay=False, visible1=True, visible2=True, mask=None, startMsg=None, stopMsg=None, DEBUG=False) %}
 
     {% set portalActiveRange = 1.75 %}
 
@@ -41,7 +41,7 @@
         <Timer wait="{{ TELE_GO_TIME }}" in="mTel2Out" out="mTel1Open" />
     {% endif %}
 
-    {% if debug %}
+    {% if DEBUG %}
     <Hologram cx="{{ x1 + fx1 }}" cz="{{ z1 + fz1 }}" y="{{ y1 + 1 }}" shape="bspGroundArrow" scale="0.5" angle="{{ a1 }}" color="#0f0" />
     <Hologram cx="{{ x2 + fx2 }}" cz="{{ z2 + fz2 }}" y="{{ y2 + 1 }}" shape="bspGroundArrow" scale="0.5" angle="{{ a2 }}" color="#f00" />
     {% endif %}
@@ -66,7 +66,7 @@
     {% if not oneWay %}
         <Field
             cx="{{ x1 }}" cz="{{ z1 }}" y="{{ y1 }}" shape="{{ bspForceHitbox }}" deltaX="{{ fx2 }}" deltaZ="{{ fz2 }}" deltaY="{{ forceY }}" angle="{{ a1 }}"
-            {{ 'visible="true" color="rgba(0, 255, 0, 30%)"' if debug }}
+            {{ 'visible="true" color="rgba(0, 255, 0, 30%)"' if DEBUG }}
             watch="playerMask" start="mTel2Out" stop="mPush1Stop" enter="mPush1Stop"
         />
     {% endif %}
@@ -103,7 +103,7 @@
     />
     <Field
         cx="{{ x2 }}" cz="{{ z2 }}" y="{{ y2 }}" shape="{{ bspForceHitbox }}" deltaX="{{ fx1 }}" deltaZ="{{ fz1 }}" deltaY="{{ forceY }}" angle="{{ a2 }}"
-        {{ 'visible="true" color="rgba(255, 0, 0, 30%)"' if debug }}
+        {{ 'visible="true" color="rgba(255, 0, 0, 30%)"' if DEBUG }}
         watch="playerMask" start="mTel1Out" stop="mPush2Stop" enter="mPush2Stop"
     />
     {% if not oneWay %}

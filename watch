@@ -3,7 +3,7 @@
 # Watch for changes and automatically run `make`. This requires `fswatch` to be
 # installed.
 #
-# Pass -l to enable automatic live reloading.
+# Pass -l to enable live reloading.
 
 while getopts ":l" opt
 do

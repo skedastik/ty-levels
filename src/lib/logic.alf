@@ -8,7 +8,7 @@ Note that its default position is x/y/z (0,0,60). Position it elsewhere if it
 gets in the way. Multiple instances are automatically offset from eachother, so
 use the same x/z/y value for all of them.
 #}
-{% macro equilibrium(increment, decrement, out, x=0, z=0, y=60, debug=False) %}
+{% macro equilibrium(increment, decrement, out, x=0, z=0, y=60) %}
 
     {% set kInstances = 'tylib_equilibrium_instances' %}
     {% set instance = getScratch(kInstances) %}
@@ -30,7 +30,7 @@ use the same x/z/y value for all of them.
         cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 1.5 }}"
         shape="bspStandardWall" scale="0.5"
         mass="0" accel="1" customGravity="5"
-        {% if debug %}
+        {% if DEBUG %}
             color="#0f0"
         {% else %}
             color="rgba(0, 0, 0, 0%)" yon="0.001"
@@ -51,7 +51,7 @@ use the same x/z/y value for all of them.
             openSound="0" closeSound="0" stopSound="0"
             openSpeed="100" closeSpeed="100"
             guardDelay="0"
-            {% if debug %}
+            {% if DEBUG %}
                 color="{{ '#f00' if i % 2 == 0 else '#fff' }}"
             {% else %}
                 color="rgba(0, 0, 0, 0%)" yon="0.001"
@@ -76,7 +76,7 @@ use the same x/z/y value for all of them.
     <Field
         cx="{{ x }}" cz="{{ z + instancePadding }}" y="{{ y + 0.5 }}"
         shape="bspStandardWall" scale="0.5"
-        {% if debug %}
+        {% if DEBUG %}
             color="rgba(64, 64, 0, 50%)" visible="true"
         {% endif %}
         watch="targ1"

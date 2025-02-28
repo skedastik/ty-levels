@@ -41,13 +41,13 @@ will affect the level preview.
 
 {% set spawnSwitchTime = toTicks(1) %}
 
-{% macro rules(respawns=3, drawGracePeriod=3, xLogic=220, zLogic=0, yLogic=16, debug=False) %}
+{% macro rules(respawns=3, drawGracePeriod=3, xLogic=220, zLogic=0, yLogic=16) %}
 
     {% if respawns < 1 or respawns > 9 %}
         {{ throw('`respawns` must be in the range [1,9] inclusive.') }}
     {% endif %}
 
-    {% set defaultLives = 99 if not debug else 2 %}
+    {% set defaultLives = 99 if not DEBUG else 2 %}
 
     <unique vars="mDecisiveWin mTeleportWinner mDraw mGameOver" />
 
@@ -90,7 +90,7 @@ will affect the level preview.
     />
 
     {% for t in ts %}
-        {{ equilibrium(x=xLogic, z=zLogic+20, y=yLogic, increment='mT'+str(t)+'PlayerIn', decrement='mT'+str(t)+'PlayerOut', out='mT'+str(t)+'Eliminated', debug=debug) }}
+        {{ equilibrium(x=xLogic, z=zLogic+20, y=yLogic, increment='mT'+str(t)+'PlayerIn', decrement='mT'+str(t)+'PlayerOut', out='mT'+str(t)+'Eliminated') }}
     {% endfor %}
 
     <!-- NARRATION LOGIC & ACTORS -->
@@ -203,7 +203,7 @@ will affect the level preview.
     <Ramp
         x="{{ xLogic }}" z="{{ zLogic }}" y="{{ yLogic }}" w="20" d="20" h="1"
         traction="0" friction="0"
-        {% if debug %}
+        {% if DEBUG %}
             color="#f00"
         {% else %}
             color="rgba(0, 0, 0, 0%)" yon="0.001"
@@ -222,7 +222,7 @@ will affect the level preview.
             cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 2.5 }}"
             lives="{{ 2 - defaultLives }}"
             shape="bspStandardWall" scale="0.7"
-            {% if debug %}
+            {% if DEBUG %}
                 color="#f00"
             {% else %}
                 yon="0.001"
@@ -235,7 +235,7 @@ will affect the level preview.
         <!-- The player is ghosted by this guard. Why guards? They don't trigger the kill feed, nor do they affect player score. -->
         <Guard
             cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 3.5 }}" speed="1000" shotPower="1000" shield="-1" freq="{{ toTicks(0.1) }}"
-            {% if debug %}
+            {% if DEBUG %}
                 scale="0.25"
             {% else %}
                 shape="bspSliver0" yon="0.001"
@@ -252,7 +252,7 @@ will affect the level preview.
             -->
             <Field
                 x="{{ cx }}" z="{{ zLogic }}" y="{{ yLogic }}" w="1" d="1" h="4" watch="playerMask" mask="T{{ t }}" enter="mT{{ t }}PlayerOut"
-                {% if debug %}
+                {% if DEBUG %}
                     color="rgba(64, 64, 0, 50%)"
                     visible="true"
                 {% endif %}
@@ -262,7 +262,7 @@ will affect the level preview.
 
     <!-- DEBUG STUFF -->
 
-    {% if debug %}
+    {% if DEBUG %}
         {% for t in ts %}
             <Text text="DEBUG: mT{{ t }}PlayerIn" in="mT{{ t }}PlayerIn" showEveryone="true" />
             <Text text="DEBUG: mT{{ t }}PlayerOut" in="mT{{ t }}PlayerOut" showEveryone="true" />
@@ -277,7 +277,7 @@ will affect the level preview.
     {% endif %}
 {% endmacro %}
 
-{% macro teamIncarnGroup(x, z, y, angle, team, r=None, players=8, debug=False) %}
+{% macro teamIncarnGroup(x, z, y, angle, team, r=None, players=8) %}
     {% set teamIncarnGroupCount = getScratch(kteamIncarnGroupCount) %}
     {% if teamIncarnGroupCount is not none %}
         {% set teamIncarnGroupCount = setScratch(kteamIncarnGroupCount, teamIncarnGroupCount + 1) %}
@@ -287,10 +287,10 @@ will affect the level preview.
 
     <unique vars="mStopInitialIncarnators" />
     <Timer wait="{{ spawnSwitchTime }}" in="@start" out="mStopInitialIncarnators" />
-    {{ tig(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, stop='mStopInitialIncarnators', debug=debug) }}
+    {{ tig(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, stop='mStopInitialIncarnators') }}
 {% endmacro %}
 
-{% macro incarnator(x, z, y, angle, debug=False) %}
+{% macro incarnator(x, z, y, angle) %}
     {% set incarnCount = getScratch(kIncarnCount) %}
     {% if incarnCount is not none %}
         {% set incarnCount = setScratch(kIncarnCount, incarnCount + 1) %}
@@ -310,7 +310,7 @@ will affect the level preview.
         cx="{{ x }}" cz="{{ z }}" y="{{ y+1.5 }}"
         lives="1"
         shape="bspStandardWall" scale="0.7"
-        {% if debug %}
+        {% if DEBUG %}
             color="#f00"
         {% else %}
             yon="0.001"
@@ -334,7 +334,7 @@ will affect the level preview.
             x="{{ x }}" z="{{ z }}" y="{{ y }}" w="1" d="1" h="2"
             watch="playerMask" mask="T{{ t }}"
             start="mStartIncarnator" stop="mStopIncarnator" enter="mT{{ t }}Died"
-            {% if debug %}
+            {% if DEBUG %}
                 color="#ff0" visible="true"
             {% endif %}
         />
@@ -352,7 +352,7 @@ will affect the level preview.
         x="{{ x }}" z="{{ z }}" y="{{ y-r+1 }}" w="{{ 2*r }}" d="{{ 2*r }}" h="{{ 2*r }}"
         watch="playerMask"
         enter="mPlayersNear" exit="mStartIncarnator"
-        {% if debug %}
+        {% if DEBUG %}
             color="rgba(0, 0, 32, 30%)" visible="true"
         {% endif %}
     />

@@ -14,6 +14,8 @@ args = sys.argv
 
 DO_TRIM = '--no-trim' not in args
 
+DEBUG = '--debug' in args
+
 fin = args[len(args) - 2]
 fout = args[len(args) - 1]
 
@@ -36,6 +38,9 @@ def sformat(value, fmt):
     return fmt.replace('{}', str(value))
 
 env.filters['sformat'] = sformat
+alf_globals.update({
+    'DEBUG': DEBUG
+})
 env.globals.update(alf_globals)
 
 def getContextHighlighted(s, line, offset, n):

@@ -32,7 +32,12 @@ Install `fswatch`:
 
 Now `make` will automatically run in response to source file changes.
 
-Use the `--no-trim` option to disable automatic trimming of unnecessary whitespace and comments from ALF files.
+#### Options
+
+    --no-trim
+            Disable automatic trimming of unnecessary whitespace and comments from ALF files.
+    --debug
+            Set `DEBUG` global to `True` across all ALF templates.
 
 ### Publishing
 

@@ -20,14 +20,13 @@
     {% set bubbleTeleStartTime = 8 %}
     {% set bubbleTeleDeadRange = 165 %}
     {% set bubbleTeleActiveRange = bubbleTeleDeadRange + 30 %}
-    {% set debug = False %}
 
     <set
         designer="Ty"
         information="{{ info(respawns=maxRespawns) }}4 players/team max. Red/blue and green/yellow provide the fairest match. &#13;&#13;The center goody triggers waves of other goodies to appear, among other things. Every kill decreases its cooldown."
     />
 
-    {{ rules(respawns=maxRespawns, debug=debug, xLogic=bubbleTeleActiveRange+20, zLogic=0, yLogic=16) }}
+    {{ rules(respawns=maxRespawns, xLogic=bubbleTeleActiveRange+20, zLogic=0, yLogic=16) }}
 
     {% set bspLightBeam = 4003 %}
     {% set snCenterGoodyTaken = 3002 %}
@@ -220,7 +219,7 @@
         <Timer wait="{{ toTicks(goodyWave3Delay) }}" in="mCenterTaken" out="mGoodyWave3" />
         <Counter n="1" in.0="mGoodyWave0" in.1="mGoodyWave3" out="mTowerLineGoodyWave" />
 
-        {% if debug %}
+        {% if DEBUG %}
             <Text text="mCenterRefresh" in="mCenterRefresh" showEveryone="true" />
             <Text text="mReduceCenterCooldown" in="mReduceCenterCooldown" showEveryone="true" />
             <Text text="mGoodyWave0" in="mGoodyWave0" showEveryone="true" />
@@ -291,29 +290,29 @@
 
     {% set spawnY = 16 %}
 
-    {{ teamIncarnGroup(x=-68, z=68, y=spawnY, angle=45, team=3, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=68, z=-68, y=spawnY, angle=225, team=6, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=62, z=62, y=spawnY, angle=315, team=1, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=-62, z=-62, y=spawnY, angle=135, team=2, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=0, z=-92, y=spawnY, angle=180, team=4, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=0, z=92, y=spawnY, angle=0, team=5, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam, debug=debug) }}
-    {{ teamIncarnGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam, debug=debug) }}
+    {{ teamIncarnGroup(x=-68, z=68, y=spawnY, angle=45, team=3, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=68, z=-68, y=spawnY, angle=225, team=6, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=62, z=62, y=spawnY, angle=315, team=1, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=-62, z=-62, y=spawnY, angle=135, team=2, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=0, z=-92, y=spawnY, angle=180, team=4, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=0, z=92, y=spawnY, angle=0, team=5, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=-92, z=0, y=spawnY, angle=90, team=7, players=maxPlayersPerTeam) }}
+    {{ teamIncarnGroup(x=92, z=0, y=spawnY, angle=270, team=8, players=maxPlayersPerTeam) }}
 
     {% set spawnY = 4 %}
 
-    {{ incarnator(x=-59, z=59, y=spawnY, angle=45, debug=debug) }}
-    {{ incarnator(x=59, z=-59, y=spawnY, angle=225, debug=debug) }}
-    {{ incarnator(x=65, z=65, y=spawnY, angle=315, debug=debug) }}
-    {{ incarnator(x=-65, z=-65, y=spawnY, angle=135, debug=debug) }}
-    {{ incarnator(x=0, z=-94, y=spawnY, angle=180, debug=debug) }}
-    {{ incarnator(x=0, z=94, y=spawnY, angle=0, debug=debug) }}
-    {{ incarnator(x=-94, z=0, y=spawnY, angle=90, debug=debug) }}
-    {{ incarnator(x=94, z=0, y=spawnY, angle=270, debug=debug) }}
-    {{ incarnator(x=89, z=35, y=spawnY, angle=291.75, debug=debug) }}
-    {{ incarnator(x=35, z=89, y=spawnY, angle=338.75, debug=debug) }}
-    {{ incarnator(x=-35, z=-89, y=spawnY, angle=158.75, debug=debug) }}
-    {{ incarnator(x=-89, z=-35, y=spawnY, angle=111, debug=debug) }}
+    {{ incarnator(x=-59, z=59, y=spawnY, angle=45) }}
+    {{ incarnator(x=59, z=-59, y=spawnY, angle=225) }}
+    {{ incarnator(x=65, z=65, y=spawnY, angle=315) }}
+    {{ incarnator(x=-65, z=-65, y=spawnY, angle=135) }}
+    {{ incarnator(x=0, z=-94, y=spawnY, angle=180) }}
+    {{ incarnator(x=0, z=94, y=spawnY, angle=0) }}
+    {{ incarnator(x=-94, z=0, y=spawnY, angle=90) }}
+    {{ incarnator(x=94, z=0, y=spawnY, angle=270) }}
+    {{ incarnator(x=89, z=35, y=spawnY, angle=291.75) }}
+    {{ incarnator(x=35, z=89, y=spawnY, angle=338.75) }}
+    {{ incarnator(x=-35, z=-89, y=spawnY, angle=158.75) }}
+    {{ incarnator(x=-89, z=-35, y=spawnY, angle=111) }}
 
     {{ healthCheck() }}
 </map>
