@@ -60,6 +60,10 @@ Avara will now automatically reload the level in response to source file changes
 
 The above fork also features an editing HUD that has proven to be indispensable. Activate it by issuing the `/ehud` command. Now you're a surveyor.
 
+#### Etags 🏷️
+
+The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look a tagged actor. No more hunting for that damn wall--just tag your geometry!
+
 ## File structure
 
 .alf source files are found in `src`. These aren't pure ALF files, but [Jinja](https://jinja.palletsprojects.com) templates that render to ALF via the build process.
