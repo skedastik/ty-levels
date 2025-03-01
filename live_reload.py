@@ -1,10 +1,5 @@
-import socket
+import socket, os
 from time import sleep
-
-ip = '127.0.0.1'
-port = 19567
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Avara's UDP packet structure as seen in CCommManager.h as of 2025.02.08:
 #
@@ -26,11 +21,31 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # The first two bytes below are the CRC (obtained from Avara network logs). The
 # last byte is the command code corresponding to the definitions in CommDefs.h
 # in Avara's source code.
-kpLiveReloadPause = bytearray(b'\xc2\x0f\x00\x00\x00\x00\x00\x00\x22')
-kpLiveReloadLevel = bytearray(b'\x4b\x1e\x00\x00\x00\x00\x00\x00\x23')
-kpLiveReloadStart = bytearray(b'\xf4\x6a\x00\x00\x00\x00\x00\x00\x24')
+kpLiveReloadPause = bytearray(b'\xc5\xd9\x00\x00\x00\x00\x00\x00\x22')
+kpLiveReloadLevel = bytearray(b'\x4c\xc8\x00\x00\x00\x00\x00\x00\x23')
+kpLiveReloadStart = bytearray(b'\xf3\xbc\x00\x00\x00\x00\x00\x00\x24')
 
-sock.sendto(kpLiveReloadPause, (ip, port))
-sock.sendto(kpLiveReloadLevel, (ip, port))
-sleep(0.1)
-sock.sendto(kpLiveReloadStart, (ip, port))
+# This is the expected version of Avara. Update this whenever you change the
+# above CRC bytes!
+expectedAvaraVersion = '36a5afb0'
+
+ip = '127.0.0.1'
+port_avara = 19567
+port_listen = 19568
+
+sock_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock_in.settimeout(4)
+sock_in.bind((ip, port_listen))
+
+sock_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+try:
+    sock_out.sendto(kpLiveReloadPause, (ip, port_avara))
+    sock_in.recv(4)
+    sock_out.sendto(kpLiveReloadLevel, (ip, port_avara))
+    sock_in.recv(4)
+    sock_out.sendto(kpLiveReloadStart, (ip, port_avara))
+except socket.timeout:
+    os.system('tput bel')
+    print('\033[1;35m' + 'Live reload timed out. Is your Avara server running? Is it the correct version (' + expectedAvaraVersion + ')?' + '\033[0m')
+    exit(1)

@@ -14,8 +14,12 @@ done
 
 if  [[ live_reload -eq 1 ]]; then
     echo 'Watching for changes to source files (live reload enabled)...'
-    fswatch -o -l 0.1 src alf_globals.py | xargs -n1 -I{} sh -c "make OPTS='$*' && python live_reload.py"
+    fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c \
+        "make OPTS='$*' && \
+        echo 'Requesting live reload from Avara...' && \
+        python live_reload.py && \
+        echo 'Live reload succeeded.'"
 else
     echo 'Watching for changes to source files...'
-    fswatch -o -l 0.1 src alf_globals.py | xargs -n1 -I{} sh -c "make OPTS='$*'"
+    fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='$*'"
 fi
