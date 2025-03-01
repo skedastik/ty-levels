@@ -13,7 +13,6 @@ from alf_globals import alf_globals
 args = sys.argv
 
 DO_TRIM = '--no-trim' not in args
-
 DEBUG = '--debug' in args
 
 fin = args[len(args) - 2]
@@ -52,25 +51,22 @@ def getContextHighlighted(s, line, offset, n):
     c += offset
     return ''.join([
         '\033[91m' + s[max(c - n, 0) : c] + '\033[0m',
-        '\033[37;41;1m' + s[c] + '\033[0m',
+        '\033[37;41;1m' + (s[c] if c < len(s) else ' ') + '\033[0m',
         '\033[91m' + s[c + 1 : c + n + 1] + '\033[0m'
     ])
 
 try:
     alf = env.get_template(fin).render()
-
     parser = etree.XMLParser(remove_blank_text=DO_TRIM, remove_comments=DO_TRIM)
     alf = etree.tostring(etree.XML(alf, parser), encoding='unicode')
-
     with open(fout, 'w') as fh:
         # eliminate unnecessary whitespace in XML output
         fh.write(alf)
-
 except Exception as e:
     os.system('tput bel')
-    if (type(e) == etree.XMLSyntaxError):
+    if type(e) == etree.XMLSyntaxError:
         print('\033[1;35m' + type(e).__name__ + ': ' + e.msg + ':\033[0m')
         print(getContextHighlighted(alf, e.lineno, e.offset, 128))
         exit(1)
     else:
-        raise e
+        raise
