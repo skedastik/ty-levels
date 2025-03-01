@@ -5,6 +5,8 @@
 #
 # Pass -l to enable live reloading.
 
+opts=$*
+
 while getopts ":l" opt
 do
     case $opt in
@@ -23,10 +25,10 @@ cancel_and_run() {
         fi
         # build and reload
         { \
-            make OPTS='$*' && \
-            echo 'Requesting live reload from Avara...' && \
+            make OPTS="${opts}" && \
+            echo 'Requesting reload from Avara...' && \
             python live_reload.py && \
-            echo 'Live reload succeeded.'
+            echo 'Reload request acknowledged.'
         } &
         local command_pid=$!
     done
@@ -37,5 +39,5 @@ if  [[ live_reload -eq 1 ]]; then
     fswatch -o --no-defer -l 0.1 src alf_globals.py | cancel_and_run
 else
     echo 'Watching for changes to source files...'
-    fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='$*'"
+    fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='${opts}'"
 fi
