@@ -12,13 +12,29 @@ do
     esac
 done
 
+# In order to make live reload more responsive to user actions (i.e. saving
+# source files), immediately stop any previously spawned processes and trigger
+# another live reload.
+cancel_and_run() {
+    while read; do
+        # kill any previously spawned subprocesses
+        if [ ${command_pid:-0} -gt 0 ]; then
+            while pkill -P $command_pid 2>/dev/null; do sleep 0.05; done
+        fi
+        # build and reload
+        { \
+            make OPTS='$*' && \
+            echo 'Requesting live reload from Avara...' && \
+            python live_reload.py && \
+            echo 'Live reload succeeded.'
+        } &
+        local command_pid=$!
+    done
+}
+
 if  [[ live_reload -eq 1 ]]; then
     echo 'Watching for changes to source files (live reload enabled)...'
-    fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c \
-        "make OPTS='$*' && \
-        echo 'Requesting live reload from Avara...' && \
-        python live_reload.py && \
-        echo 'Live reload succeeded.'"
+    fswatch -o --no-defer -l 0.1 src alf_globals.py | cancel_and_run
 else
     echo 'Watching for changes to source files...'
     fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='$*'"
