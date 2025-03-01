@@ -26,7 +26,8 @@ will affect the level preview.
 
 #}
 
-{% from 'lib/common.alf' import goody, teamIncarnGroup as tig %}
+{% from 'lib/standard.alf' import goody %}
+{% from 'lib/teamIncarnGroup.alf' import teamIncarnGroup as tig %}
 {% from 'lib/logic.alf' import equilibrium %}
 
 {% macro info(respawns=3) %}

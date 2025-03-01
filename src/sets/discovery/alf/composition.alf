@@ -1,7 +1,7 @@
 <map>
     <set designer="Ty" />
     
-    {% from 'lib/common.alf' import goody %}
+    {% from 'lib/standard.alf' import goody %}
     {% include './composition/colors.alf' %}
     {% from './composition/structures.alf' import summit, pillar %}
 

@@ -36,6 +36,11 @@
         "Message": "Not your everyday logic actors."
       },
       {
+        "Alf": "standard-lib-walls-ramps.alf",
+        "Name": "Standard Walls & Ramps",
+        "Message": "Testing lib/standard.alf walls and ramps."
+      },
+      {
         "Alf": "wall-decimator.alf",
         "Name": "Wall Decimator",
         "Message": "It's a strange beast."

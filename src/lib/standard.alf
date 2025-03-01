@@ -1,0 +1,134 @@
+{# 
+Expressive Wall macro supporting wall definitions using both the original Avara
+convention and bounding boxes. In addition to x/z/y, pass w/d/h for the the
+former or xx/zz/yy for the latter.
+#}
+{% macro wall(color, x, z, y, w=None, d=None, h=None, xx=None, zz=None, yy=None, etag=None)%}
+    <Wall
+        {{ _validateDimensionArgs(w, d, h, xx, zz, yy) }}
+
+        {% if xx is none %}
+            x="{{ x }}" w="{{ w }}"
+        {% else %}
+            x="{{ (x + xx) / 2 }}" w="{{ abs(x - xx) }}"
+        {% endif %}
+
+        {% if zz is none %}
+            z="{{ z }}" d="{{ d }}"
+        {% else %}
+            z="{{ (z + zz) / 2 }}" d="{{ abs(z - zz) }}"
+        {% endif %}
+
+        {% if yy is none %}
+            y="{{ y }}" h="{{ h }}"
+        {% else %}
+            y="{{ min(y, yy) }}" h="{{ abs(y - yy) }}"
+        {% endif %}
+
+        color="{{ color }}"
+
+        {% if etag is not none %}
+            etag="{{ etag }}"
+        {% endif %}
+    />
+{% endmacro %}
+
+{% macro goody(x, z, y, grenades, missiles, power, shield, lives, boostTime, cooldown, shape, color, colorTrim, angle, speed, sound, yon, out) %}
+    <unique vars="mShow" />
+    {% if out is not defined %}
+        <unique vars="mTaken" />
+        {% set takenMsg = 'mTaken' %}
+    {% else %}
+        {% set takenMsg = out %}
+    {% endif %}
+    <And in="@start" out="mShow" />
+    <Timer wait="{{ toTicks(cooldown) }}" in="{{ takenMsg }}" out="mShow" />
+    <Goody
+        {% if shape is defined %}
+        shape="{{ shape }}"
+        {% endif %}
+
+        {% if grenades is defined  %}
+        grenades="{{ grenades }}"
+        {% endif %}
+
+        {% if missiles is defined  %}
+        missiles="{{ missiles }}"
+        {% endif %}
+
+        {% if power is defined  %}
+        power="{{ power }}"
+        {% endif %}
+
+        {% if shield is defined  %}
+        shield="{{ shield }}"
+        {% endif %}
+
+        {% if lives is defined  %}
+        lives="{{ lives }}"
+        {% endif %}
+
+        {% if boostTime is defined  %}
+        boostTime="{{ boostTime }}"
+        {% endif %}
+
+        {% if color is defined  %}
+        color="{{ color }}"
+        {% endif %}
+
+        {% if colorTrim is defined  %}
+        color.1="{{ colorTrim }}"
+        {% endif %}
+
+        {% if x is defined  %}
+        cx="{{ x }}"
+        {% endif %}
+
+        {% if z is defined  %}
+        cz="{{ z }}"
+        {% endif %}
+
+        {% if y is defined  %}
+        y="{{ y + PLAYER_RIDE_HEIGHT }}"
+        {% endif %}
+
+        {% if angle is defined  %}
+        angle="{{ angle }}"
+        {% endif %}
+
+        {% if yon is defined %}
+        yon="{{ yon }}"
+        {% endif %}
+
+        {% if sound is defined %}
+        sound="{{ sound }}"
+        {% endif %}
+
+        {% if speed is defined %}
+        speed="{{ speed }}"
+        {% endif %}
+
+        start="mShow"
+        out="{{ takenMsg }}"
+    />
+{% endmacro %}
+
+{# ------------------------- internal macros below -------------------------- #}
+
+{% macro _validateDimensionArgs(w=None, d=None, h=None, xx=None, zz=None, yy=None) %}
+    {% if xx is none and w is none %}
+        {{ throw('Either `xx` or `w` expected. Neither were passed.') }}
+    {% elif xx is not none and w is not none %}
+        {{ throw('Both `xx` and `w` were passed. Only one or the other is allowed.') }}
+    {% endif %}
+    {% if zz is none and d is none %}
+        {{ throw('Either `zz` or `d` expected. Neither were passed.') }}
+    {% elif zz is not none and d is not none %}
+        {{ throw('Both `zz` and `d` were passed. Only one or the other is allowed.') }}
+    {% endif %}
+    {% if yy is none and h is none %}
+        {{ throw('Either `yy` or `h` expected. Neither were passed.') }}
+    {% elif yy is not none and h is not none %}
+        {{ throw('Both `yy` and `h` were passed. Only one or the other is allowed.') }}
+    {% endif %}
+{% endmacro %}

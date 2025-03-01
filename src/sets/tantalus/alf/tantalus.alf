@@ -1,7 +1,8 @@
 <map>
     {% from 'lib/rulesets/tdm.alf' import info, rules, teamIncarnGroup, incarnator, healthCheck %}
     {% include 'lib/boilerplate.alf' %}
-    {% from 'lib/common.alf' import ref, bubbleTeleporter %}
+    {% from 'lib/standard.alf' import ref %}
+    {% from 'lib/bubbleTeleporter.alf' import bubbleTeleporter %}
     {% include 'lib/teamColors.alf' %}
     {% include './tantalus/colors.alf' %}
     {% from './tantalus/structures.alf' import hill, tower %}
@@ -182,7 +183,6 @@
         {% set rz = -50 %}
         {% set ry = 5 %}
 
-        {# {{ ref(x=rx, z=rz, y=0, w=2, d=2, h=8) }} #}
         <Wall x="{{ rx + 3 }}" z="{{ rz }}" y="{{ ry }}" w="8" d="2" h="2" color="cGround2" />
         <Wall x="{{ rx + 6 }}" z="{{ rz }}" y="0" w="2" d="2" h="6" color="cGround2" />
         <Wall x="{{ rx }}" z="{{ rz - 3 }}" y="{{ ry }}" w="2" d="8" h="2" color="cGround2" />
@@ -192,7 +192,6 @@
         {% set rz = 50 %}
         {% set ry = 5 %}
         
-        {# {{ ref(x=rx, z=rz, y=0, w=2, d=2, h=ry) }} #}
         <Wall x="{{ rx - 3 }}" z="{{ rz }}" y="{{ ry }}" w="8" d="2" h="2" color="cGround2" />
         <Wall x="{{ rx - 6 }}" z="{{ rz }}" y="0" w="2" d="2" h="6" color="cGround2" />
         <Wall x="{{ rx }}" z="{{ rz + 3 }}" y="{{ ry }}" w="2" d="8" h="2" color="cGround2" />

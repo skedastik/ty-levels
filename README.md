@@ -67,7 +67,7 @@ The above fork also features an editing HUD that has proven to be indispensable.
 
 #### Etags 🏷️
 
-The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look a tagged actor. No more hunting for that damn wall--just tag your geometry!
+The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look at a tagged actor. No more hunting for that damn wall. Just tag your geometry!
 
 ## File structure
 

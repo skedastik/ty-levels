@@ -1,0 +1,73 @@
+{# A group of team-specific incarnators. The first player spawned in each group
+faces the specified angle with remaining players arranged radially outward. You
+may pass a spawn message which will be triggered once for each player that
+spawns. This message is sent 1 tick after the start of the game. #}
+{% macro teamIncarnGroup(x, z, y, angle, team, spawnMessage, stop, r=None, players=8) %}
+    {% if r is none %}
+        {% set r = 3 %}
+    {% endif %}
+
+    {% set r_min = 1.5 %}
+    {% if r < r_min %}
+        {{ throw('Minimum walker group radius is ' + str(r_min) + '.') }}
+    {% endif %}
+
+    {% if players < 1 or players > 8 %}
+        {{ throw('players must be in range [1,8] inclusive.')}}
+    {% endif %}
+
+    {% set a1 = angle - 90 %}
+    {% set a2 = angle + 90 %}
+    {% set a3 = angle %}
+    {% set a4 = angle + 180 %}
+    {% set a5 = angle - 45 %}
+    {% set a6 = angle + 45 %}
+    {% set a7 = angle - 135 %}
+    {% set a8 = angle + 135 %}
+    {% set dx1 = r * round(math.sin(math.radians(a1)), 3) %}
+    {% set dz1 = r * -round(math.cos(math.radians(a1)), 3) %}
+    {% set dx2 = r * round(math.sin(math.radians(a2)), 3) %}
+    {% set dz2 = r * -round(math.cos(math.radians(a2)), 3) %}
+    {% set dx3 = r * round(math.sin(math.radians(a3)), 3) %}
+    {% set dz3 = r * -round(math.cos(math.radians(a3)), 3) %}
+    {% set dx4 = r * round(math.sin(math.radians(a4)), 3) %}
+    {% set dz4 = r * -round(math.cos(math.radians(a4)), 3) %}
+    {% set dx5 = r * round(math.sin(math.radians(a5)), 3) %}
+    {% set dz5 = r * -round(math.cos(math.radians(a5)), 3) %}
+    {% set dx6 = r * round(math.sin(math.radians(a6)), 3) %}
+    {% set dz6 = r * -round(math.cos(math.radians(a6)), 3) %}
+    {% set dx7 = r * round(math.sin(math.radians(a7)), 3) %}
+    {% set dz7 = r * -round(math.cos(math.radians(a7)), 3) %}
+    {% set dx8 = r * round(math.sin(math.radians(a8)), 3) %}
+    {% set dz8 = r * -round(math.cos(math.radians(a8)), 3) %}
+    
+    {% set cxs = [x-dx3, x-dx1, x-dx2, x-dx5, x-dx6, x-dx7, x-dx8, x-dx4] %}
+    {% set czs = [z-dz3, z-dz1, z-dz2, z-dz5, z-dz6, z-dz7, z-dz8, z-dz4] %}
+    {% set angles = [angle, angle-90, angle+90, angle-45, angle+45, angle-135, angle+135, angle+180] %}
+
+    <unique vars="mStartDetectingSpawn mStopDetectingSpawn" />
+    <Timer wait="1" in="@start" out="mStartDetectingSpawn" />
+    <Timer wait="2" in="@start" out="mStopDetectingSpawn" />
+    
+    {% for i in range(0, players) %}
+        <Incarnator
+            cx="{{ cxs[i] }}" cz="{{ czs[i] }}" y="{{ y }}" angle="{{ angles[i] }}"
+            mask="T{{ team }}"
+            {% if stop is defined %}
+                stop="{{ stop }}"
+            {% endif %}
+        />
+        {% if spawnMessage is defined %}
+            <Goody
+                cx="{{ cxs[i] }}" cz="{{ czs[i] }}" y="{{ y + PLAYER_RIDE_HEIGHT }}" sound="0" shape="bspAvaraA"
+                {% if DEBUG %}
+                    color="#f00"
+                {% else %}
+                    color="rgba(0, 0, 0, 0%)" yon="0.001"
+                {% endif %}
+                out="{{ spawnMessage }}" start="mStartDetectingSpawn" stop="mStopDetectingSpawn"
+            />
+        {% endif %}
+    {% endfor %}
+
+{% endmacro %}

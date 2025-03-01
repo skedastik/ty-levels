@@ -1,0 +1,38 @@
+{# By default the bubble teleporter has an active zone 20 meters thick beyond
+the passed radius. This is to facilitate level logic that might require players
+to be teleported or spawned outside the bubble. To override that behavior, pass
+r2 to define the active radius. #}
+{% macro bubbleTeleporter(r, r2=None, x=0, z=0, y=None, destGroup=None, spin=True, start=None) %}
+    {% if r2 is not none and r2 <= r %}
+        {{ throw('r2 must be greater than r') }}
+    {% endif %}
+
+    {# Shift the bubble tele below ground to avoid interaction w/ players. #}
+    {% set dy = 10 %}
+    {# Calculate shifted bubble radius r' so r is preserved. #}
+    {% set rp = adjustedRadius(math.sqrt(r*r + dy*dy)) %}
+    {% set y_max = rp - dy %}
+    {% set rp2 = adjustedRadius(math.sqrt((r+20)*(r+20) + dy*dy)) if r2 is none else adjustedRadius(math.sqrt(r2*r2 + dy*dy)) %}
+
+    {% if destGroup is none %}
+        {% if y is none %}
+            {{ throw('You must pass `y` if no `destGroup` is specified.') }}
+        {% endif %}
+
+        {% set destGroup = 'uBubbleTele' %}
+
+        {% if y > y_max %}
+            {{ throw('`y` is above bubble radius. Given passed `r`, y_max = ' + str(round(y_max * 100) / 100) + ').') }}
+        {% endif %}
+
+        <unique vars="{{ destGroup }}" />
+        <Teleporter cx="{{ x }}" cz="{{ z }}" y="{{ y }}" shape="0" group="{{ destGroup }}" {{ 'spin="false"' if not spin }} mask="0" />
+    {% endif %}
+
+    <Teleporter
+        cx="{{ x }}" cz="{{ z }}" y="{{ -dy }}" shape="0" deadRange="{{ rp }}" activeRange="{{ rp2 }}" destGroup="{{ destGroup }}"
+        {% if start is not none %}
+            start="{{ start }}"
+        {% endif %}
+    />
+{% endmacro %}

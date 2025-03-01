@@ -1,4 +1,1 @@
 <set yon="{{ YON_MAX }}" wallYon="{{ YON_MAX }}" />
-
-{# useful while editing levels #}
-<set cRef='"rgba(255, 0, 0, 10%)"' />

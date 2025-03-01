@@ -60,6 +60,8 @@ alf_globals = {
     'int': int,
     'round': round,
     'min': min,
+    'max': max,
+    'abs': abs,
     'toTicks': toTicks,
     'adjustedRadius': adjustedRadius,
     'PI': math.pi,

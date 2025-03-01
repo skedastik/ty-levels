@@ -1,7 +1,7 @@
 <map>
 
 {% from 'lib/logic.alf' import equilibrium %}
-{% from 'lib/common.alf' import goody %}
+{% from 'lib/standard.alf' import goody %}
 
 <Incarnator cx="0" cz="10" y="0" angle="0" />
 {{ goody(x=0, z=10, power=100, cooldown=0.5, color="rgba(0, 0, 0, 0%)", sound=0) }}
