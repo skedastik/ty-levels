@@ -34,4 +34,7 @@
 
     {{ ramp(x=0, z=1, y=0, w=1, d=1, deltaY=1, thick=0.25, seamless=True, angle=270, color="#0f0") }}
     {{ ramp(x=-1, z=0, y=0, w=1, d=1, deltaY=1, thick=0.75, seamless=True, angle=0, color="#0f0") }}
+
+    {# Ramp can't be larger than 20x20 w/d. They become distorted. :( #}
+    <Ramp x="0" z="-40" y="0" w="40" d="40" h="{{ PLANCK }}" deltaY="6" angle="180" color="#ff0" />
 </map>
