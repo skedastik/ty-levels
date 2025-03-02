@@ -1,7 +1,7 @@
 {# 
 Expressive Wall macro supporting wall definitions using both the original Avara
 convention and bounding boxes. In addition to x/z/y, pass w/d/h for the the
-former or xx/zz/yy for the latter.
+former or xx/zz/yy for the latter. Mix and match as you please.
 #}
 {% macro wall(color, x, z, y, w=None, d=None, h=None, xx=None, zz=None, yy=None, etag=None)%}
     <Wall
@@ -25,6 +25,91 @@ former or xx/zz/yy for the latter.
             y="{{ min(y, yy) }}" h="{{ abs(y - yy) }}"
         {% endif %}
 
+        color="{{ color }}"
+
+        {% if etag is not none %}
+            etag="{{ etag }}"
+        {% endif %}
+    />
+{% endmacro %}
+
+{# 
+Expressive Ramp macro supporting definitions using both the original Avara
+convention and bounding boxes. In addition to x/z/y, pass w/d/deltaY for the the
+former or xx/zz/yy for the latter. Mix and match as you please.
+
+The `h` param is now called `thick`.
+
+Ramps slope down in the direction of `angle`.
+
+An additional boolean param `seamless` is introduced. It defaults to False
+meaning it behaves just like an original Avara ramp. That is, given a wall with
+significant thickness, a visible seam will exist between the ramp and its
+bounding box. To eliminate this seam regardless of how thick the ramp is, pass
+False. Keep in mind seamless ramps will encroach beyond their defined bounds.
+#}
+{% macro ramp(color, x, z, y, thick, angle, seamless=False, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
+    <Ramp
+        {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
+
+        {% if xx is none %}
+            {% set wf =  w %}
+            {% set xf =  x %}
+        {% else %}
+            {% set wf = abs(x - xx) %}
+            {% set xf = (x + xx) / 2 %}
+        {% endif %}
+
+        {% if zz is none %}
+            {% set df = d %}
+            {% set zf = z %}
+        {% else %}
+            {% set df = abs(z - zz) %}
+            {% set zf = (z + zz) / 2 %}
+        {% endif %}
+
+        {% if yy is none %}
+            {% set yf = y %}
+            {% set dyf = deltaY %}
+        {% else %}
+            {% set yf = min(y, yy) %}
+            {% set dyf = abs(y - yy) %}
+        {% endif %}
+
+        {% if seamless %}
+            {% if angle == 90 or angle == 270 %}
+                {% set beta = math.pi/2 - math.atan(wf/dyf) %}
+                {% set deltax = thick * math.sin(beta) %}
+                {% set deltay = thick * math.cos(beta) %}
+                {% set wf = wf + deltax %}
+                {% if angle == 90 %}
+                    {% set xf = xf - deltax/2 %}
+                {% else %}
+                    {% set xf = xf + deltax/2 %}
+                {% endif %}
+            {% else %}
+                {% set beta = math.pi/2 - math.atan(df/dyf) %}
+                {% set deltaz = thick * math.sin(beta) %}
+                {% set deltay = thick * math.cos(beta) %}
+                {% set df = df + deltaz %}
+                {% if angle == 180 %}
+                    {% set zf = zf - deltaz/2 %}
+                {% else %}
+                    {% set zf = zf + deltaz/2 %}
+                {% endif %}
+            {% endif %}
+            {% set yf = yf - deltay %}
+            {% set dyf = dyf + deltay %}
+        {% endif %}
+
+        x="{{ xf }}"
+        z="{{ zf }}"
+        y="{{ yf }}"
+        deltaY="{{ dyf }}"
+        w="{{ wf }}"
+        d="{{ df }}"
+        h="{{ thick }}"
+        angle="{{ angle }}"
         color="{{ color }}"
 
         {% if etag is not none %}
@@ -115,7 +200,7 @@ former or xx/zz/yy for the latter.
 
 {# ------------------------- internal macros below -------------------------- #}
 
-{% macro _validateDimensionArgs(w=None, d=None, h=None, xx=None, zz=None, yy=None) %}
+{% macro _validateDimensionArgs(w=None, d=None, h=None, xx=None, zz=None, yy=None, isWall=True) %}
     {% if xx is none and w is none %}
         {{ throw('Either `xx` or `w` expected. Neither were passed.') }}
     {% elif xx is not none and w is not none %}
@@ -127,8 +212,8 @@ former or xx/zz/yy for the latter.
         {{ throw('Both `zz` and `d` were passed. Only one or the other is allowed.') }}
     {% endif %}
     {% if yy is none and h is none %}
-        {{ throw('Either `yy` or `h` expected. Neither were passed.') }}
+        {{ throw('Either `yy` or '+('`h`' if isWall else '`deltaY`')+' expected. Neither were passed.') }}
     {% elif yy is not none and h is not none %}
-        {{ throw('Both `yy` and `h` were passed. Only one or the other is allowed.') }}
+        {{ throw('Both `yy` and '+('`h`' if isWall else '`deltaY`')+' were passed. Only one or the other is allowed.') }}
     {% endif %}
 {% endmacro %}
