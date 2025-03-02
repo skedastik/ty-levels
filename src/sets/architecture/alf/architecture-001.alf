@@ -16,7 +16,7 @@
 {% set xb0 = -15 %}
 <WallDoor x="{{ xa0 }}" z="{{ z0 }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
 <WallDoor x="{{ xb0 }}" z="{{ z0 }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
-{{ ramp(x=(xa0+xb0)/2, z=z0 - pillarLeg, zz=z0+pillarLeg, y=0, w=abs(xa0-xb0), deltaY=y1, angle=0, thick=0.25, seamlessTop=True, color='cRamp05') }}
+{{ ramp(x=(xa0+xb0)/2, z=z0 - pillarLeg, zz=z0+pillarLeg, y=0, w=abs(xa0-xb0), deltaY=y1, angle=0, thick=0.25, color='cRamp05') }}
 {% set z0 = z0 + pillarLeg %}
 {{ wall(x=(xa0+xb0)/2, z=z0, zz=z0+corridorWidth, y=y0, w=abs(xa0-xb0), h=y1, color='cRamp05') }}
 {% set y0 = y1 %}
