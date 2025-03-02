@@ -47,8 +47,9 @@ meaning it behaves just like an original Avara ramp. That is, given a wall with
 significant thickness, a visible seam will exist between the ramp and its
 bounding box. To eliminate this seam regardless of how thick the ramp is, pass
 False. Keep in mind seamless ramps will encroach beyond their defined bounds.
+You may also specify that only the top be seamless via the `seamlessTop` param.
 #}
-{% macro ramp(color, x, z, y, thick, angle, seamless=False, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
+{% macro ramp(color, x, z, y, thick, angle, seamless=False, seamlessTop=False, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
     <Ramp
         {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
 
@@ -76,30 +77,36 @@ False. Keep in mind seamless ramps will encroach beyond their defined bounds.
             {% set dyf = abs(y - yy) %}
         {% endif %}
 
-        {% if seamless %}
+        {% if seamless or seamlessTop %}
             {% if angle == 90 or angle == 270 %}
                 {% set beta = math.pi/2 - math.atan(wf/dyf) %}
-                {% set deltax = thick * math.sin(beta) %}
                 {% set deltay = thick * math.cos(beta) %}
-                {% set wf = wf + deltax %}
-                {% if angle == 90 %}
-                    {% set xf = xf - deltax/2 %}
-                {% else %}
-                    {% set xf = xf + deltax/2 %}
+                {% if seamlessTop %}
+                    {% set deltax = thick * math.sin(beta) %}
+                    {% set wf = wf + deltax %}
+                    {% if angle == 90 %}
+                        {% set xf = xf - deltax/2 %}
+                    {% else %}
+                        {% set xf = xf + deltax/2 %}
+                    {% endif %}
                 {% endif %}
             {% else %}
                 {% set beta = math.pi/2 - math.atan(df/dyf) %}
-                {% set deltaz = thick * math.sin(beta) %}
                 {% set deltay = thick * math.cos(beta) %}
-                {% set df = df + deltaz %}
-                {% if angle == 180 %}
-                    {% set zf = zf - deltaz/2 %}
-                {% else %}
-                    {% set zf = zf + deltaz/2 %}
+                {% if seamlessTop %}
+                    {% set deltaz = thick * math.sin(beta) %}
+                    {% set df = df + deltaz %}
+                    {% if angle == 180 %}
+                        {% set zf = zf - deltaz/2 %}
+                    {% else %}
+                        {% set zf = zf + deltaz/2 %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
-            {% set yf = yf - deltay %}
-            {% set dyf = dyf + deltay %}
+            {% if seamless %}
+                {% set yf = yf - deltay %}
+                {% set dyf = dyf + deltay %}
+            {% endif %}
         {% endif %}
 
         x="{{ xf }}"
