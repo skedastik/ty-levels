@@ -1,0 +1,30 @@
+<map>
+
+{% include '../common/colors.alf' %}
+{% from 'lib/standard.alf' import wall, ramp %}
+
+<Incarnator cx="0" cz="0" y="0" angle="180" />
+
+{% set pillarThick = 8 %}
+{% set pillarLeg = legFromHypotenuse(pillarThick) %}
+{% set corridorWidth = 20 %}
+
+{% set z0 = 10 %}
+{% set y0 = 0 %}
+{% set y1 = 4 %}
+{% set xa0 = 15 %}
+{% set xb0 = -15 %}
+<WallDoor x="{{ xa0 }}" z="{{ z0 }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
+<WallDoor x="{{ xb0 }}" z="{{ z0 }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
+{{ ramp(x=(xa0+xb0)/2, z=z0 - pillarLeg, zz=z0+pillarLeg, y=0, w=abs(xa0-xb0), deltaY=y1, angle=0, thick=0.25, seamlessTop=True, color='cRamp05') }}
+{% set z0 = z0 + pillarLeg %}
+{{ wall(x=(xa0+xb0)/2, z=z0, zz=z0+corridorWidth, y=y0, w=abs(xa0-xb0), h=y1, color='cRamp05') }}
+{% set y0 = y1 %}
+{% set y1 = y1 + y1 %}
+{% set xa1 = xa0 + pillarLeg*2 %}
+{% set z1 = z0 + corridorWidth %}
+{{ ramp(x=xa0, xx=xa1, z=z0-pillarLeg, zz=z0+corridorWidth+pillarLeg, y=y0, yy=y1, angle=270, thick=PLANCK, color='cRamp05') }}
+<WallDoor x="{{ xa0 }}" z="{{ z1+pillarLeg }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
+<WallDoor x="{{ xb0 }}" z="{{ z1+pillarLeg }}" y="{{ y0 }}" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" />
+
+</map>

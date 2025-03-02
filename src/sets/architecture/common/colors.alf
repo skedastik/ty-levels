@@ -1,0 +1,22 @@
+<set
+    cSky='"#bbb"'
+    cHorizon='"#ddd"'
+    cGround='"#ccc"'
+    cWall05='"#fff"'
+    cRamp05='"#c0dbd0"'
+/>
+
+<SkyColor color="cHorizon" color.1="cSky" />
+<GroundColor color="cGround" />
+
+<set
+    ambient.i="0.6"
+
+    light.0.i="0.3"
+    light.0.a="50"
+    light.0.b="35"
+
+    light.1.i="0.4"
+    light.1.a="25"
+    light.1.b="210"
+/>

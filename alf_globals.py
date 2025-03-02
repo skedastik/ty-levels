@@ -64,6 +64,7 @@ alf_globals = {
     'abs': abs,
     'toTicks': toTicks,
     'adjustedRadius': adjustedRadius,
+    'legFromHypotenuse': lambda length: length / math.sqrt(2),
     'PI': math.pi,
     'MAX_TEAMS': MAX_TEAMS,
     'MAX_PLAYERS': MAX_PLAYERS,
