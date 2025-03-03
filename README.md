@@ -69,6 +69,10 @@ The above fork also features an editing HUD that has proven to be indispensable.
 
 The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look at a tagged actor. No more hunting for that damn wall. Just tag your geometry!
 
+### Other commands
+
+    /tele - Teleport to top of target object, or target ground location.
+
 ## File structure
 
 .alf source files are found in `src`. These aren't pure ALF files, but [Jinja](https://jinja.palletsprojects.com) templates that render to ALF via the build process.
