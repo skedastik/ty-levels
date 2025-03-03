@@ -3,9 +3,13 @@
 # Render ALF template src_alf to distributable ALF file dest_alf.
 #
 # --no-trim
-#   Don't remove comments or whitespace.
+#       Don't remove comments or whitespace.
+# --strip-etags
+#       Strip etags.
+# --crush_floats
+#       Truncate floats to fourth decimal place.
 
-import sys, os
+import sys, os, re
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from lxml import etree
 from alf_globals import alf_globals
@@ -14,6 +18,7 @@ args = sys.argv
 
 DO_TRIM = '--no-trim' not in args
 DO_STRIP_ETAGS = '--strip-etags' in args
+DO_CRUSH_FLOATS = '--crush-floats' in args
 DEBUG = '--debug' in args
 
 fin = args[len(args) - 2]
@@ -67,6 +72,10 @@ try:
             del elem.attrib[attr]
 
     alf = etree.tostring(tree, encoding='unicode')
+
+    if DO_CRUSH_FLOATS:
+        alf = re.sub(r'"(-?)([0-9]+?\.[0-9]{4})[0-9]+?(e-?[0-9]+?)?"', r'"\1\2\3"', alf)
+
     with open(fout, 'w') as fh:
         # eliminate unnecessary whitespace in XML output
         fh.write(alf)
