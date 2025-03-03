@@ -3,33 +3,43 @@
 {% include '../common/colors.alf' %}
 {% from 'lib/standard.alf' import wall, ramp %}
 
-<Incarnator cx="0" cz="0" y="0" angle="180" />
+<Incarnator cx="0" cz="-20" y="0" angle="180" />
 
 {% set pillarLeg = 6 %}
 {% set pillarThick = hypotenuseFromLeg(pillarLeg) %}
 {% set rampThick = 0.25 %}
 
-<WallDoor x="14" z="10" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="1" />
-<WallDoor x="-14" z="10" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="2" />
-<WallDoor x="14" z="36" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="3" />
-<WallDoor x="-14" z="36" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="4" />
+{# south side #}
 
-{{ ramp(x=14, xx=-14, z=4, zz=16, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='5') }}
-{{ ramp(x=14, xx=-14, z=30, zz=42, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='11') }}
+<WallDoor x="14" z="22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="1" />
+<WallDoor x="-14" z="22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="2" />
+<WallDoor x="14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="3" />
+<WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="4" />
 
-{{ wall(x=14, xx=-14, z=16, zz=30, y=0, h=4, color='cRamp05', etag='6') }}
+{{ ramp(x=14, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='5') }}
+{{ ramp(x=14, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='11') }}
 
-{{ ramp(x=14, xx=20, z=10, zz=36, y=4, deltaY=2, angle=270, thick=rampThick, color='cRamp05', etag='7') }}
-{{ wall(x=20, xx=34, z=10, zz=52, y=6-rampThick, h=rampThick, color='cRamp05', etag='8') }}
-{{ ramp(x=14, xx=34, z=10, zz=4, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='9') }}
-{{ wall(x=14, xx=34, z=4, zz=-24, y=8-rampThick, h=rampThick, color='cRamp05', etag='10') }}
+{{ wall(x=14, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp05', etag='6') }}
 
-{{ ramp(x=-14, xx=-20, z=10, zz=36, y=4, deltaY=2, angle=90, thick=rampThick, color='cRamp05', etag='12') }}
-{{ wall(x=-20, xx=-34, z=10, zz=52, y=6-rampThick, h=rampThick, color='cRamp05', etag='8') }}
-{{ ramp(x=-14, xx=-34, z=10, zz=4, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='9') }}
-{{ wall(x=-14, xx=-34, z=4, zz=-24, y=8-rampThick, h=rampThick, color='cRamp05', etag='10') }}
+{{ ramp(x=14, xx=20, z=22, zz=48, y=4, deltaY=2, angle=270, thick=rampThick, color='cRamp05', etag='7') }}
+{{ wall(x=20, xx=34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='8') }}
+{{ ramp(x=14, xx=34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='9') }}
+{{ wall(x=14, xx=34, z=16, zz=-24, y=8-rampThick, h=rampThick, color='cRamp05', etag='10') }}
 
-{{ ramp(x=-14, xx=-6.5, z=-12, d=12, y=8, deltaY=2.5, angle=270, thick=rampThick, color='cRamp05', etag='9') }}
-{{ ramp(x=14, xx=6.5, z=-12, d=12, y=8, deltaY=2.5, angle=90, thick=rampThick, color='cRamp05', etag='9') }}
+{{ ramp(x=-14, xx=-20, z=22, zz=48, y=4, deltaY=2, angle=90, thick=rampThick, color='cRamp05', etag='12') }}
+{{ wall(x=-20, xx=-34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='8') }}
+{{ ramp(x=-14, xx=-34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='9') }}
+{{ wall(x=-14, xx=-34, z=16, zz=-12, y=8-rampThick, h=rampThick, color='cRamp05', etag='10') }}
+
+{# center #}
+
+{{ ramp(x=-14, xx=-6, z=0, d=12, y=8, deltaY=2.5, angle=270, thick=rampThick, color='cRamp05', etag='13') }}
+{{ ramp(x=14, xx=6, z=0, d=12, y=8, deltaY=2.5, angle=90, thick=rampThick, color='cRamp05', etag='14') }}
+
+{% set centerPillarThick = pillarThick %}
+<WallDoor x="0" z="0" y="0" w="{{ centerPillarThick }}" d="{{ centerPillarThick }}" h="10.25" color="cWall05" etag="15" />
+{{ wall(x=6, xx=-6, z=6, zz=-6, y=10.25, h=0.25, color='cRamp05', etag='16') }}
+
+{# north side #}
 
 </map>
