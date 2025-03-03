@@ -69,6 +69,8 @@ The above fork also features an editing HUD that has proven to be indispensable.
 
 The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look at a tagged actor. No more hunting for that damn wall. Just tag your geometry!
 
+[VS Code](https://code.visualstudio.com) is recommended to take full advantage of etags. The repo is configured to recommend the `skedastik.ty-levels` extension which is purpose-built to make tagging as easy as possible. After installing the extension, tags can be automatically applied with a single command.
+
 ### Other commands
 
     /tele - Teleport to top of target object, or target ground location.
