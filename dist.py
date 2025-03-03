@@ -13,8 +13,8 @@ from alf_globals import alf_globals
 args = sys.argv
 
 DO_TRIM = '--no-trim' not in args
+DO_STRIP_ETAGS = '--strip-etags' in args
 DEBUG = '--debug' in args
-# [TODO] Add `--strip-etags` option and use for `make bundle`
 
 fin = args[len(args) - 2]
 fout = args[len(args) - 1]
@@ -59,7 +59,14 @@ def getContextHighlighted(s, line, offset, n):
 try:
     alf = env.get_template(fin).render()
     parser = etree.XMLParser(remove_blank_text=DO_TRIM, remove_comments=DO_TRIM)
-    alf = etree.tostring(etree.XML(alf, parser), encoding='unicode')
+    tree = etree.XML(alf, parser)
+
+    if DO_STRIP_ETAGS:
+        attr='etag'
+        for elem in tree.xpath(f'//*[@{attr}]'):
+            del elem.attrib[attr]
+
+    alf = etree.tostring(tree, encoding='unicode')
     with open(fout, 'w') as fh:
         # eliminate unnecessary whitespace in XML output
         fh.write(alf)

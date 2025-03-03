@@ -16,7 +16,7 @@ jobs:
         run: |
           git config --global --add safe.directory /github/workspace
           pip install -r requirements.txt
-          make bundle
+          make bundle OPTS='--strip-etags'
       
       - name: Release
         uses: softprops/action-gh-release@v2

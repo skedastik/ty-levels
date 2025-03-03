@@ -73,7 +73,7 @@ $(APP_LEVELS_PATH)/%: $(DIST_DIR)/%
 
 symlinks: $(SET_SYMLINKS)
 
-bundle: all
+bundle: clean all
 	find $(DIST_DIR) -regex '^$(DIST_DIR)/[^/][^/]*' | grep -E '$(EXCLUDE)' | xargs rm -r
 	mv $(DIST_DIR) $(BUNDLE_PREFIX)
 	zip -r $(BUNDLE_PREFIX).zip $(BUNDLE_PREFIX)
@@ -87,4 +87,4 @@ release:
 
 clean:
 	@rm -rf $(DIST_DIR)
-	@echo Done.
+	@echo clean: Done.
