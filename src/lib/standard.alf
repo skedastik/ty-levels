@@ -44,9 +44,10 @@ Ramps slope down in the direction of `angle` assuming positive `deltaY`.
 
 These ramps behave slightly differently from Avara's original in that the top of
 the ramp is seamless regardless of ramp thickness. That is, there will be no
-visible gap or seam between the ramp and its defined bounds.
+visible gap or seam between the ramp and its defined bounds. To make the bottom
+of the ramp behave as it did originally (visible seam), pass `seam=True`.
 #}
-{% macro ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
+{% macro ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, seam=False, etag=None)%}
     {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
 
     {% if xx is none %}
@@ -71,6 +72,18 @@ visible gap or seam between the ramp and its defined bounds.
     {% else %}
         {% set yf = min(y, yy) %}
         {% set dyf = abs(y - yy) %}
+    {% endif %}
+
+    {% if angle == 90 or angle == 270 %}
+        {% set beta = math.pi/2 - math.atan(wf/dyf) %}
+    {% else %}
+        {% set beta = math.pi/2 - math.atan(df/dyf) %}
+    {% endif %}
+    {% set deltay = thick * math.cos(beta) %}
+
+    {% if seam %}
+        {% set yf = yf + deltay %}
+        {% set dyf = dyf - deltay %}
     {% endif %}
 
     {# support arbitrarily large ramps by decimating them just like Avara decimates walls #}
@@ -100,7 +113,6 @@ visible gap or seam between the ramp and its defined bounds.
         
         {# make the ramp seamless #}
         {% if angle == 90 or angle == 270 %}
-            {% set beta = math.pi/2 - math.atan(wf/dyf) %}
             {% set deltax = thick * math.sin(beta) %}
             {% set wf = wf + deltax %}
             {% if angle == 90 %}
@@ -109,7 +121,6 @@ visible gap or seam between the ramp and its defined bounds.
                 {% set xf = xf + deltax/2 %}
             {% endif %}
         {% else %}
-            {% set beta = math.pi/2 - math.atan(df/dyf) %}
             {% set deltaz = thick * math.sin(beta) %}
             {% set df = df + deltaz %}
             {% if angle == 180 %}
@@ -118,7 +129,6 @@ visible gap or seam between the ramp and its defined bounds.
                 {% set zf = zf + deltaz/2 %}
             {% endif %}
         {% endif %}
-        {% set deltay = thick * math.cos(beta) %}
         {% set yf = yf - deltay %}
         {% set dyf = dyf + deltay %}
 
