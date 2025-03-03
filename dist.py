@@ -14,6 +14,7 @@ args = sys.argv
 
 DO_TRIM = '--no-trim' not in args
 DEBUG = '--debug' in args
+# [TODO] Add `--strip-etags` option and use for `make bundle`
 
 fin = args[len(args) - 2]
 fout = args[len(args) - 1]
