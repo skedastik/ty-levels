@@ -7,7 +7,7 @@ LIB_BSPS_DIR := $(LIB_DIR)/bsps
 COMMON_DIR := common
 
 # regex to exclude sets from bundle
-EXCLUDE := discovery
+EXCLUDE := discovery|architecture
 
 # main .alf files
 SRC_ALFS := $(shell find $(SETS_DIR) -regex '$(SETS_DIR)/[^/][^/]*/alf/[^/][^/]*\.alf')
