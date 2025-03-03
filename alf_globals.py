@@ -48,6 +48,7 @@ alf_globals = {
     'toTicks': toTicks,
     'adjustedRadius': adjustedRadius,
     'legFromHypotenuse': lambda length: length / math.sqrt(2),
+    'hypotenuseFromLeg': lambda length: math.sqrt(2 * length * length),
     'MAX_WALL_SIZE': 20, # corresponds to LOCATORRECTSIZE in Avara code--walls larger than this are decimated; ramps are distorted
     'MAX_TEAMS': 8,
     'MAX_PLAYERS': 8,
