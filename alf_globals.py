@@ -18,25 +18,6 @@ def adjustedRadius(r):
     # accurate at larger radii (>50).
     return math.pow(r, 0.98)
 
-# This scale yields a good balance between hiding distant logic objects while
-# still preserving a decent level preview. 
-YON_MAX = 500                           # a reasonably large max yon
-
-MAX_TEAMS = 8
-MAX_PLAYERS = 8
-
-TEAM_COLORS=[
-    None,
-    'Green',
-    'Yellow',
-    'Red',
-    'Magenta',
-    'Purple',
-    'Blue',
-    'Black',
-    'White'
-]
-
 scratchDict = {}
 
 def getScratch(key):
@@ -53,8 +34,10 @@ alf_globals = {
     # macro.
     'getScratch': getScratch,
     'setScratch': setScratch,
+    
     'len': len,
     'str': str,
+    'print': print,
     'throw': throw,
     'math': math,
     'int': int,
@@ -65,13 +48,13 @@ alf_globals = {
     'toTicks': toTicks,
     'adjustedRadius': adjustedRadius,
     'legFromHypotenuse': lambda length: length / math.sqrt(2),
-    'PI': math.pi,
-    'MAX_TEAMS': MAX_TEAMS,
-    'MAX_PLAYERS': MAX_PLAYERS,
-    'TEAM_COLORS': TEAM_COLORS,
+    'MAX_WALL_SIZE': 20, # corresponds to LOCATORRECTSIZE in Avara code--walls larger than this are decimated; ramps are distorted
+    'MAX_TEAMS': 8,
+    'MAX_PLAYERS': 8,
+    'TEAM_COLORS': [None, 'Green', 'Yellow', 'Red', 'Magenta', 'Purple', 'Blue', 'Black', 'White'],
     'PLAYER_RIDE_HEIGHT': 1.75,
     'GOODY_SPIN_SPEED': 2,
     'TELE_GO_TIME': 60, # time in ticks it takes for a teleporter to become usable again after teleporting to it (defined in CTeleporter.cpp)
     'PLANCK': 0.002, # miniscule distance to reduce z-fighting
-    'YON_MAX': YON_MAX
+    'YON_MAX': 500
 }

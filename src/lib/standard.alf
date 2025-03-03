@@ -40,45 +40,67 @@ former or xx/zz/yy for the latter. Mix and match as you please.
 
 The `h` param is now called `thick`.
 
-Ramps slope down in the direction of `angle`.
+Ramps slope down in the direction of `angle` assuming positive `deltaY`.
 
 These ramps behave slightly differently from Avara's original in that the top of
 the ramp is seamless regardless of ramp thickness. That is, there will be no
-visible gap or seam between the top of the ramp and its defined bounds. The
-bottom of the ramp behaves as normal, but this too can be made seamless by
-passing `seamless=True`.
+visible gap or seam between the ramp and its defined bounds.
 #}
-{% macro ramp(color, x, z, y, thick, angle, seamless=False, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
-    <Ramp
-        {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
+{% macro ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, etag=None)%}
+    {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
 
-        {% if xx is none %}
-            {% set wf =  w %}
-            {% set xf =  x %}
+    {% if xx is none %}
+        {% set wf =  w %}
+        {% set xf =  x %}
+    {% else %}
+        {% set wf = abs(x - xx) %}
+        {% set xf = (x + xx) / 2 %}
+    {% endif %}
+
+    {% if zz is none %}
+        {% set df = d %}
+        {% set zf = z %}
+    {% else %}
+        {% set df = abs(z - zz) %}
+        {% set zf = (z + zz) / 2 %}
+    {% endif %}
+
+    {% if yy is none %}
+        {% set yf = y %}
+        {% set dyf = deltaY %}
+    {% else %}
+        {% set yf = min(y, yy) %}
+        {% set dyf = abs(y - yy) %}
+    {% endif %}
+
+    {# support arbitrarily large ramps by decimating them just like Avara decimates walls #}
+    {% if wf > MAX_WALL_SIZE %}
+        {% if angle == 90 %}
+            {{ ramp(color, xf-wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+        {% elif angle == 270 %}
+            {{ ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ ramp(color, xf+wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
         {% else %}
-            {% set wf = abs(x - xx) %}
-            {% set xf = (x + xx) / 2 %}
+            {{ ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
+            {{ ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
         {% endif %}
-
-        {% if zz is none %}
-            {% set df = d %}
-            {% set zf = z %}
+    {% elif df > MAX_WALL_SIZE %}
+        {% if angle == 180 %}
+            {{ ramp(color, xf,      zf-df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+        {% elif angle == 0 %}
+            {{ ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ ramp(color, xf,      zf+df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
         {% else %}
-            {% set df = abs(z - zz) %}
-            {% set zf = (z + zz) / 2 %}
+            {{ ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
+            {{ ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
         {% endif %}
-
-        {% if yy is none %}
-            {% set yf = y %}
-            {% set dyf = deltaY %}
-        {% else %}
-            {% set yf = min(y, yy) %}
-            {% set dyf = abs(y - yy) %}
-        {% endif %}
-
+    {% else %} {# ramp is not too large so go ahead and instantiate it #}
+        
+        {# make the ramp seamless #}
         {% if angle == 90 or angle == 270 %}
             {% set beta = math.pi/2 - math.atan(wf/dyf) %}
-            {% set deltay = thick * math.cos(beta) %}
             {% set deltax = thick * math.sin(beta) %}
             {% set wf = wf + deltax %}
             {% if angle == 90 %}
@@ -88,7 +110,6 @@ passing `seamless=True`.
             {% endif %}
         {% else %}
             {% set beta = math.pi/2 - math.atan(df/dyf) %}
-            {% set deltay = thick * math.cos(beta) %}
             {% set deltaz = thick * math.sin(beta) %}
             {% set df = df + deltaz %}
             {% if angle == 180 %}
@@ -97,25 +118,20 @@ passing `seamless=True`.
                 {% set zf = zf + deltaz/2 %}
             {% endif %}
         {% endif %}
-        {% if seamless %}
-            {% set yf = yf - deltay %}
-            {% set dyf = dyf + deltay %}
-        {% endif %}
+        {% set deltay = thick * math.cos(beta) %}
+        {% set yf = yf - deltay %}
+        {% set dyf = dyf + deltay %}
 
-        x="{{ xf }}"
-        z="{{ zf }}"
-        y="{{ yf }}"
-        deltaY="{{ dyf }}"
-        w="{{ wf }}"
-        d="{{ df }}"
-        h="{{ thick }}"
-        angle="{{ angle }}"
-        color="{{ color }}"
-
-        {% if etag is not none %}
-            etag="{{ etag }}"
-        {% endif %}
-    />
+        <Ramp
+            x="{{ xf }}" z="{{ zf }}" y="{{ yf }}"
+            w="{{ wf }}" d="{{ df }}" h="{{ thick }}"
+            deltaY="{{ dyf }}" angle="{{ angle }}"
+            color="{{ color }}"
+            {% if etag is not none %}
+                etag="{{ etag }}"
+            {% endif %}
+        />
+    {% endif %}
 {% endmacro %}
 
 {% macro goody(x, z, y, grenades, missiles, power, shield, lives, boostTime, cooldown, shape, color, colorTrim, angle, speed, sound, yon, out) %}

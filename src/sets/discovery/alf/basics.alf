@@ -49,7 +49,8 @@
     -->
     <Wall color="#f3eee7" x="-2" z="-5" w="1" d="1" h="1" />
     <!-- 
-    Ramps slope down in the direction of the ramp angle.
+    Ramps slope down in the direction of the ramp angle assuming positive
+    deltaY.
 
     Colors with alpha seem to blend additively, but with a twist. I'm guessing
     the formula looks something like: Given value `X` return `2X - 255`.
