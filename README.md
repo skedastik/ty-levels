@@ -88,7 +88,7 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
 
-#### `Auto Tag`
+#### `Toggle Auto Tag`
 
 Hit **Cmd-Shift-P** and begin typing "autotag". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are automatically tagged on save.
 
