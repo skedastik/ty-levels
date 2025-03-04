@@ -4,7 +4,7 @@ Get the latest release [here](https://github.com/skedastik/ty-levels/releases/la
 
 ## Development
 
-⚠️ This repo's workflow only supports macOS (and Linux with some small adjustments).
+⚠️ This repo's workflow only supports macOS (and potentially Linux with some small adjustments).
 
 Install Python dependencies:
 
@@ -86,7 +86,7 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 ### A. Etags
 
-This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following commands:
+This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
 
 #### `Add Etags`
 
@@ -94,11 +94,15 @@ Hit **Cmd-Shift-P** and begin typing "add etags". Hit **Enter** when the command
 
 #### `Find Etag` 🔎
 
-If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the 'ty-levels' extension to open relevant URIs. Check "do not ask me again" and click **Open**.
+If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the "ty-levels" extension to open relevant URIs. Check "do not ask me again" and click **Open**.
+
+#### Automatic etag regeneration ✨
+
+Copying and pasting tagged elements? No problem. Any pasted tags will be regenerated automatically.
 
 #### Other commands
 
-For a full list of VS Code commands, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
+For a full list of commands, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
 
 ### B. File structure
 
