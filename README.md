@@ -4,6 +4,8 @@ Get the latest release [here](https://github.com/skedastik/ty-levels/releases/la
 
 ## Development
 
+⚠️ This repo's workflow only supports macOS (and Linux with some small adjustments).
+
 Install Python dependencies:
 
     $ virtualenv venv
@@ -65,17 +67,34 @@ Avara will now automatically reload the level in response to source file changes
 
 The above fork also features an editing HUD that has proven to be indispensable. Activate it by issuing the `/ehud` command. Now you're a surveyor.
 
-#### Etags 🏷️
+### Etags 🏷️
 
 The fork supports "etags" or editing tags. An etag is a string attribute that can be applied to any element in your ALF file. Etags are surfaced in the editing HUD when you look at a tagged actor. No more hunting for that damn wall. Just tag your geometry!
 
-[VS Code](https://code.visualstudio.com) is recommended to take full advantage of etags. The repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging as easy as possible. After installing the extension, tags can be automatically applied with a single command.
+[VS Code](https://code.visualstudio.com) is recommended to take full advantage of etags, including the ability to instantly reveal tagged objects in your code. See [Appendix A](#a-etags).
 
-### Other commands
+### In-game commands
 
-    /tele - Teleport to top of target object, or target ground location.
+    /ehud
+            Toggle the editing HUD on and off.
+    /tele
+            Teleport to top of target object, or target ground location.
+    /find
+            Reveal the target object in VS Code. Live reload must be enabled.
 
-## File structure
+## Appendix
+
+### A. Etags
+
+This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
+
+#### `Add Etags to Solids` command
+
+Hit **Cmd-Shift-P** and begin typing "add etags to solids". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are tagged.
+
+If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the 'ty-levels' extension to open relevant URIs. Check "do not ask me again" and click Open.
+
+### B. File structure
 
 .alf source files are found in `src`. These aren't pure ALF files, but [Jinja](https://jinja.palletsprojects.com) templates that render to ALF via the build process.
 

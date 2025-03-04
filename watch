@@ -7,6 +7,21 @@
 
 opts=$*
 
+background_pids=()
+
+add_background_pid() {
+    background_pids+=("$1")
+}
+
+kill_background_processes() {
+    echo "Cleaning up..."
+    for pid in "${background_pids[@]}"; do
+      kill "$pid" 2>/dev/null
+    done
+}
+
+trap kill_background_processes EXIT
+
 while getopts ":l" opt
 do
     case $opt in
@@ -35,7 +50,9 @@ cancel_and_run() {
 }
 
 if  [[ live_reload -eq 1 ]]; then
-    echo 'Watching for changes to source files (live reload enabled)...'
+    echo 'Watching for changes to source files (live reload features enabled)...'
+    python dispatcher.py &
+    add_background_pid $!
     fswatch -o --no-defer -l 0.1 src alf_globals.py | cancel_and_run
 else
     echo 'Watching for changes to source files...'

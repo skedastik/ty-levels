@@ -1,5 +1,4 @@
 import socket, os
-from time import sleep
 
 # Avara's UDP packet structure as seen in CCommManager.h as of 2025.02.08:
 #
@@ -49,3 +48,5 @@ except socket.timeout:
     os.system('tput bel')
     print('\033[1;35m' + 'Live reload timed out. Is your Avara server running? Is it the correct version (' + expectedAvaraVersion + ')?' + '\033[0m')
     exit(1)
+finally:
+    sock_in.close()
