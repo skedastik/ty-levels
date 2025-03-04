@@ -24,12 +24,12 @@
 {{ ramp(x=14, xx=20, z=22, zz=48, y=4, deltaY=2, angle=270, thick=rampThick, color='cRamp05', etag='hp7je1') }}
 {{ wall(x=20, xx=34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='g4n38e') }}
 {{ ramp(x=14, xx=34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='7bfabm') }}
-{{ wall(x=14, xx=34, z=16, zz=-24, y=8-rampThick, h=rampThick, color='cRamp05', etag='licev6') }}
+{{ wall(x=14, xx=34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='licev6') }}
 
 {{ ramp(x=-14, xx=-20, z=22, zz=48, y=4, deltaY=2, angle=90, thick=rampThick, color='cRamp05', etag='b9sm8c') }}
 {{ wall(x=-20, xx=-34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='5qaihi') }}
 {{ ramp(x=-14, xx=-34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='mux0o8') }}
-{{ wall(x=-14, xx=-34, z=16, zz=-12, y=8-rampThick, h=rampThick, color='cRamp05', etag='0lic56') }}
+{{ wall(x=-14, xx=-34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='0lic56') }}
 
 {# center #}
 
@@ -41,5 +41,15 @@
 {{ wall(x=6, xx=-6, z=6, zz=-6, y=10.25, h=0.25, color='cRamp05', etag='6tv64p') }}
 
 {# north side #}
+
+<WallDoor x="14" z="-22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="cs9x16" />
+<WallDoor x="-14" z="-22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="kivu9l" />
+<WallDoor x="14" z="-48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="xl1qd5" />
+<WallDoor x="-14" z="-48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="kfzor0" />
+
+{{ ramp(x=14, xx=-14, z=-16, zz=-28, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='9up4mj') }}
+{{ ramp(x=14, xx=-14, z=-42, zz=-54, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='68xhv8') }}
+
+{{ wall(x=14, xx=-14, z=-28, zz=-42, y=0, h=4, color='cRamp05', etag='nyt6j0') }}
 
 </map>
