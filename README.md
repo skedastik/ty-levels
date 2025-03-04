@@ -88,9 +88,9 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
 
-#### `Add Etags`
+#### `Auto Tag`
 
-Hit **Cmd-Shift-P** and begin typing "add etags". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are tagged.
+Hit **Cmd-Shift-P** and begin typing "autotag". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are automatically tagged on save.
 
 #### `Find Etag` 🔎
 
@@ -98,7 +98,7 @@ If you have live reload enabled, you can use the `/find` command in-game to reve
 
 #### Automatic etag regeneration ✨
 
-Copying and pasting tagged elements? No problem. Any pasted tags will be regenerated automatically.
+Copying and pasting tagged elements? No problem. Any pasted etags will be regenerated automatically ensuring they are always unique.
 
 #### Other commands
 
