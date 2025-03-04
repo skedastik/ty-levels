@@ -86,13 +86,19 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 ### A. Etags
 
-This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
+This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following commands:
 
-#### `Add Etags to Solids` command
+#### `Add Etags`
 
-Hit **Cmd-Shift-P** and begin typing "add etags to solids". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are tagged.
+Hit **Cmd-Shift-P** and begin typing "add etags". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are tagged.
 
-If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the 'ty-levels' extension to open relevant URIs. Check "do not ask me again" and click Open.
+#### `Find Etag` 🔎
+
+If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the 'ty-levels' extension to open relevant URIs. Check "do not ask me again" and click **Open**.
+
+#### Other commands
+
+For a full list of VS Code commands, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
 
 ### B. File structure
 
