@@ -79,7 +79,7 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
             Toggle the editing HUD on and off.
     /tele
             Teleport to top of target object, or target ground location.
-    /find
+    /f /find
             Reveal the target object in VS Code. Live reload must be enabled.
 
 ## Appendix
@@ -94,7 +94,7 @@ Hit **Cmd-Shift-P** and begin typing "autotag". Hit **Enter** when the command a
 
 #### `Find Etag` 🔎
 
-If you have live reload enabled, you can use the `/find` command in-game to reveal your target in VS Code. You will be prompted to allow the "ty-levels" extension to open relevant URIs. Check "do not ask me again" and click **Open**.
+If you have live reload enabled, you can use `/f` in-game to reveal your target in VS Code. You will be prompted to allow the "ty-levels" extension to open relevant URIs. Check "do not ask me again" and click **Open**.
 
 #### Automatic etag regeneration ✨
 
