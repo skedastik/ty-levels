@@ -1,0 +1,39 @@
+# Changelog
+
+All notable changes to this project (and related repos) will be documented in this file.
+
+The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [2025.03.06]
+
+### Added
+
+- This changelog. I wish I started it sooner. 🤷‍♂️
+
+## [2025.03.03]
+
+### Added
+
+- The [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+    - Automatically tag your solids. Tagging is effortless now.
+- [Editor tools](https://github.com/skedastik/Avara/tree/editor-tools) commands:
+    - `/find` Immediately reveal a tagged target in VS Code, if you have [live reloading](README.md#live-reloading-) enabled.
+    - `/tele` Teleport to the top of your target or target ground location.
+
+## [2025.03.02]
+
+### Added
+
+- [src/lib/standard.alf](src/lib/standard.alf)
+    - New `wall` and `ramp` macros support bounding-box definitions as well as the old center-dimensions definitions. Use whichever you prefer or whatever the situation calls for. The parameters are flexible. Mix and match as you please.
+    - The `ramp` macro creates seamless ramps, regardless of thickness. No more visible gaps! (Gaps are still an option, of course. We love gaps too.)
+    - The `ramp` macro allows ramps of arbitrary size. Goodbye 20x20 restriction, hello gigantic ramps.
+
+## [2025.02.25]
+
+### Added
+
+- [src/lib/rulesets/tdm.alf](src/lib/rulesets/tdm.alf)
+    - Team deathmatch, evolved. Apply the ruleset to any level.
+- [src/sets/tantalus/alf/tantalus.alf](src/sets/tantalus/alf/tantalus.alf)
+    - Wow, my first level in decades. It uses the TDM ruleset. I wonder how it plays...
