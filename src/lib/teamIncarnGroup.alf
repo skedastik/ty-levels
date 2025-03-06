@@ -12,8 +12,8 @@ spawns. This message is sent 1 tick after the start of the game. #}
         {{ throw('Minimum walker group radius is ' + str(r_min) + '.') }}
     {% endif %}
 
-    {% if players < 1 or players > 8 %}
-        {{ throw('players must be in range [1,8] inclusive.')}}
+    {% if players < 1 or players > MAX_PLAYERS %}
+        {{ throw('players must be in range [1,'+str(MAX_PLAYERS)+'] inclusive.')}}
     {% endif %}
 
     {% set a1 = angle - 90 %}
