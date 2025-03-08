@@ -49,7 +49,7 @@ Push your changes, then:
 
 ## Editing tools 🛠️
 
-Editing levels without in-game tooling is painful. Build [this](https://github.com/skedastik/Avara/tree/editor-tools) Avara fork. Now you have access to...
+Editing levels without additional tooling is painful. Build [this](https://github.com/skedastik/Avara/tree/editor-tools) Avara fork and install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels). Now you have access to...
 
 ### Live reloading 🎥
 
@@ -73,7 +73,7 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 [VS Code](https://code.visualstudio.com) is recommended to take full advantage of etags, including the ability to instantly reveal tagged objects in your code. See [Appendix A](#a-etags).
 
-### In-game commands
+### In-game commands ⚡️
 
     /ehud
             Toggle the editing HUD on and off.
@@ -82,11 +82,17 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
     /f /find
             Reveal the target object in VS Code. Live reload must be enabled.
 
+### Bulk transformations 📐
+
+Let's say you're designing a symmetrical level. You finished half of it. Now you have to duplicate everything and manually update all the coordinates. It would be really nice if everything was centered around the origin at (0,0) too. Ugh, what a pain, right?
+
+No longer. With bulk transformations you can translate and mirror elements en masse. Just copy/paste, select, and issue two VS Code [commands](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels). Done.
+
 ## Appendix
 
 ### A. Etags
 
-This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) extension which is purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
+This repo is configured to recommend the [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension which was purpose-built to make tagging effortless. After installing the extension you will have access to the following features:
 
 #### `Toggle Auto Tag`
 
@@ -102,9 +108,9 @@ Copying and pasting tagged elements? No problem. Any pasted etags will be regene
 
 #### Other commands
 
-For a full list of commands, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
+For a full list of commands, including bulk transformations, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
 
-### B. File structure
+### C. File structure
 
 .alf source files are found in `src`. These aren't pure ALF files, but [Jinja](https://jinja.palletsprojects.com) templates that render to ALF via the build process.
 

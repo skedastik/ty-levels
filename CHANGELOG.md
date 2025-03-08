@@ -4,6 +4,13 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.07]
+
+### Added
+
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+    - Transform your elements en masse with new Translate and Mirror commands.
+
 ## [2025.03.06]
 
 ### Added
@@ -14,10 +21,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ### Added
 
-- The [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
     - Automatically tag your solids. Tagging is effortless now.
 - [Editor tools](https://github.com/skedastik/Avara/tree/editor-tools) commands:
-    - `/find` Immediately reveal a tagged target in VS Code, if you have [live reloading](README.md#live-reloading-) enabled.
+    - `/find` Immediately reveal a tagged target in VS Code if you have [live reloading](README.md#live-reloading-) enabled.
     - `/tele` Teleport to the top of your target or target ground location.
 
 ## [2025.03.02]
