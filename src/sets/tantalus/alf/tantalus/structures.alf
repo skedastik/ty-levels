@@ -1,4 +1,4 @@
-{% macro hill(x, z, w, h, y=0, wallColor="cWall2") %}
+{% macro Hill(x, z, w, h, y=0, wallColor="cWall2") %}
 <Ramp x="{{ x + w }}" z="{{ z }}" y="{{ y }}" w="{{ w }}" d="{{ w }}" h="0" angle="90" deltaY="{{ h }}" color="cRamp2" />
 <Ramp x="{{ x - w }}" z="{{ z }}" y="{{ y }}" w="{{ w }}" d="{{ w }}" h="0" angle="270" deltaY="{{ h }}" color="cRamp2" />
 <Ramp x="{{ x }}" z="{{ z + w }}" y="{{ y }}" w="{{ w }}" d="{{ w }}" h="0" angle="180" deltaY="{{ h }}" color="cRamp2" />
@@ -10,7 +10,7 @@
 <Wall x="{{ x }}" z="{{ z }}" y="{{ y }}" w="{{ w }}" d="{{ w }}" h="{{ h }}" color="cRamp2" />
 {% endmacro %}
 
-{% macro tower(x, z, w, d, h, yaw=0, supportW=4, supportH=None, supportColor="cSupport", platformColor="cWall3") %}
+{% macro Tower(x, z, w, d, h, yaw=0, supportW=4, supportH=None, supportColor="cSupport", platformColor="cWall3") %}
 {% set thickness = 1.5 %}
 <WallDoor x="{{ x }}" z="{{ z }}" y="0" w="{{ supportW }}" d="{{ supportW }}" h="{{ h - thickness if supportH is none else supportH }}" midYaw="{{ yaw }}" color="{{ supportColor }}" />
 <WallDoor x="{{ x }}" z="{{ z }}" y="{{ h - thickness }}" w="{{ w }}" d="{{ d }}" h="{{ thickness }}" midYaw="{{ yaw }}" color="{{ platformColor }}" />

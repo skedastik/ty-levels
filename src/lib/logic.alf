@@ -8,7 +8,7 @@ Note that its default position is x/y/z (0,0,60). Position it elsewhere if it
 gets in the way. Multiple instances are automatically offset from eachother, so
 use the same x/z/y value for all of them.
 #}
-{% macro equilibrium(increment, decrement, out, x=0, z=0, y=60) %}
+{% macro Equilibruim(increment, decrement, out, x=0, z=0, y=60) %}
 
     {% set kInstances = 'tylib_equilibrium_instances' %}
     {% set instance = getScratch(kInstances) %}

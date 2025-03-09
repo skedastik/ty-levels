@@ -2,7 +2,7 @@
 the passed radius. This is to facilitate level logic that might require players
 to be teleported or spawned outside the bubble. To override that behavior, pass
 r2 to define the active radius. #}
-{% macro bubbleTeleporter(r, r2=None, x=0, z=0, y=None, destGroup=None, spin=True, start=None) %}
+{% macro BubbleTeleporter(r, r2=None, x=0, z=0, y=None, destGroup=None, spin=True, start=None) %}
     {% if r2 is not none and r2 <= r %}
         {{ throw('r2 must be greater than r') }}
     {% endif %}

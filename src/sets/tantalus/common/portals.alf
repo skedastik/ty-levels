@@ -5,7 +5,7 @@
 {% set snPortalExit = 3000 %}
 
 {# A pair of teleportation portals that forcefully eject players #}
-{% macro portalPair(x1, z1, y1, a1, x2, z2, y2, a2, force=0.8, forceY=0.2, colorOuter="#fff", colorInner="rgba(0, 50, 255, 20%)", rotateSpeed=0, oneWay=False, visible1=True, visible2=True, mask=None, startMsg=None, stopMsg=None, DEBUG=False) %}
+{% macro PortalPair(x1, z1, y1, a1, x2, z2, y2, a2, force=0.8, forceY=0.2, colorOuter="#fff", colorInner="rgba(0, 50, 255, 20%)", rotateSpeed=0, oneWay=False, visible1=True, visible2=True, mask=None, startMsg=None, stopMsg=None, DEBUG=False) %}
 
     {% set portalActiveRange = 1.75 %}
 

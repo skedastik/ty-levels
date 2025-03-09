@@ -6,8 +6,8 @@ sudden death, meaning they will not be able to respawn. The last team standing
 wins.
 
 To use this ruleset, invoke the `rules` macro at the top of your ALF file. Make
-initial team placements by using the `teamIncarnGroup` macro, once for each team.
-Use the `incarnator` macro to place a minimum of eight incarnators for
+initial team placements by using the `TeamIncarnGroup` macro, once for each team.
+Use the `Incarnator` macro to place a minimum of eight incarnators for
 subsequent spawns. Currently, team-specific incarnators are not supported.
 
 Though not required, it is recommended to call the `healthCheck` macro at the
@@ -26,9 +26,9 @@ will affect the level preview.
 
 #}
 
-{% from 'lib/standard.alf' import goody %}
-{% from 'lib/teamIncarnGroup.alf' import teamIncarnGroup as tig %}
-{% from 'lib/logic.alf' import equilibrium %}
+{% from 'lib/standard.alf' import Goody %}
+{% from 'lib/teamIncarnGroup.alf' import TeamIncarnGroup as tig %}
+{% from 'lib/logic.alf' import Equilibruim %}
 
 {% macro info(respawns=3) %}
     [TDM] {{ respawns }} respawns per team. Last team standing wins.
@@ -91,7 +91,7 @@ will affect the level preview.
     />
 
     {% for t in ts %}
-        {{ equilibrium(x=xLogic, z=zLogic+20, y=yLogic, increment='mT'+str(t)+'PlayerIn', decrement='mT'+str(t)+'PlayerOut', out='mT'+str(t)+'Eliminated') }}
+        {{ Equilibruim(x=xLogic, z=zLogic+20, y=yLogic, increment='mT'+str(t)+'PlayerIn', decrement='mT'+str(t)+'PlayerOut', out='mT'+str(t)+'Eliminated') }}
     {% endfor %}
 
     <!-- NARRATION LOGIC & ACTORS -->
@@ -218,7 +218,7 @@ will affect the level preview.
         <Field
             x="{{ cx }}" z="{{ zLogic }}" y="{{ yLogic }}" w="1" d="1" h="4" watch="playerMask" enter="mSpawned"
         />
-        <!-- The player's lives are reduced to 1 by this goody. -->
+        <!-- The player's lives are reduced to 1 by this Goody. -->
         <Goody
             cx="{{ cx }}" cz="{{ zLogic }}" y="{{ yLogic + 2.5 }}"
             lives="{{ 2 - defaultLives }}"
@@ -278,7 +278,7 @@ will affect the level preview.
     {% endif %}
 {% endmacro %}
 
-{% macro teamIncarnGroup(x, z, y, angle, team, r=None, players=8) %}
+{% macro TeamIncarnGroup(x, z, y, angle, team, r=None, players=8) %}
     {% set teamIncarnGroupCount = getScratch(kteamIncarnGroupCount) %}
     {% if teamIncarnGroupCount is not none %}
         {% set teamIncarnGroupCount = setScratch(kteamIncarnGroupCount, teamIncarnGroupCount + 1) %}
@@ -291,7 +291,7 @@ will affect the level preview.
     {{ tig(x=x, z=z, y=y, angle=angle, team=team, spawnMessage='mT'+str(team)+'PlayerIn', r=r, players=players, stop='mStopInitialIncarnators') }}
 {% endmacro %}
 
-{% macro incarnator(x, z, y, angle) %}
+{% macro Incarnator(x, z, y, angle) %}
     {% set incarnCount = getScratch(kIncarnCount) %}
     {% if incarnCount is not none %}
         {% set incarnCount = setScratch(kIncarnCount, incarnCount + 1) %}
@@ -367,9 +367,9 @@ will affect the level preview.
     {% set teamIncarnGroupCount = getScratch(kteamIncarnGroupCount) %}
     {% set incarnCount = getScratch(kIncarnCount) %}
     {% if teamIncarnGroupCount is none or teamIncarnGroupCount < 8 %}
-        {{ throw('You must place 8 walker groups using tdm.alf::teamIncarnGroup.') }}
+        {{ throw('You must place 8 walker groups using tdm.alf::TeamIncarnGroup.') }}
     {% endif %}
     {% if incarnCount is none or incarnCount < 8 %}
-        {{ throw('You must place at least 8 incarnators using tdm.alf::incarnator.') }}
+        {{ throw('You must place at least 8 incarnators using tdm.alf::Incarnator.') }}
     {% endif %}
 {% endmacro %}

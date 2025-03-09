@@ -3,7 +3,7 @@ Expressive Wall macro supporting wall definitions using both the original Avara
 convention and bounding boxes. In addition to x/z/y, pass w/d/h for the the
 former or xx/zz/yy for the latter. Mix and match as you please.
 #}
-{% macro wall(color, x, z, y, w=None, d=None, h=None, xx=None, zz=None, yy=None, etag=None)%}
+{% macro Wall(color, x, z, y, w=None, d=None, h=None, xx=None, zz=None, yy=None, etag=None)%}
     <Wall
         {{ _validateDimensionArgs(w, d, h, xx, zz, yy) }}
 
@@ -47,7 +47,7 @@ the ramp is seamless regardless of ramp thickness. That is, there will be no
 visible gap or seam between the ramp and its defined bounds. To make the bottom
 of the ramp behave as it did originally (visible seam), pass `seam=True`.
 #}
-{% macro ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, seam=False, etag=None)%}
+{% macro Ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, seam=False, etag=None)%}
     {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
 
     {% if xx is none %}
@@ -89,25 +89,25 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
     {# support arbitrarily large ramps by decimating them just like Avara decimates walls #}
     {% if wf > MAX_WALL_SIZE %}
         {% if angle == 90 %}
-            {{ ramp(color, xf-wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
-            {{ ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
         {% elif angle == 270 %}
-            {{ ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
-            {{ ramp(color, xf+wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
         {% else %}
-            {{ ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
-            {{ ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
         {% endif %}
     {% elif df > MAX_WALL_SIZE %}
         {% if angle == 180 %}
-            {{ ramp(color, xf,      zf-df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
-            {{ ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
         {% elif angle == 0 %}
-            {{ ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
-            {{ ramp(color, xf,      zf+df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
         {% else %}
-            {{ ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
-            {{ ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
         {% endif %}
     {% else %} {# ramp is not too large so go ahead and instantiate it #}
         
@@ -144,7 +144,7 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
     {% endif %}
 {% endmacro %}
 
-{% macro goody(x, z, y, grenades, missiles, power, shield, lives, boostTime, cooldown, shape, color, colorTrim, angle, speed, sound, yon, out) %}
+{% macro Goody(x, z, y, grenades, missiles, power, shield, lives, boostTime, cooldown, shape, color, colorTrim, angle, speed, sound, yon, out) %}
     <unique vars="mShow" />
     {% if out is not defined %}
         <unique vars="mTaken" />

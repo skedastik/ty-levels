@@ -1,6 +1,6 @@
 <map>
     {% include 'lib/boilerplate.alf' %}
-    {% from 'lib/standard.alf' import wall, ramp %}
+    {% from 'lib/standard.alf' import Wall, Ramp %}
 
     <GroundColor color="#004" />
 
@@ -9,29 +9,29 @@
     {# These are all 1x1x1 walls located at (0,0,0)... #}
 
     {# Use Avara's location + dimensions convention: #}
-    {{ wall(x=0, z=0, y=0, w=1, d=1, h=1, color="#00f") }}
+    {{ Wall(x=0, z=0, y=0, w=1, d=1, h=1, color="#00f") }}
 
     {# Or use a bounding box! The bounds are interchangeable. It doesn't matter if x or xx is greater, for instance. #}
-    {{ wall(x=-0.5, xx=0.5, z=-0.5, zz=0.5, y=1, yy=0, color="#00f") }}
+    {{ Wall(x=-0.5, xx=0.5, z=-0.5, zz=0.5, y=1, yy=0, color="#00f") }}
 
     {# Go hog wild and mix and match, you crazy diamond!!! #}
-    {{ wall(x=0, w=1, z=-0.5, zz=0.5, y=0, h=1, color="#00f") }}
+    {{ Wall(x=0, w=1, z=-0.5, zz=0.5, y=0, h=1, color="#00f") }}
 
     {# Okay, now you're just being silly and raising exceptions. #}
-    {# {{ wall(x=0, w=1, xx=8, z=-0.5, zz=0.5, d=16, y=0, yy=24, h=1, color="#f00") }} #}
+    {# {{ Wall(x=0, w=1, xx=8, z=-0.5, zz=0.5, d=16, y=0, yy=24, h=1, color="#f00") }} #}
 
     <!-- ramps -->
 
     {# These are all 1x1x1 ramps located at (1,0,0) sloping down toward 0 degrees. #}
 
-    {{ ramp(x=1, z=0, y=0, w=1, d=1, deltaY=1, thick=0.1, angle="0", color="#f00") }}
-    {{ ramp(x=1.5, xx=0.5, z=-0.5, zz=0.5, y=0, yy=1, thick=0.1, angle="0", color="#f00") }}
-    {{ ramp(x=1.5, xx=0.5, z=-0.5, zz=0.5, y=0, yy=1, thick=0.1, angle="0", color="#f00") }}
+    {{ Ramp(x=1, z=0, y=0, w=1, d=1, deltaY=1, thick=0.1, angle="0", color="#f00") }}
+    {{ Ramp(x=1.5, xx=0.5, z=-0.5, zz=0.5, y=0, yy=1, thick=0.1, angle="0", color="#f00") }}
+    {{ Ramp(x=1.5, xx=0.5, z=-0.5, zz=0.5, y=0, yy=1, thick=0.1, angle="0", color="#f00") }}
 
     {# Seamless ramps with thickness! #}
 
-    {{ ramp(x=0, z=1, y=0, w=1, d=1, deltaY=1, thick=0.25, angle=270, color="#0f0") }}
-    {{ ramp(x=-1, z=0, y=0, w=1, d=1, deltaY=1, thick=0.75, angle=0, color="#0f0") }}
+    {{ Ramp(x=0, z=1, y=0, w=1, d=1, deltaY=1, thick=0.25, angle=270, color="#0f0") }}
+    {{ Ramp(x=-1, z=0, y=0, w=1, d=1, deltaY=1, thick=0.75, angle=0, color="#0f0") }}
 
     
     <Wall x="-51" z="-40" y="0" w="2" d="44" h="6" color="rgba(64, 64, 0, 50%)" />
@@ -45,6 +45,6 @@
     <Wall x="51" z="-40" y="0" w="2" d="44" h="6" color="rgba(0, 64, 64, 50%)" />
     <Wall x="30" z="-19" y="0" w="44" d="2" h="{{ PLANCK }}" color="rgba(0, 64, 64, 50%)" />
     <Wall x="30" z="-61" y="0" w="44" d="2" h="6" color="rgba(0, 64, 64, 50%)" />
-    {# Use the ramp macro to generate Ramps of arbitrary size! #}
-    {{ ramp(x=30, z=-40, y=0, w=40, d=40, thick=1, deltaY=6, angle=180, color='#0ff', seam=True, etag='hugeRamp') }}
+    {# Use the Ramp macro to generate Ramps of arbitrary size! #}
+    {{ Ramp(x=30, z=-40, y=0, w=40, d=40, thick=1, deltaY=6, angle=180, color='#0ff', seam=True, etag='hugeRamp') }}
 </map>

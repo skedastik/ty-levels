@@ -2,7 +2,7 @@
 <map>
 
 {% include '../common/colors.alf' %}
-{% from 'lib/standard.alf' import wall, ramp %}
+{% from 'lib/standard.alf' import Wall, Ramp %}
 
 <Incarnator cx="0" cz="-20" y="0" angle="180" />
 
@@ -17,29 +17,29 @@
 <WallDoor x="14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="3okn90x" />
 <WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="9cecot6" />
 
-{{ ramp(x=14, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='01t30gd') }}
-{{ ramp(x=14, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='pnel0nh') }}
+{{ Ramp(x=14, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='01t30gd') }}
+{{ Ramp(x=14, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='pnel0nh') }}
 
-{{ wall(x=14, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp05', etag='kvikq2c') }}
+{{ Wall(x=14, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp05', etag='kvikq2c') }}
 
-{{ ramp(x=14, xx=20, z=22, zz=48, y=4, deltaY=2, angle=270, thick=rampThick, color='cRamp05', etag='0odf47y') }}
-{{ wall(x=20, xx=34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='hz0aorz') }}
-{{ ramp(x=14, xx=34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='gsd408w') }}
-{{ wall(x=14, xx=34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='67tl22t') }}
+{{ Ramp(x=14, xx=20, z=22, zz=48, y=4, deltaY=2, angle=270, thick=rampThick, color='cRamp05', etag='0odf47y') }}
+{{ Wall(x=20, xx=34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='hz0aorz') }}
+{{ Ramp(x=14, xx=34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='gsd408w') }}
+{{ Wall(x=14, xx=34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='67tl22t') }}
 
-{{ ramp(x=-14, xx=-20, z=22, zz=48, y=4, deltaY=2, angle=90, thick=rampThick, color='cRamp05', etag='b4m3wfe') }}
-{{ wall(x=-20, xx=-34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='2pwwe0c') }}
-{{ ramp(x=-14, xx=-34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='fi2v7kc') }}
-{{ wall(x=-14, xx=-34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='phvwdi5') }}
+{{ Ramp(x=-14, xx=-20, z=22, zz=48, y=4, deltaY=2, angle=90, thick=rampThick, color='cRamp05', etag='b4m3wfe') }}
+{{ Wall(x=-20, xx=-34, z=22, zz=64, y=6-rampThick, h=rampThick, color='cRamp05', etag='2pwwe0c') }}
+{{ Ramp(x=-14, xx=-34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThick, color='cRamp05', etag='fi2v7kc') }}
+{{ Wall(x=-14, xx=-34, z=16, zz=-16, y=8-rampThick, h=rampThick, color='cRamp05', etag='phvwdi5') }}
 
 {# center #}
 
-{{ ramp(x=-14, xx=-6, z=0, d=12, y=8, deltaY=2.5, angle=270, thick=rampThick, color='cRamp05', etag='l5c8nqt') }}
-{{ ramp(x=14, xx=6, z=0, d=12, y=8, deltaY=2.5, angle=90, thick=rampThick, color='cRamp05', etag='p91qjpt') }}
+{{ Ramp(x=-14, xx=-6, z=0, d=12, y=8, deltaY=2.5, angle=270, thick=rampThick, color='cRamp05', etag='l5c8nqt') }}
+{{ Ramp(x=14, xx=6, z=0, d=12, y=8, deltaY=2.5, angle=90, thick=rampThick, color='cRamp05', etag='p91qjpt') }}
 
 {% set centerPillarThick = pillarThick %}
 <WallDoor x="0" z="0" y="0" w="{{ centerPillarThick }}" d="{{ centerPillarThick }}" h="10.25" color="cWall05" etag="h2wlwik" />
-{{ wall(x=6, xx=-6, z=6, zz=-6, y=10.25, h=0.25, color='cRamp05', etag='xqga507') }}
+{{ Wall(x=6, xx=-6, z=6, zz=-6, y=10.25, h=0.25, color='cRamp05', etag='xqga507') }}
 
 {# north side #}
 
@@ -48,9 +48,9 @@
 <WallDoor x="14" z="-48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="0vwpqcw" />
 <WallDoor x="-14" z="-48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="vuljoae" />
 
-{{ ramp(x=14, xx=-14, z=-16, zz=-28, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='f2bydav') }}
-{{ ramp(x=14, xx=-14, z=-42, zz=-54, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='h0owe6l') }}
+{{ Ramp(x=14, xx=-14, z=-16, zz=-28, y=0, deltaY=4, angle=180, thick=rampThick, seam=True, color='cRamp05', etag='f2bydav') }}
+{{ Ramp(x=14, xx=-14, z=-42, zz=-54, y=0, deltaY=4, angle=0, thick=rampThick, seam=True, color='cRamp05', etag='h0owe6l') }}
 
-{{ wall(x=14, xx=-14, z=-28, zz=-42, y=0, h=4, color='cRamp05', etag='msm3iys') }}
+{{ Wall(x=14, xx=-14, z=-28, zz=-42, y=0, h=4, color='cRamp05', etag='msm3iys') }}
 
 </map>

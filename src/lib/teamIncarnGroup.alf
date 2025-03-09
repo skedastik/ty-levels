@@ -2,7 +2,7 @@
 faces the specified angle with remaining players arranged radially outward. You
 may pass a spawn message which will be triggered once for each player that
 spawns. This message is sent 1 tick after the start of the game. #}
-{% macro teamIncarnGroup(x, z, y, angle, team, spawnMessage, stop, r=None, players=8) %}
+{% macro TeamIncarnGroup(x, z, y, angle, team, spawnMessage, stop, r=None, players=8) %}
     {% if r is none %}
         {% set r = 3 %}
     {% endif %}

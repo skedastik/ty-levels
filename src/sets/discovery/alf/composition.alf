@@ -1,7 +1,7 @@
 <map>
     <set designer="Ty" />
     
-    {% from 'lib/standard.alf' import goody %}
+    {% from 'lib/standard.alf' import Goody %}
     {% include './composition/colors.alf' %}
     {% from './composition/structures.alf' import summit, pillar %}
 
@@ -14,10 +14,10 @@
     {{ summit(x=-summitSpacing, z=0, width=summitWidth, height=summitHeight) }}
     {{ summit(x=0, z=summitSpacing, width=summitWidth, height=summitHeight) }}
     {{ summit(x=0, z=-summitSpacing, width=summitWidth, height=summitHeight) }}
-    {{ goody(x=summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
-    {{ goody(x=-summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
-    {{ goody(x=0, z=summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
-    {{ goody(x=0, z=-summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ Goody(x=summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ Goody(x=-summitSpacing, z=0, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ Goody(x=0, z=summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
+    {{ Goody(x=0, z=-summitSpacing, y=summitHeight, shape="bspGrenade", grenades=10, cooldown=10) }}
 
     {% set pillarWidth = math.sqrt(2 * summitWidth * summitWidth) %}
     {{ pillar(x=summitSpacing/2, z=summitSpacing/2, width=pillarWidth, height=10) }}

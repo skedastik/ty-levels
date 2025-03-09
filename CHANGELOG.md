@@ -4,6 +4,14 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.09]
+
+### Changed
+
+- Adopt the convention of capitalizing all macros that create actors. For example, "ramp" is now "Ramp".
+
+### Added
+
 ## [2025.03.07]
 
 ### Added
@@ -32,9 +40,9 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 ### Added
 
 - [src/lib/standard.alf](src/lib/standard.alf)
-    - New `wall` and `ramp` macros support bounding-box definitions as well as the old center-dimensions definitions. Use whichever you prefer or whatever the situation calls for. The parameters are flexible. Mix and match as you please.
-    - The `ramp` macro creates seamless ramps, regardless of thickness. No more visible gaps! (Gaps are still an option, of course. We love gaps too.)
-    - The `ramp` macro allows ramps of arbitrary size. Goodbye 20x20 restriction, hello gigantic ramps.
+    - New `Wall` and `Ramp` macros support bounding-box definitions as well as the old center-dimensions definitions. Use whichever you prefer or whatever the situation calls for. The parameters are flexible. Mix and match as you please.
+    - The `Ramp` macro creates seamless ramps, regardless of thickness. No more visible gaps! (Gaps are still an option, of course. We love gaps too.)
+    - The `Ramp` macro allows ramps of arbitrary size. Goodbye 20x20 restriction, hello gigantic ramps.
 
 ## [2025.02.25]
 
