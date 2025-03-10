@@ -4,13 +4,19 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.10]
+
+### Added
+
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+    - `Set Param` command
+    - Configurable auto-tagging
+
 ## [2025.03.09]
 
 ### Changed
 
 - Adopt the convention of capitalizing all macros that create actors. For example, "ramp" is now "Ramp".
-
-### Added
 
 ## [2025.03.07]
 

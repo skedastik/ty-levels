@@ -98,13 +98,11 @@ This repo is configured to recommend the [ty-levels](https://marketplace.visuals
 
 Hit **Cmd-Shift-P** and begin typing "autotag". Hit **Enter** when the command appears. Now all your untagged solids (Walls, Ramps, WallDoors etc.) are automatically tagged on save.
 
+Copying and pasting tagged elements? No problem. Any pasted etags will be retagged automatically ensuring they are always unique.
+
 #### `Find Etag` 🔎
 
 If you have live reload enabled, you can use `/f` in-game to reveal your target in VS Code. You will be prompted to allow the "ty-levels" extension to open relevant URIs. Check "do not ask me again" and click **Open**.
-
-#### Automatic etag regeneration ✨
-
-Copying and pasting tagged elements? No problem. Any pasted etags will be regenerated automatically ensuring they are always unique.
 
 #### Other commands
 
