@@ -86,7 +86,7 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 Let's say you're designing a symmetrical level. You finished half of it. Now you have to duplicate everything and manually update all the coordinates. It would be really nice if everything was centered around the origin at (0,0) too. Ugh, what a pain, right?
 
-No longer. With bulk transformations you can translate and mirror elements en masse. Just copy/paste, select, and issue two VS Code [commands](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels). Done.
+No longer. With the VS Code extension's bulk transformations feature you can translate, mirror, and rotate elements en masse with a single command.
 
 ## Appendix
 
