@@ -2,7 +2,12 @@
     cSky='"#bbb"'
     cHorizon='"#ddd"'
     cGround='"#ccc"'
+    
     cWall05='"#fff"'
+    cWall06='"#ccc"'
+
+    cGlass05='"rgba(0, 0, 128, 10%)"'
+
     cRamp05='"#c0dbd0"'
 />
 
