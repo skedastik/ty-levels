@@ -1,0 +1,19 @@
+{
+  "name": "ty-levels",
+  "version": "0.0.1",
+  "description": "Avara editor tool utilities.",
+  "main": "transform.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skedastik/ty-levels.git"
+  },
+  "author": "skedastik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skedastik/ty-levels/issues"
+  },
+  "homepage": "https://github.com/skedastik/ty-levels#readme"
+}

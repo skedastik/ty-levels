@@ -1,11 +1,15 @@
 venv/
 dist/
+tmp/
 
 *.zip
 
 # Python
 __pycache__/
 *.py[cod]
+
+# JavaScript
+node_modules/
 
 # General
 .DS_Store
