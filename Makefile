@@ -5,6 +5,7 @@ SETS_DIR := $(SRC_ROOT)/$(SETS_DIRNAME)
 LIB_DIR := $(SRC_ROOT)/lib
 LIB_BSPS_DIR := $(LIB_DIR)/bsps
 COMMON_DIR := common
+TMP_DIR := tmp
 
 # regex to exclude sets from bundle
 EXCLUDE := discovery|architecture
@@ -87,4 +88,5 @@ release:
 
 clean:
 	@rm -rf $(DIST_DIR)
+	@rm -rf $(TMP_DIR)
 	@echo clean: Done.

@@ -61,8 +61,28 @@ def getContextHighlighted(s, line, offset, n):
         '\033[91m' + s[c + 1 : c + n + 1] + '\033[0m'
     ])
 
+def printError(msg):
+    print(f'\033[1;35m{msg}\033[0m')
+
 try:
     alf = env.get_template(fin).render()
+
+    if re.search(r'<!--\s*auto:\s*(.+?)\s*-->', alf):
+        os.system('mkdir -p tmp')
+        alfFileName = os.path.basename(fin)
+        tmpPrePath = f'tmp/{alfFileName}'
+        tmpPostPath = f'tmp/{alfFileName}-auto-edit'
+        with open(tmpPrePath, 'w') as fh:
+            fh.write(alf)
+        autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
+        status = os.system(autoEditShellCommand)
+        if status != 0:
+            if status == 32512:
+                printError('Is your Node.js environment activated?')
+            exit(1)
+        with open(tmpPostPath, 'r') as fh:
+            alf = fh.read()
+
     parser = etree.XMLParser(remove_blank_text=DO_TRIM, remove_comments=DO_TRIM)
     tree = etree.XML(alf, parser)
 
@@ -82,7 +102,7 @@ try:
 except Exception as e:
     os.system('tput bel')
     if type(e) == etree.XMLSyntaxError:
-        print('\033[1;35m' + type(e).__name__ + ': ' + e.msg + ':\033[0m')
+        printError(type(e).__name__ + ': ' + e.msg + ':')
         print(getContextHighlighted(alf, e.lineno, e.offset, 128))
         exit(1)
     else:

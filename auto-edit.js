@@ -1,14 +1,15 @@
-// node transform.py src_alf
+// node auto-edit.py src_alf dest_alf
 
 const { automatable } = require('node-ty-levels');
 const fs = require('fs');
 
-if (process.argv.length < 3) {
-    console.error('Usage: node transform.js src_file.alf')
+if (process.argv.length < 4) {
+    console.error('Usage: node auto-edit.js src_file.alf out_file.alf')
     process.exit(1);
 }
 
 const inFile = process.argv[2];
+const outFile = process.argv[3];
 
 class TreeNode {
     constructor(edits, parent) {
@@ -65,7 +66,9 @@ const renderTree = node => {
 };
 
 (async () => {
+    console.log(`auto-edit.js -> Processing ${inFile}...`);
     const root = await buildTreeFromInFile();
     const renderedAlf = renderTree(root);
-    console.log(renderedAlf);
+    fs.writeFileSync(outFile, renderedAlf);
+    console.log(`auto-edit.js -> Done. Processed file written to ${outFile}.`);
 })();
