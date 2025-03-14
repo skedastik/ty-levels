@@ -4,11 +4,21 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+
+## [2025.03.13]
+
+### Added
+
+- Avara editor-tools [fork](https://github.com/skedastik/Avara/tree/editor-tools) and [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension
+    - New TUI [commands](./README.md#in-game-commands)
+        - `/pick`
+        - `/set`
+
 ## [2025.03.10]
 
 ### Added
 
-- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension
     - `Set Param` command
     - Configurable auto-tagging
 
@@ -22,7 +32,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ### Added
 
-- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension
     - Transform your elements en masse with new Translate and Mirror commands.
 
 ## [2025.03.06]
@@ -35,7 +45,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ### Added
 
-- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension.
+- [ty-levels](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels) VS Code extension
     - Automatically tag your solids. Tagging is effortless now.
 - [Editor tools](https://github.com/skedastik/Avara/tree/editor-tools) commands:
     - `/find` Immediately reveal a tagged target in VS Code if you have [live reloading](README.md#live-reloading-) enabled.

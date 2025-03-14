@@ -73,14 +73,23 @@ The fork supports "etags" or editing tags. An etag is a string attribute that ca
 
 [VS Code](https://code.visualstudio.com) is recommended to take full advantage of etags, including the ability to instantly reveal tagged objects in your code. See [Appendix A](#a-etags).
 
-### In-game commands ⚡️
+### In-game commands
 
     /ehud
             Toggle the editing HUD on and off.
+            
     /tele
             Teleport to top of target object, or target ground location.
+
     /f /find
-            Reveal the target object in VS Code. Live reload must be enabled.
+            Reveal the target actor in VS Code. Live reload must be enabled.
+
+    /pick
+            PICK an actor to apply edits to.
+
+    /set param1=value1,param2=value2,...,paramN=valueN
+            Reveal the PICKED actor in VS Code and set its specified parameters to their respective values. Example: "/set w=1,d=1".
+            
 
 ### Bulk transformations 📐
 

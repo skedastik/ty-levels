@@ -11,13 +11,49 @@ sock.bind((ip, port_listen))
 
 print(f'Listening for messages from Avara on :{port_listen}...')
 
+def openVsCodeUri(command, params):
+    query = urlencode(params)
+    uri = f'vscode://skedastik.ty-levels/{command}?{query}'
+    print(f'Opening "{uri}"...')
+    os.system(f'open "{uri}"')
+
+def commandFind(etag):
+    openVsCodeUri('extension.findEtag', {'etag': etag})
+
+def commandSetParamOnEtag(argString: str):
+    args = argString.split(',')
+    if len(args) < 2:
+        print('Expected at least two arguments for "setParamOnEtag" command.')
+        return
+    params = {}
+    for arg in args:
+        tokens = arg.split('=', 1)
+        if (len(tokens) != 2):
+            print(f'Incorrectly formatted arg for "setParamOnEtag": {arg}')
+        param = tokens[0]
+        value = tokens[1]
+        params[param] = value
+    openVsCodeUri('extension.setParamOnEtag', params)
+
+dispatchTable = {
+    'findEtag': commandFind,
+    'setParamOnEtag': commandSetParamOnEtag
+}
+
+def dispatch(message: str):
+    print(f'Received "{message}".')
+    tokens = message.split(' ', 1)
+    command = tokens[0]
+    if command not in dispatchTable:
+        print(f'Ignoring unrecognized command "{command}".')
+        return
+    argString = tokens[1] if len(tokens) > 1 else ''
+    dispatchTable[command](argString)
+
 try:
     while True:
-        etag = sock.recv(32).decode('utf-8')
-        query = urlencode({'etag': etag})
-        uri = f'vscode://skedastik.ty-levels/extension.findEtag?{query}'
-        print(f'Received request to reveal etag "{etag}". Opening {uri}')
-        os.system(f'open {uri}')
+        dispatch(sock.recv(64).decode('utf-8'))
 except:
     sock.close()
+    print('Socket closed.')
     raise
