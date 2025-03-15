@@ -8,7 +8,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ### Added
 
-- Auto-edit annotations
+- [Auto-edit annotations](./README.md#b-auto-edit-annotations)
     - Bulk transformation commands are nice, but why apply them by hand when you can just annotate your ALF and let the build process do it for you!
 
 ## [2025.03.13]
