@@ -70,5 +70,4 @@ const renderTree = node => {
     const root = await buildTreeFromInFile();
     const renderedAlf = renderTree(root);
     fs.writeFileSync(outFile, renderedAlf);
-    console.log(`auto-edit.js -> Done. Processed file written to ${outFile}.`);
 })();
