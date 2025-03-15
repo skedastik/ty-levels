@@ -4,6 +4,12 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.15]
+
+### Added
+
+- Auto-edit annotations
+    - Bulk transformation commands are nice, but why apply them by hand when you can just annotate your ALF and let the build process do it for you!
 
 ## [2025.03.13]
 

@@ -101,6 +101,10 @@ Let's say you're designing a symmetrical level. You finished half of it. Now you
 
 No longer. With the VS Code extension's bulk transformations feature you can translate, mirror, and rotate elements en masse with a single command.
 
+### Auto-edit ✨
+
+Bulk transformation commands are nice, but why apply them by hand when you can just annotate your ALF and let the build process do it for you! See [Appendix B](#b-auto-edit-annotations).
+
 ## Appendix
 
 ### A. Etags
@@ -119,7 +123,45 @@ If you have live reload enabled, you can use `/f` in-game to reveal your target 
 
 #### Other commands
 
-For a full list of commands, including bulk transformations, see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
+For a full list of commands and configuration options see the extension [README](https://marketplace.visualstudio.com/items?itemName=skedastik.ty-levels).
+
+### B. Auto-edit annotations
+
+Most Avara levels have symmetry, either rotational or reflected. The bulk transformation VS Code commands can help with that, but you still have to apply them manually. At least, you did before. Now you can just annotate your ALF files and have the build process do it for you. Combined with macro composition, auto-edits makes symmetrical level design a breeze.
+
+Annotations are applied using a pair of comment tags:
+
+    <!--auto: edit1, edit2, edit3, ..., editN-->
+        <Wall />
+        <Ramp />
+        ...
+    <--/auto-->
+
+The following edits are currently supported:
+
+- mirrorZ
+- mirrorX
+- mirrorY
+- rotate90Clockwise
+- rotate90Counterclockwise
+
+Edits can be infinitely chained and nested. They are applied from innermost to outermost, left to right. Take the following example:
+
+    <!--auto: rotate90Clockwise, rotate90Clockwise-->
+        <Wall ... />
+        <!--auto: mirrorX-->
+            <Ramp >
+        <--/auto-->
+    <--/auto-->
+
+The order of operations above is:
+
+1. Mirror **Ramp** across X axis.
+2. Rotate **Wall and Ramp** 90 degrees clockwise twice.
+
+The true power of auto-edits emerge when combined with Jinja macro composition.You could, for instance, design one quadrant of your level, place it in a macro, then call the macro four times in your layout, applying rotation each time. Now you have rotational symmetry with changes to the original quadrant being instantly reflected in the others.
+
+See [architecture-001a.alf](./src/sets/architecture/alf/architecture-001a.alf) for a concrete example.
 
 ### C. File structure
 
