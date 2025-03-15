@@ -12,6 +12,10 @@ Install Python dependencies:
     $ source venv/bin/activate
     $ pip install -r requirements.txt
 
+Install Node.js dependencies:
+
+    $ npm install
+
 Build distributable level files:
 
     $ make
