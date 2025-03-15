@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/skedastik/ty-levels/issues"
   },
-  "homepage": "https://github.com/skedastik/ty-levels#readme"
+  "homepage": "https://github.com/skedastik/ty-levels#readme",
+  "dependencies": {
+    "node-ty-levels": "^0.0.1"
+  }
 }
