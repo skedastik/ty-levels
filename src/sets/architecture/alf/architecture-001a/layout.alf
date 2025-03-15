@@ -1,0 +1,67 @@
+<!-- autotag -->
+{% from 'lib/standard.alf' import Wall, Ramp %}
+
+{% set pillarLeg = 6 %}
+{% set pillarThick = hypotenuseFromLeg(pillarLeg) %}
+{% set smallPillarLeg = 4 %}
+{% set smallPillarThick = hypotenuseFromLeg(pillarLeg) %}
+{% set centerPillarThick = 8.5 %}
+{% set pillarHeight = 28 %}
+{% set rampThickGround = 0.25 %}
+{% set rampThickMezzanine = 0.25 %}
+
+{% set centerPillarHeight = 10.5 %}
+{% set centerPostHeight = 2 %}
+{% set centerPostThick = 1 %}
+
+{% macro Center() %}
+    <Wall x="0" z="0" y="0" w="{{ centerPillarThick }}" d="{{ centerPillarThick }}" h="{{ centerPillarHeight }}" color="cWall05" etag="3u63it5" />
+    <Wall x="0" z="0" y="16.5" w="{{ centerPillarThick }}" d="{{ centerPillarThick }}" h="{{ pillarHeight - centerPillarHeight - centerPostHeight }}" color="cWall05" etag="iw5z0nh" />
+
+    {# -X side #}
+        
+    {{ Ramp(x=-14, xx=-4.25, z=0, d=pillarThick, y=8, yy=centerPillarHeight, angle=270, thick=rampThickMezzanine, color='cRamp05', etag='bc9tivk') }}
+
+    {# +X side #}
+    
+    {{ Ramp(x=14, xx=17 / 4, z=0, d=pillarThick, y=8, yy=centerPillarHeight, angle=90, thick=rampThickMezzanine, color='cRamp05', etag='dpx3lqo') }}
+{% endmacro %}
+
+{% macro Quadrant() %}
+    <WallDoor x="-14" z="22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight }}" color="cWall05" midYaw="45" etag="51ieh31" />
+    <WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight }}" color="cWall05" midYaw="45" etag="rn7xzoq" />
+
+    {{ Ramp(x=0, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThickGround, seam=True, color='cRamp05', etag='efgqk83') }}
+    {{ Wall(x=0, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp05', etag='hpw9mzl') }}
+    {{ Ramp(x=0, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThickGround, seam=True, color='cRamp05', etag='711qi2l') }}
+
+    {# mezzanine start #}
+
+    {{ Ramp(x=-14, xx=-20, z=22, zz=48, y=4, deltaY=2, angle=90, thick=rampThickMezzanine, color='cRamp05', etag='lx8wa2g') }}
+    {{ Wall(x=-20, xx=-34, z=22, zz=68, y=6-rampThickMezzanine, h=rampThickMezzanine, color='cRamp05', etag='l8am3wp') }}
+    {{ Ramp(x=-14, xx=-34, z=22, zz=16, y=6, deltaY=2, angle=180, thick=rampThickMezzanine, color='cRamp05', etag='ry68dgp') }}
+    {{ Wall(x=-14, xx=-26, z=16, zz=0, y=8-rampThickMezzanine, h=rampThickMezzanine, color='cRamp05', etag='va4mm8q') }}
+
+    {# short pillar #}
+
+    <WallDoor x="-34" z="22" y="0" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="10" color="cWall05" midYaw="45" etag="q8zgfhk" />
+    <WallDoor x="-34" z="22" y="16" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="{{ pillarHeight - 16 }}" color="cWall05" midYaw="45" etag="q7t5z3y" />
+    {{ Wall(x=-34, xx=-46, z=28, zz=16, y=0, h=10, color='cWall05', etag='v3409iq') }}
+    {{ Wall(x=-26, xx=-46, z=16, zz=6, y=8-rampThickMezzanine, h=rampThickMezzanine, color='cRamp05', etag='53xej3a') }}
+
+    {# outer walls #}
+
+    {{ Wall(x=0, xx=-34, z=68, zz=74, y=0, h=pillarHeight, color='cWall06', etag='zltluxg') }}
+    {{ Wall(x=-40, xx=-34, z=28, zz=74, y=0, h=pillarHeight, color='cWall06', etag='izq5n0t') }}
+    {{ Wall(x=-40, xx=-46, z=28, zz=34, y=0, h=pillarHeight, color='cWall06', etag='sn303if') }}
+    {{ Wall (x=-46, xx=-52, z=34, zz=0, y=0, h=pillarHeight, color='cWall06', etag='z6j2bvg') }}
+{% endmacro %}
+
+{% macro Half() %}
+    {# -X side #}
+        {{ Quadrant() }}
+    {# +X side #}
+        <!--auto: mirrorZ-->
+        {{ Quadrant() }}
+        <!--/auto-->
+{% endmacro %}
