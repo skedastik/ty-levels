@@ -6,9 +6,9 @@
 {% set smallPillarLeg = 4 %}
 {% set smallPillarThick = hypotenuseFromLeg(pillarLeg) %}
 {% set centerPillarThick = 8.5 %}
-{% set pillarHeight = 28 %}
+{% set pillarHeight = 40 %}
 {% set rampThickGround = 0.25 %}
-{% set rampThickMezzanine = 0.25 %}
+{% set rampThickMezzanine = 0.5 %}
 
 {% set centerPillarHeight = 10.5 %}
 {% set centerPostHeight = 2 %}
@@ -28,8 +28,16 @@
 {% endmacro %}
 
 {% macro Quadrant() %}
-    <WallDoor x="-14" z="22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight }}" color="cWall05" midYaw="45" etag="51ieh31" />
-    <WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight }}" color="cWall05" midYaw="45" etag="rn7xzoq" />
+    <WallDoor x="-14" z="22" y="20" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight - 20 }}" color="cWall05" midYaw="45" etag="ljyp64p" />
+    <WallDoor x="-14" z="22" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="20" color="cWall05" midYaw="45" etag="51ieh31" />
+
+    {# cross supports #}
+
+    {{ Wall(x=14, xx=-14, z=48, d=2*pillarLeg, y=22, h=6, color='cWall05', etag='hme4y6e') }}
+    {{ Wall(x=14, w=2*pillarLeg, z=0, zz=22, y=28, h=6, color='cWall05', etag='w6wieb5') }}
+
+    <WallDoor x="-14" z="48" y="24" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight - 24 }}" color="cWall05" midYaw="45" etag="b704vek" />
+    <WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="24" color="cWall05" midYaw="45" etag="rn7xzoq" />
 
     {{ Ramp(x=0, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThickGround, seam=True, color='cRamp05', etag='efgqk83') }}
     {{ Wall(x=0, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp05', etag='hpw9mzl') }}
@@ -44,17 +52,19 @@
 
     {# short pillar #}
 
-    <WallDoor x="-34" z="22" y="0" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="10" color="cWall05" midYaw="45" etag="q8zgfhk" />
-    <WallDoor x="-34" z="22" y="16" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="{{ pillarHeight - 16 }}" color="cWall05" midYaw="45" etag="q7t5z3y" />
+    <WallDoor x="-34" z="22" y="0" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="10" color="cWall05" midYaw="45" hitVolume="12" etag="q8zgfhk" />
+    <WallDoor x="-34" z="22" y="16" w="{{ smallPillarThick }}" d="{{ smallPillarThick }}" h="{{ pillarHeight - 16 }}" color="cWall05" midYaw="45" hitVolume="12" etag="q7t5z3y" />
     {{ Wall(x=-34, xx=-46, z=28, zz=16, y=0, h=10, color='cWall05', etag='v3409iq') }}
+    {{ Wall(x=-34, xx=-46, z=28, zz=16, y=22, h=6, color='cWall05', etag='8dqeejv') }}
     {{ Wall(x=-26, xx=-46, z=16, zz=6, y=8-rampThickMezzanine, h=rampThickMezzanine, color='cRamp05', etag='53xej3a') }}
 
     {# outer walls #}
 
-    {{ Wall(x=0, xx=-34, z=68, zz=74, y=0, h=pillarHeight, color='cWall06', etag='zltluxg') }}
-    {{ Wall(x=-40, xx=-34, z=28, zz=74, y=0, h=pillarHeight, color='cWall06', etag='izq5n0t') }}
-    {{ Wall(x=-40, xx=-46, z=28, zz=34, y=0, h=pillarHeight, color='cWall06', etag='sn303if') }}
-    {{ Wall (x=-46, xx=-52, z=34, zz=0, y=0, h=pillarHeight, color='cWall06', etag='z6j2bvg') }}
+    <WallDoor x="0" z="68" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="2.2" color="cWall05" midYaw="45" etag="totv9i3" />
+
+    {{ Wall(x=0, xx=-34, z=68, zz=70, y=0, h=pillarHeight, color='cWall06', etag='zltluxg') }}
+    {{ Wall(x=-34, xx=-48, z=28, zz=70, y=0, h=pillarHeight, color='cWall06', etag='h1glqdq') }}
+    {{ Wall (x=-46, xx=-48, z=28, zz=0, y=0, h=pillarHeight, color='cWall06', etag='z6j2bvg') }}
 {% endmacro %}
 
 {% macro Half() %}

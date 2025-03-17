@@ -1,8 +1,9 @@
 <set
     cSky='"#bbb"'
     cHorizon='"#ddd"'
-    cGround='"#ccc"'
+    cGround='"#bbb"'
     
+    cWall04='"#ddd"'
     cWall05='"#fff"'
     cWall06='"#ccc"'
 
