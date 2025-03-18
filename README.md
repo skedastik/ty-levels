@@ -137,13 +137,13 @@ Annotations are applied using a pair of comment tags:
         ...
     <--/auto-->
 
-The following edits are currently supported:
+The following edits (and their shortened aliases) are currently supported:
 
-- mirrorZ
-- mirrorX
-- mirrorY
-- rotate90Clockwise
-- rotate90Counterclockwise
+- mirrorX / mx
+- mirrorZ / mz
+- mirrorY / my
+- rotate90Clockwise / rc
+- rotate90Counterclockwise / rcc
 
 Edits can be infinitely chained and nested. They are applied from innermost to outermost, left to right. Take the following example:
 

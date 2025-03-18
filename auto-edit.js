@@ -50,16 +50,25 @@ const buildTreeFromInFile = async () => {
     return root;
 };
 
+const aliases = {
+    mx: 'mirrorX',
+    mz: 'mirrorZ',
+    my: 'mirrorY',
+    rcw: 'rotate90Clockwise',
+    rcc: 'rotate90Counterclockwise'
+};
+
 const renderTree = node => {
     const chunks = [];
     node.children.forEach(child => chunks.push(child instanceof TreeNode ? renderTree(child) : child));
     let mergedChunk = chunks.join('\n');
     if (node.edits) {
         node.edits.forEach(edit => {
-            if (!automatable[edit]) {
-                throw new Error(`Encountered unsupported edit command "${edit}".`);
+            const editFn = automatable[edit] || automatable[aliases[edit]];
+            if (!editFn) {
+                throw new Error(`Encountered unrecognized edit command "${edit}".`);
             }
-            mergedChunk = automatable[edit](mergedChunk);
+            mergedChunk = editFn(mergedChunk);
         });
     }
     return mergedChunk;
