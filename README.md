@@ -188,7 +188,7 @@ The following edits (and their shortened aliases) are currently supported:
     rotate90Clockwise / rc (x,z)
             Rotate 90 deg around point (`x`,`z`) (default (0,0)).
 
-    rotate90Counterclockwise / rcc
+    rotate90Counterclockwise / rcc (x,z)
             Rotate -90 deg around point (`x`,`z`) (default (0,0)).
 
 The true power of these annotations emerges when combined with Jinja macro composition. You could, for instance, design one quadrant of your level, place it in a macro, then call the macro four times in your layout, applying rotation each time. Now you have rotational symmetry with changes to the original quadrant being instantly reflected in the others.
