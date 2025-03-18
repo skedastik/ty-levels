@@ -127,7 +127,7 @@ For a full list of commands and configuration options see the extension [README]
 
 ### B. Auto-edit annotations
 
-Most Avara levels have symmetry, either rotational or reflected. The bulk transformation VS Code commands can help with that, but you still have to apply them manually. At least, you did before. Now you can just annotate your ALF files and have the build process do it for you. Combined with macro composition, auto-edits makes symmetrical level design a breeze.
+Most Avara levels have symmetry, either rotational or reflected. The bulk transformation VS Code commands can help with that, but you still have to apply them manually. At least, you did before. Now you can just annotate your ALF files and have the build process do it for you. Combined with macro composition, annotations make symmetrical level design a breeze.
 
 Annotations are applied using a pair of comment tags:
 
@@ -160,7 +160,7 @@ Edits can also take arguments:
         <-- /auto -->
     <-- /auto -->
 
-The order of operations above is:
+The above means:
 
 1. Translate **Ramp** 5 units along X axis.
 2. Rotate **Wall and Ramp** 90 deg clockwise around point (5,0) X/Z.
