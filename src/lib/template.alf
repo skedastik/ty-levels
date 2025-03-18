@@ -2,6 +2,7 @@
 <map>
 
 {% include 'lib/boilerplate.alf' %}
+{% from 'lib/standard.alf' import WorldAxes %}
 
 <set
     cSky='"#111"'

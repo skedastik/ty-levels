@@ -1,15 +1,11 @@
 <set
-    cSky='"#bbb"'
-    cHorizon='"#ddd"'
-    cGround='"#bbb"'
+    cSky='"#111"'
+    cHorizon='"#222"'
+    cGround='"#000"'
     
-    cWall04='"#ddd"'
-    cWall05='"#fff"'
-    cWall06='"#ccc"'
+    cWall01='"#ddd"'
 
-    cGlass05='"rgba(0, 0, 128, 10%)"'
-
-    cRamp05='"#c0dbd0"'
+    cRamp01='"#666"'
 />
 
 <SkyColor color="cHorizon" color.1="cSky" />
