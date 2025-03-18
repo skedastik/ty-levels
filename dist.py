@@ -78,7 +78,9 @@ try:
         status = os.system(autoEditShellCommand)
         if status != 0:
             if status == 32512:
-                printError('Is your Node.js environment activated?')
+                printError(f'auto-edit.js exited with status {status}. Is your Node.js environment activated?')
+            else:
+                printError(f'auto-edit.js exited with status {status}.')
             exit(1)
         with open(tmpPostPath, 'r') as fh:
             alf = fh.read()
