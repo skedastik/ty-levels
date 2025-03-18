@@ -1,6 +1,7 @@
 // node auto-edit.py src_alf dest_alf
 
 const { automatable } = require('node-ty-levels');
+const process = require('process');
 const fs = require('fs');
 
 if (process.argv.length < 4) {
@@ -54,6 +55,9 @@ const aliases = {
     mx: 'mirrorX',
     mz: 'mirrorZ',
     my: 'mirrorY',
+    tx: 'translateX',
+    tz: 'translateZ',
+    ty: 'translateY',
     rcw: 'rotate90Clockwise',
     rcc: 'rotate90Counterclockwise'
 };
@@ -64,11 +68,17 @@ const renderTree = node => {
     let mergedChunk = chunks.join('\n');
     if (node.edits) {
         node.edits.forEach(edit => {
-            const editFn = automatable[edit] || automatable[aliases[edit]];
-            if (!editFn) {
-                throw new Error(`Encountered unrecognized edit command "${edit}".`);
+            const results = edit.match(/([^()\s]+)(\s*\(\s*(.*?)\s*\))?/);
+            if (!results) {
+                throw new Error(`Encountered malformed edit command "${edit}".`);
             }
-            mergedChunk = editFn(mergedChunk);
+            const fnName = results[1];
+            const arg = results[3];
+            const editFn = automatable[fnName] || automatable[aliases[fnName]];
+            if (!editFn) {
+                throw new Error(`Encountered unrecognized edit command "${fnName}".`);
+            }
+            mergedChunk = editFn(mergedChunk, arg);
         });
     }
     return mergedChunk;
@@ -76,7 +86,12 @@ const renderTree = node => {
 
 (async () => {
     console.log(`auto-edit.js -> Processing ${inFile}...`);
-    const root = await buildTreeFromInFile();
-    const renderedAlf = renderTree(root);
-    fs.writeFileSync(outFile, renderedAlf);
+    try {
+        const root = await buildTreeFromInFile();
+        const renderedAlf = renderTree(root);
+        fs.writeFileSync(outFile, renderedAlf);
+    } catch (e) {
+        console.error(`auto-edit.js -> Error: ${e.message}`);
+        process.exit(1);
+    }
 })();
