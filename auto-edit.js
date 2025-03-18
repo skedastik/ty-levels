@@ -3,6 +3,7 @@
 const tyl = require('node-ty-levels');
 const process = require('process');
 const fs = require('fs');
+const { performance } = require('perf_hooks');
 
 if (process.argv.length < 4) {
     console.error('Usage: node auto-edit.js src_file.alf out_file.alf')
@@ -84,10 +85,15 @@ const aliases = {
     rcc: 'rotate90Counterclockwise'
 };
 
+let tJoiningChunks = 0;
+let tEditFunctions = 0;
+
 const renderTree = node => {
     const chunks = [];
     node.children.forEach(child => chunks.push(child instanceof TreeNode ? renderTree(child) : child));
+    const t = performance.now();
     let mergedChunk = chunks.join('\n');
+    tJoiningChunks += (performance.now() - t);
     if (node.edits) {
         node.edits.forEach(edit => {
             const results = edit.match(/([^()\s]+)(\s*\(\s*(.*?)\s*\))?/);
@@ -100,7 +106,9 @@ const renderTree = node => {
             if (!editFn) {
                 throw new Error(`Encountered unrecognized edit command "${fnName}".`);
             }
+            const t2 = performance.now();
             mergedChunk = editFn(mergedChunk, ...args);
+            tEditFunctions += (performance.now() - t2);
         });
     }
     return mergedChunk;
@@ -109,9 +117,16 @@ const renderTree = node => {
 (async () => {
     console.log(`auto-edit.js -> Processing ${inFile}...`);
     try {
+        const t = performance.now();
         const root = await buildTreeFromInFile();
+        console.log(`auto-edit.js -> buildTreeFromInFile took ${performance.now() - t}ms.`);
+        const t2 = performance.now();
         const renderedAlf = renderTree(root);
+        console.log(`auto-edit.js -> renderTree ->           Total time joining chunks: ${tJoiningChunks}ms`);
+        console.log(`auto-edit.js -> renderTree -> Total time executing edit functions: ${tEditFunctions}ms`);
+        console.log(`auto-edit.js -> renderTree ->                             Elapsed: ${performance.now() - t2}ms.`);
         fs.writeFileSync(outFile, renderedAlf);
+        console.log(`auto-edit.js -> Done. Time elapsed: ${performance.now() - t}ms`);
     } catch (e) {
         console.error(`auto-edit.js -> Error: ${e.message}`);
         process.exit(1);

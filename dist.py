@@ -9,7 +9,7 @@
 # --crush_floats
 #       Truncate floats to fourth decimal place.
 
-import sys, os, re
+import sys, os, re, time
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from lxml import etree
 from alf_globals import alf_globals
@@ -65,7 +65,9 @@ def printError(msg):
     print(f'\033[1;35m{msg}\033[0m')
 
 try:
+    t = time.perf_counter()
     alf = env.get_template(fin).render()
+    print(f'Jinja templates rendered in {round((time.perf_counter() - t) * 100) / 100} seconds.')
 
     if re.search(r'<!--\s*auto:\s*(.+?)\s*-->', alf):
         os.system('mkdir -p tmp')
@@ -74,9 +76,13 @@ try:
         tmpPostPath = f'tmp/{alfFileName}-auto-edit'
         with open(tmpPrePath, 'w') as fh:
             fh.write(alf)
-        autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
+
         # [TODO] Consider using PyMiniRacer to avoid overhead of reloading JavaScript every time
+        autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
+        t = time.perf_counter()
         status = os.system(autoEditShellCommand)
+        print(f'auto-edit.js took {round((time.perf_counter() - t) * 100) / 100} seconds.')
+
         if status != 0:
             if status == 32512:
                 raise Exception(f'auto-edit.js exited with status {status}. Is your Node.js environment activated?')
