@@ -69,7 +69,7 @@
     {# -X side #}
         {{ Quadrant() }}
     {# +X side #}
-        <!--auto: mirrorZ-->
+        <!-- auto: mirrorZ -->
         {{ Quadrant() }}
-        <!--/auto-->
+        <!-- /auto -->
 {% endmacro %}

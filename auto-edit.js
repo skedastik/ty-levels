@@ -23,6 +23,28 @@ class TreeNode {
 const RGX_AUTO_BEGIN = /<!--\s*auto:\s*(.+?)\s*-->/;
 const RGX_AUTO_END = /<!--\s*\/auto\s*-->/;
 
+const splitEdits = editListString => {
+    const s = editListString + ',';
+    const edits = [];
+    let parens = 0;
+    for (let i = 0, tokenStart = 0; i < s.length; i++) {
+        if (s[i] === '(') {
+            parens++;
+            continue;
+        } else if (s[i] === ')') {
+            parens--;
+            continue;
+        } else if (s[i] === ',' && parens === 0) {
+            edits.push(s.substring(tokenStart, i));
+            tokenStart = i + 1;
+        }
+    }
+    if (parens !== 0) {
+        throw new Error(`Encountered malformed list of auto-edit commands "${editListString}".`);
+    }
+    return edits.map(edit => edit.trim());
+};
+
 const buildTreeFromInFile = async () => {
     const root = new TreeNode();
     let curNode = root;
@@ -30,7 +52,7 @@ const buildTreeFromInFile = async () => {
     for await (const line of f.readLines()) {
         const results = line.match(RGX_AUTO_BEGIN);
         if (results) {
-            const edits = results[1].split(',').map(edit => edit.trim());
+            const edits = splitEdits(results[1]);
             const newNode = new TreeNode(edits, curNode);
             curNode.children.push(newNode);
             curNode = newNode;

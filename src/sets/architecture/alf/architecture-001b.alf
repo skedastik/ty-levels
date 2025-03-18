@@ -17,8 +17,8 @@
 
 {# -Z side #}
 
-    <!--auto: mirrorX-->
+    <!-- auto: mirrorX -->
     {{ Half() }}
-    <!--/auto-->
+    <!-- /auto -->
 
 </map>

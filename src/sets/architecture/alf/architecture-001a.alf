@@ -15,8 +15,8 @@
 {{ WorldAxes() }}
 
 {{ Unit(x=0, z=0, y=0, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
-<!--auto: rc({{ leg*8 }})-->
+<!-- auto: rc({{ leg*8 }}, 0) -->
     {{ Unit(x=leg*8, z=0, y=rampDeltaY*1.5, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
-<!--/auto-->
+<!-- /auto -->
 
 </map>
