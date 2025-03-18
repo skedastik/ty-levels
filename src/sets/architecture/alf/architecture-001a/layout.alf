@@ -1,31 +1,31 @@
 {% from 'lib/standard.alf' import Wall, Ramp %}
 
-{% macro Quadrant(leg, pillarHeight, rampDeltaY) %}
+{% macro Quadrant(y, leg, pillarHeight, rampDeltaY) %}
     {% set pillarThick = hypotenuseFromLeg(leg) %}
 
     <Solid cx="0" cz="0" y="{{ PLANCK }}" shape="bspGroundStar" color="#fff" />
 
     <WallDoor x="{{ leg*2 }}" z="{{ leg*2 }}" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight }}" color="cWall01" midYaw="45" etag="glkwz8a" />
-    {{ Ramp(x=0, xx=leg*2, z=leg, zz=leg*3, y=0, deltaY=rampDeltaY, angle=180, thick=0, color='cRamp01', etag='i6geygu') }}
-    {{ Wall(x=0, xx=leg*2, z=0, zz=leg, y=rampDeltaY, h=0, color='cRamp01', etag='gzgpo2x') }}
-    {{ Ramp(x=leg*2, xx=leg*3, z=0, zz=leg*2, y=rampDeltaY, deltaY=rampDeltaY/2, angle=270, thick=0, color='cRamp01', etag='s7d3y6n') }}
-    {{ Wall(x=leg*3, xx=leg*5, z=0, zz=leg*2, y=rampDeltaY*1.5, h=0, color='cRamp01', etag='gzgpo2x') }}
-    {{ Ramp(x=leg*2, xx=leg*5, z=leg*2, zz=leg*3, y=rampDeltaY*1.5, deltaY=rampDeltaY/2, angle=0, thick=0, color='cRamp01', etag='s7d3y6n') }}
-    {{ Wall(x=0, xx=leg*5, z=leg*3, zz=leg*4, y=rampDeltaY*2, h=0, color='cRamp01', etag='gzgpo2x') }}
+    {{ Ramp(x=0, xx=leg*2, z=leg, zz=leg*3, y=y+0, deltaY=rampDeltaY, angle=180, thick=0, color='cRamp01', etag='i6geygu') }}
+    {{ Wall(x=0, xx=leg*2, z=0, zz=leg, y=y+rampDeltaY, h=0, color='cRamp01', etag='gzgpo2x') }}
+    {{ Ramp(x=leg*2, xx=leg*3, z=0, zz=leg*2, y=y+rampDeltaY, deltaY=rampDeltaY/2, angle=270, thick=0, color='cRamp01', etag='s7d3y6n') }}
+    {{ Wall(x=leg*3, xx=leg*5, z=0, zz=leg*2, y=y+rampDeltaY*1.5, h=0, color='cRamp01', etag='gzgpo2x') }}
+    {{ Ramp(x=leg*2, xx=leg*5, z=leg*2, zz=leg*3, y=y+rampDeltaY*1.5, deltaY=rampDeltaY/2, angle=0, thick=0, color='cRamp01', etag='s7d3y6n') }}
+    {{ Wall(x=0, xx=leg*5, z=leg*3, zz=leg*4, y=y+rampDeltaY*2, h=0, color='cRamp01', etag='gzgpo2x') }}
 {% endmacro %}
 
-{% macro Half(leg, pillarHeight, rampDeltaY) %}
-    {{ Quadrant(leg, pillarHeight, rampDeltaY) }}
+{% macro Half(y, leg, pillarHeight, rampDeltaY) %}
+    {{ Quadrant(y, leg, pillarHeight, rampDeltaY) }}
     <!--auto: mz-->
-        {{ Quadrant(leg, pillarHeight, rampDeltaY) }}
+        {{ Quadrant(y, leg, pillarHeight, rampDeltaY) }}
     <!--/auto-->
 {% endmacro %}
 
 {% macro Unit(x, z, y, leg, pillarHeight, rampDeltaY) %}
-    <!-- auto: tx({{ x }}), tz({{ z }}), ty({{ y }}) -->
-        {{ Half(leg, pillarHeight, rampDeltaY) }}
+    <!--auto: tx({{ x }}), tz({{ z }})-->
+        {{ Half(y, leg, pillarHeight, rampDeltaY) }}
         <!--auto: mx-->
-            {{ Half(leg, pillarHeight, rampDeltaY) }}
+            {{ Half(y, leg, pillarHeight, rampDeltaY) }}
         <!--/auto-->
-    <!-- /auto -->
+    <!--/auto-->
 {% endmacro %}

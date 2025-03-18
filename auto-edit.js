@@ -1,6 +1,6 @@
 // node auto-edit.py src_alf dest_alf
 
-const { automatable } = require('node-ty-levels');
+const tyl = require('node-ty-levels');
 const process = require('process');
 const fs = require('fs');
 
@@ -58,7 +58,7 @@ const aliases = {
     tx: 'translateX',
     tz: 'translateZ',
     ty: 'translateY',
-    rcw: 'rotate90Clockwise',
+    rc: 'rotate90Clockwise',
     rcc: 'rotate90Counterclockwise'
 };
 
@@ -73,12 +73,12 @@ const renderTree = node => {
                 throw new Error(`Encountered malformed edit command "${edit}".`);
             }
             const fnName = results[1];
-            const arg = results[3];
-            const editFn = automatable[fnName] || automatable[aliases[fnName]];
+            const args = results[3] ? results[3].split(',') : [];
+            const editFn = tyl[fnName] || tyl[aliases[fnName]];
             if (!editFn) {
                 throw new Error(`Encountered unrecognized edit command "${fnName}".`);
             }
-            mergedChunk = editFn(mergedChunk, arg);
+            mergedChunk = editFn(mergedChunk, ...args);
         });
     }
     return mergedChunk;

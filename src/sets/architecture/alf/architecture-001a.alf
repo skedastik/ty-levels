@@ -8,12 +8,15 @@
 
 {% set leg = 6 %}
 {% set pillarHeight = 28 %}
-{% set rampDeltaY = 4 %}
+{% set rampDeltaY = 3 %}
 
 <Incarnator cx="0" cz="0" y="4" angle="180" />
 
 {{ WorldAxes() }}
 
 {{ Unit(x=0, z=0, y=0, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
+<!--auto: rc({{ leg*8 }})-->
+    {{ Unit(x=leg*8, z=0, y=rampDeltaY*1.5, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
+<!--/auto-->
 
 </map>
