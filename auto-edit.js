@@ -114,19 +114,22 @@ const renderTree = node => {
     return mergedChunk;
 };
 
+const roundTwoDecimals = x => Math.round(x * 100) / 100;
+
 (async () => {
     console.log(`auto-edit.js -> Processing ${inFile}...`);
     try {
         const t = performance.now();
         const root = await buildTreeFromInFile();
-        console.log(`auto-edit.js -> buildTreeFromInFile took ${performance.now() - t}ms.`);
+        console.log(`auto-edit.js -> buildTreeFromInFile took ${roundTwoDecimals(performance.now() - t)}ms.`);
         const t2 = performance.now();
         const renderedAlf = renderTree(root);
-        console.log(`auto-edit.js -> renderTree ->           Total time joining chunks: ${tJoiningChunks}ms`);
-        console.log(`auto-edit.js -> renderTree -> Total time executing edit functions: ${tEditFunctions}ms`);
-        console.log(`auto-edit.js -> renderTree ->                             Elapsed: ${performance.now() - t2}ms.`);
+        console.log(`auto-edit.js -> renderTree ->           Total time joining chunks: ${roundTwoDecimals(tJoiningChunks)}ms`);
+        console.log(`auto-edit.js -> renderTree -> Total time executing edit functions: ${roundTwoDecimals(tEditFunctions)}ms`);
+        console.log(`auto-edit.js -> renderTree ->        Total time elapsed in mathjs: ${roundTwoDecimals(tyl.tMathJs)}ms`);
+        console.log(`auto-edit.js -> renderTree ->                             Elapsed: ${roundTwoDecimals(performance.now() - t2)}ms.`);
         fs.writeFileSync(outFile, renderedAlf);
-        console.log(`auto-edit.js -> Done. Time elapsed: ${performance.now() - t}ms`);
+        console.log(`auto-edit.js -> Done. Time elapsed: ${roundTwoDecimals(performance.now() - t)}ms`);
     } catch (e) {
         console.error(`auto-edit.js -> Error: ${e.message}`);
         process.exit(1);
