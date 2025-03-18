@@ -1,0 +1,19 @@
+<!-- autotag -->
+<map>
+
+{% include 'lib/boilerplate.alf' %}
+
+<set
+    cSky='"#111"'
+    cHorizon='"#222"'
+    cGround='"#000"'
+/>
+
+<SkyColor color="cHorizon" color.1="cSky" />
+<GroundColor color="cGround" />
+
+<Incarnator cx="-20" cz="-20" y="0" angle="135" />
+
+{{ WorldAxes() }}
+
+</map>

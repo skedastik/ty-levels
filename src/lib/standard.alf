@@ -224,6 +224,10 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
     />
 {% endmacro %}
 
+{% macro WorldAxes() %}
+    <Hologram shape="3000" cx="0" cz="0" y="0" />
+{% endmacro %}
+
 {# ------------------------- internal macros below -------------------------- #}
 
 {% macro _validateDimensionArgs(w=None, d=None, h=None, xx=None, zz=None, yy=None, isWall=True) %}
