@@ -131,35 +131,67 @@ Most Avara levels have symmetry, either rotational or reflected. The bulk transf
 
 Annotations are applied using a pair of comment tags:
 
-    <!--auto: edit1, edit2, edit3, ..., editN-->
+    <!-- auto: edit1, edit2, edit3, ..., editN -->
         <Wall />
         <Ramp />
         ...
-    <--/auto-->
-
-The following edits (and their shortened aliases) are currently supported:
-
-- mirrorX / mx
-- mirrorZ / mz
-- mirrorY / my
-- rotate90Clockwise / rc
-- rotate90Counterclockwise / rcc
+    <-- /auto -->
 
 Edits can be infinitely chained and nested. They are applied from innermost to outermost, left to right. Take the following example:
 
-    <!--auto: rotate90Clockwise, rotate90Clockwise-->
+    <!-- auto: rotate90Clockwise, rotate90Clockwise -->
         <Wall ... />
-        <!--auto: mirrorX-->
+        <!-- auto: mirrorX -->
             <Ramp >
-        <--/auto-->
-    <--/auto-->
+        <-- /auto -->
+    <-- /auto -->
 
 The order of operations above is:
 
 1. Mirror **Ramp** across X axis.
-2. Rotate **Wall and Ramp** 90 degrees clockwise twice.
+2. Rotate **Wall and Ramp** 90 deg clockwise twice around origin (0,0) X/Z.
 
-The true power of auto-edits emerge when combined with Jinja macro composition.You could, for instance, design one quadrant of your level, place it in a macro, then call the macro four times in your layout, applying rotation each time. Now you have rotational symmetry with changes to the original quadrant being instantly reflected in the others.
+Edits can also take arguments:
+
+    <!-- auto: rotate90Clockwise(5,0) -->
+        <Wall ... />
+        <!-- auto: translateX(5) -->
+            <Ramp >
+        <-- /auto -->
+    <-- /auto -->
+
+The order of operations above is:
+
+1. Translate **Ramp** 5 units along X axis.
+2. Rotate **Wall and Ramp** 90 deg clockwise around point (5,0) X/Z.
+
+The following edits (and their shortened aliases) are currently supported:
+
+    translateX / tx (x)
+            Translate by `x` along X axis.
+
+    translateZ / tz (z)
+            Translate by `z` along Z axis.
+
+    translateY / ty (y)
+            Translate by `y` along Y axis.
+
+    mirrorX / mx (z)
+            Reflect across X axis positioned at `z` (default 0).
+
+    mirrorZ / mz (x)
+            Reflect across Z axis positioned at `x` (default 0). 
+
+    mirrorY / my (y)
+            Reflect across Y plane positioned at `y` (default 0).
+
+    rotate90Clockwise / rc (x,z)
+            Rotate 90 deg around point (`x`,`z`) (default (0,0)).
+
+    rotate90Counterclockwise / rcc
+            Rotate -90 deg around point (`x`,`z`) (default (0,0)).
+
+The true power of these annotations emerges when combined with Jinja macro composition. You could, for instance, design one quadrant of your level, place it in a macro, then call the macro four times in your layout, applying rotation each time. Now you have rotational symmetry with changes to the original quadrant being instantly reflected in the others.
 
 See [architecture-001a.alf](./src/sets/architecture/alf/architecture-001a.alf) for a concrete example.
 
