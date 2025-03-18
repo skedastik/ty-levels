@@ -75,11 +75,12 @@ try:
         with open(tmpPrePath, 'w') as fh:
             fh.write(alf)
         autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
+        # [TODO] Consider using PyMiniRacer to avoid overhead of reloading JavaScript every time
         status = os.system(autoEditShellCommand)
         if status != 0:
             if status == 32512:
-                printError('Is your Node.js environment activated?')
-            exit(1)
+                raise Exception(f'auto-edit.js exited with status {status}. Is your Node.js environment activated?')
+            raise Exception(f'auto-edit.js exited with status {status}.')
         with open(tmpPostPath, 'r') as fh:
             alf = fh.read()
 

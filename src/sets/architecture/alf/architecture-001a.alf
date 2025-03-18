@@ -2,23 +2,21 @@
 <map>
 
 {% include 'lib/boilerplate.alf' %}
+{% from 'lib/standard.alf' import WorldAxes %}
 {% include '../common/colors.alf' %}
-{% from './architecture-001a/layout.alf' import Center, Half %}
+{% from './architecture-001a/layout.alf' import Quadrant, Half, Unit %}
 
-<Incarnator cx="0" cz="-20" y="0" angle="180" />
+{% set leg = 6 %}
+{% set pillarHeight = 28 %}
+{% set rampDeltaY = 3 %}
 
-{# center #}
+<Incarnator cx="0" cz="0" y="4" angle="180" />
 
-    {{ Center() }}
+{{ WorldAxes() }}
 
-{# +Z side #}
-
-    {{ Half() }}
-
-{# -Z side #}
-
-    <!--auto: mirrorX-->
-    {{ Half() }}
-    <!--/auto-->
+{{ Unit(x=0, z=0, y=0, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
+<!--auto: rc({{ leg*8 }})-->
+    {{ Unit(x=leg*8, z=0, y=rampDeltaY*1.5, leg=leg, pillarHeight=pillarHeight, rampDeltaY=rampDeltaY) }}
+<!--/auto-->
 
 </map>

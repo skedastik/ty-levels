@@ -4,6 +4,14 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.18]
+
+### Added
+
+- [Auto-edit annotations](./README.md#b-auto-edit-annotations)
+    - Support arguments for auto-edit annotations.
+    - Support translation.
+
 ## [2025.03.15]
 
 ### Added
