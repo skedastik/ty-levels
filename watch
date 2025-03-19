@@ -4,6 +4,8 @@
 # installed.
 #
 # Pass -l to enable live reloading.
+#
+# Additional args will be passed to `make` as OPTS var.
 
 opts=$*
 
@@ -14,7 +16,7 @@ add_background_pid() {
 }
 
 kill_background_processes() {
-    echo "Cleaning up..."
+    echo "watch -> Cleaning up background processes..."
     for pid in "${background_pids[@]}"; do
       kill "$pid" 2>/dev/null
     done
@@ -40,21 +42,24 @@ cancel_and_run() {
         fi
         # build and reload
         { \
-            make OPTS="${opts}" && \
-            echo 'Requesting reload from Avara...' && \
+            make OPTS="${opts} --use-auto-edit-daemon" && \
+            echo 'watch -> Requesting reload from Avara...' && \
             python live_reload.py && \
-            echo 'Reload request acknowledged.'
+            echo 'watch -> Reload request acknowledged.'
         } &
         local command_pid=$!
     done
 }
 
+node auto-edit.js $opts --daemon &
+add_background_pid $!
+
 if  [[ live_reload -eq 1 ]]; then
-    echo 'Watching for changes to source files (live reload features enabled)...'
+    echo 'watch -> Watching for changes to source files (live reload features enabled)...'
     python dispatcher.py &
     add_background_pid $!
     fswatch -o --no-defer -l 0.1 src alf_globals.py | cancel_and_run
 else
-    echo 'Watching for changes to source files...'
+    echo 'watch -> Watching for changes to source files...'
     fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='${opts}'"
 fi
