@@ -12,6 +12,8 @@
 #       Strip etags.
 # --crush_floats
 #       Truncate floats to fourth decimal place.
+# --debug
+#       Set DEBUG global to true in ALF template environment
 # --use-auto-edit-daemon
 #       Use auto-edit daemon instead of running auto-edit.js directly. The
 #       daemon must be running already.
@@ -81,9 +83,7 @@ def autoEditViaFiles(alf):
     with open(tmpPrePath, 'w') as fh:
         fh.write(alf)
     
-    autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
-    opts = '' if DO_SIMPLIFY else 'NO_SIMPLIFY=true'
-    autoEditShellCommand = f'{opts} node auto-edit.js {tmpPrePath} {tmpPostPath}'
+    autoEditShellCommand = f'node auto-edit.js {' '.join(args[1:-2])} {tmpPrePath} {tmpPostPath}'
     status = os.system(autoEditShellCommand)
     if status != 0:
         if status == 32512:

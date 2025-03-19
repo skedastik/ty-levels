@@ -1,9 +1,27 @@
-// node auto-edit.py src_alf dest_alf
+// node auto-edit.py [options] [src_alf dest_alf]
+//
+// Apply auto-edit annotations. Can be run as a command or a daemon. If run as a
+// command, annotations in src_alf are applied and written to dest_alf.
+// Otherwise processing is performed via Unix domain sockets.
+//
+// The following options are supported:
+//
+// --simplify
+//       Simplify algebraic expressions when applying auto-edit annotations.
+// --daemon
+//       Run as a daemon.
 
-const tyl = require('node-ty-levels');
 const process = require('process');
 const fs = require('fs');
 const net = require('net');
+
+const DAEMON_MODE = process.argv.includes('--daemon');
+const DO_SIMPLIFY = process.argv.includes('--simplify');
+
+// node-ty-levels reads NO_SIMPLIFY env var, so set it before importing
+process.env['NO_SIMPLIFY'] = !DO_SIMPLIFY;
+
+const tyl = require('node-ty-levels');
 
 class EditTreeNode {
     constructor(edits, parent) {
@@ -90,9 +108,9 @@ const aliases = {
     rcc: 'rotate90Counterclockwise'
 };
 
-const renderTree = node => {
+const renderEditTree = node => {
     const chunks = [];
-    node.children.forEach(child => chunks.push(child instanceof EditTreeNode ? renderTree(child) : child));
+    node.children.forEach(child => chunks.push(child instanceof EditTreeNode ? renderEditTree(child) : child));
     let mergedChunk = chunks.join('\n');
     if (node.edits) {
         node.edits.forEach(edit => {
@@ -112,6 +130,12 @@ const renderTree = node => {
     return mergedChunk;
 };
 
+const renderEditTreeWithFinalSimplify = node => {
+    const alf = renderEditTree(node);
+    // Apply one final simplification pass to catch attributes unaffected by edits.
+    return DO_SIMPLIFY ? tyl.simplify(alf) : alf;
+};
+
 class AutoEditServer {
     static SOCKET_PATH = 'var/auto-edit.sock';
     static EOF_STRING = '<<<EOF>>>';
@@ -126,7 +150,7 @@ class AutoEditServer {
         }
 
         this.server = net.createServer(client => {
-            console.log('auto-edit.js -> Client connected. Processing stream...');
+            console.log('auto-edit.js -> Processing incoming ALF stream...');
             
             let buffer = [];
         
@@ -154,7 +178,7 @@ class AutoEditServer {
                 if (lineStart < buffer.length) {
                     builder.readLine(buffer.substring(lineStart, buffer.length));
                 }
-                client.write(renderTree(builder.eof()) + AutoEditServer.EOF_STRING);
+                client.write(renderEditTreeWithFinalSimplify(builder.eof()) + AutoEditServer.EOF_STRING);
             });
         });
 
@@ -174,27 +198,24 @@ class AutoEditServer {
     }
 }
 
-if (process.env.DAEMON_MODE) {
+if (DAEMON_MODE) {
     fs.mkdirSync('var', { recursive: true });
     const server = new AutoEditServer();
     server.start();
 } else {
     if (process.argv.length < 4) {
-        console.error('Usage: node auto-edit.js src_file.alf out_file.alf')
+        console.error('Usage: node auto-edit.js [options] src_file.alf out_file.alf')
         process.exit(1);
     }
     
-    const inFile = process.argv[2];
-    const outFile = process.argv[3];
+    const inFile = process.argv[process.argv.length - 2];
+    const outFile = process.argv[process.argv.length - 1];
 
     (async () => {
         console.log(`auto-edit.js -> Processing ${inFile}...`);
         try {
             const root = await buildEditTreeFromFile(inFile);
-            let renderedAlf = renderTree(root);
-            if (!process.env.NO_SIMPLIFY) {
-                renderedAlf = tyl.simplify(renderedAlf);
-            }
+            let renderedAlf = renderEditTreeWithFinalSimplify(root);
             fs.writeFileSync(outFile, renderedAlf);
         } catch (e) {
             console.error(`auto-edit.js -> Error: ${e.message}`);

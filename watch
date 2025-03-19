@@ -4,6 +4,8 @@
 # installed.
 #
 # Pass -l to enable live reloading.
+#
+# Additional args will be passed to `make` as OPTS var.
 
 opts=$*
 
@@ -14,7 +16,7 @@ add_background_pid() {
 }
 
 kill_background_processes() {
-    echo "watch -> Cleaning up background process..."
+    echo "watch -> Cleaning up background processes..."
     for pid in "${background_pids[@]}"; do
       kill "$pid" 2>/dev/null
     done
@@ -49,8 +51,7 @@ cancel_and_run() {
     done
 }
 
-# [TODO] Use args instead of env vars
-DAEMON_MODE=true NO_SIMPLIFY=true node auto-edit.js &
+node auto-edit.js $opts --daemon &
 add_background_pid $!
 
 if  [[ live_reload -eq 1 ]]; then
