@@ -12,6 +12,9 @@
 #       Strip etags.
 # --crush_floats
 #       Truncate floats to fourth decimal place.
+# --use-auto-edit-daemon
+#       Use auto-edit daemon instead of running auto-edit.js directly. The
+#       daemon must be running already.
 
 import sys, os, re, socket
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -30,7 +33,7 @@ DEBUG = '--debug' in args
 fin = args[len(args) - 2]
 fout = args[len(args) - 1]
 
-print(f'Rendering {fout}...')
+print(f'dist.py -> Rendering {fout}...')
 
 class RelativeEnvironment(Environment):
     """Override join_path() to enable relative template paths."""
@@ -71,6 +74,7 @@ def printError(msg):
     print(f'\033[1;35m{msg}\033[0m')
 
 def autoEditViaFiles(alf):
+    os.system('mkdir -p tmp')
     alfFileName = os.path.basename(fin)
     tmpPrePath = f'tmp/{alfFileName}'
     tmpPostPath = f'tmp/{alfFileName}-auto-edit'
@@ -88,12 +92,27 @@ def autoEditViaFiles(alf):
     with open(tmpPostPath, 'r') as fh:
         return fh.read()
 
+SOCKET_PATH = 'var/auto-edit.sock'
+EOF_STRING = '<<<EOF>>>'
+
 def autoEditViaSocket(alf: str):
-    path = "tmp/auto-edit.sock"
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect(path)
-        sock.sendall(alf.encode('utf-8'))
+        sock.connect(SOCKET_PATH)
+        sock.sendall((alf + EOF_STRING).encode('utf-8'))
+        response = []
+        boundaryChars = ''
+        while True:
+            chunk = sock.recv(1024).decode()
+            if not chunk:
+                raise Exception('auto-edit daemon terminated connection prematurely.')
+            response.append(chunk)
+            # EOF string could fall on chunk boundary
+            if EOF_STRING in chunk or EOF_STRING in boundaryChars + chunk[0:len(EOF_STRING) - 1]:
+                break
+            boundaryChars = chunk[1 - len(EOF_STRING):]
+        response = ''.join(response)
+        return response[0 : len(response) - len(EOF_STRING)]
     finally:
         sock.close()
 
@@ -101,7 +120,6 @@ try:
     alf = env.get_template(fin).render()
 
     if re.search(r'<!--\s*auto:\s*(.+?)\s*-->', alf):
-        os.system('mkdir -p tmp')
         alf = autoEditViaSocket(alf) if USE_AUTO_EDIT_DAEMON else autoEditViaFiles(alf)
 
     parser = etree.XMLParser(remove_blank_text=DO_TRIM, remove_comments=DO_TRIM)

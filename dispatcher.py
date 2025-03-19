@@ -9,12 +9,12 @@ port_listen = 19569
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((ip, port_listen))
 
-print(f'Listening for messages from Avara on :{port_listen}...')
+print(f'dispatcher.py -> Listening for messages from Avara on :{port_listen}...')
 
 def openVsCodeUri(command, params):
     query = urlencode(params)
     uri = f'vscode://skedastik.ty-levels/{command}?{query}'
-    print(f'Opening "{uri}"...')
+    print(f'dispatcher.py -> Opening "{uri}"...')
     os.system(f'open "{uri}"')
 
 def commandFind(etag):
@@ -23,13 +23,13 @@ def commandFind(etag):
 def commandSetParamOnEtag(argString: str):
     args = argString.split(',')
     if len(args) < 2:
-        print('Expected at least two arguments for "setParamOnEtag" command.')
+        print('dispatcher.py -> Expected at least two arguments for "setParamOnEtag" command.')
         return
     params = {}
     for arg in args:
         tokens = arg.split('=', 1)
         if (len(tokens) != 2):
-            print(f'Incorrectly formatted arg for "setParamOnEtag": {arg}')
+            print(f'dispatcher.py -> Incorrectly formatted arg for "setParamOnEtag": {arg}')
         param = tokens[0]
         value = tokens[1]
         params[param] = value
@@ -41,11 +41,11 @@ dispatchTable = {
 }
 
 def dispatch(message: str):
-    print(f'Received "{message}".')
+    print(f'dispatcher.py -> Received "{message}".')
     tokens = message.split(' ', 1)
     command = tokens[0]
     if command not in dispatchTable:
-        print(f'Ignoring unrecognized command "{command}".')
+        print(f'dispatcher.py -> Ignoring unrecognized command "{command}".')
         return
     argString = tokens[1] if len(tokens) > 1 else ''
     dispatchTable[command](argString)
@@ -55,5 +55,5 @@ try:
         dispatch(sock.recv(64).decode('utf-8'))
 except:
     sock.close()
-    print('Socket closed.')
+    print('dispatcher.py -> Socket closed.')
     raise

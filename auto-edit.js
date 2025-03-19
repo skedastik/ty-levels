@@ -52,8 +52,7 @@ class EditTreeBuilder {
             this.curNode.children.push(newNode);
             this.curNode = newNode;
             return;
-        }
-        if (EditTreeBuilder.RGX_AUTO_END.test(line)) {
+        } else if (EditTreeBuilder.RGX_AUTO_END.test(line)) {
             if (!this.curNode.parent) {
                 throw new Error('Encountered auto-edit end tag without matching start tag.');
             }
@@ -63,7 +62,7 @@ class EditTreeBuilder {
         this.curNode.children.push(line);
     }
 
-    finish() {
+    eof() {
         if (this.curNode !== this.root) {
             throw new Error('Expected auto-edit end tag, but reached end of document.');
         }
@@ -72,34 +71,12 @@ class EditTreeBuilder {
 }
 
 const buildEditTreeFromFile = async inFile => {
-    // const root = new EditTreeNode();
-    // let curNode = root;
     const builder = new EditTreeBuilder();
     const f = await fs.promises.open(inFile);
     for await (const line of f.readLines()) {
         builder.readLine(line);
-        // const results = line.match(RGX_AUTO_BEGIN);
-        // if (results) {
-        //     const edits = splitEdits(results[1]);
-        //     const newNode = new EditTreeNode(edits, curNode);
-        //     curNode.children.push(newNode);
-        //     curNode = newNode;
-        //     continue;
-        // }
-        // if (RGX_AUTO_END.test(line)) {
-        //     if (!curNode.parent) {
-        //         throw new Error('Encountered auto-edit end tag without matching start tag.');
-        //     }
-        //     curNode = curNode.parent;
-        //     continue;
-        // }
-        // curNode.children.push(line);
     }
-    return builder.finish();
-    // if (curNode !== root) {
-    //     throw new Error('Expected auto-edit end tag, but reached end of document.');
-    // }
-    // return root;
+    return builder.eof();
 };
 
 const aliases = {
@@ -135,40 +112,72 @@ const renderTree = node => {
     return mergedChunk;
 };
 
-if (process.env.AUTO_EDIT_DAEMONIZE) {
-    console.log(`auto-edit.js -> Running in daemon mode...`);
+class AutoEditServer {
+    static SOCKET_PATH = 'var/auto-edit.sock';
+    static EOF_STRING = '<<<EOF>>>';
 
-    const SOCKET_PATH = 'tmp/auto-edit.sock';
-    if (fs.existsSync(SOCKET_PATH)) {
-        fs.unlinkSync(SOCKET_PATH);
+    start() {
+        if (this.server) {
+            return;
+        }
+
+        if (fs.existsSync(AutoEditServer.SOCKET_PATH)) {
+            fs.unlinkSync(AutoEditServer.SOCKET_PATH);
+        }
+
+        this.server = net.createServer(client => {
+            console.log('auto-edit.js -> Client connected. Processing stream...');
+            
+            let buffer = [];
+        
+            client.on('data', data => {
+                data = data.toString('utf-8');
+                let eof = false;
+                const eofIndex = data.indexOf(AutoEditServer.EOF_STRING);
+                if (eofIndex >= 0) {
+                    data = data.substring(0, eofIndex);
+                    eof = true;
+                }
+                buffer.push(data);
+                if (!eof) {
+                    return;
+                }
+                buffer = buffer.join('');
+                const builder = new EditTreeBuilder();
+                let lineStart = 0;
+                for (let i = 0; i < buffer.length; i++) {
+                    if (buffer[i] === '\n') {
+                        builder.readLine(buffer.substring(lineStart, i));
+                        lineStart = i + 1;
+                    }
+                }
+                if (lineStart < buffer.length) {
+                    builder.readLine(buffer.substring(lineStart, buffer.length));
+                }
+                client.write(renderTree(builder.eof()) + AutoEditServer.EOF_STRING);
+            });
+        });
+
+        this.server.listen(AutoEditServer.SOCKET_PATH, () => {
+            console.log(`auto-edit.js -> Daemon listening on ${AutoEditServer.SOCKET_PATH}...`);
+        });
+    
+        process.on('SIGINT', () => {
+            console.log('auto-edit.js -> Received SIGINT. Shutting down...');
+            this.server.close(() => {
+                if (fs.existsSync(AutoEditServer.SOCKET_PATH)) {
+                    fs.unlinkSync(AutoEditServer.SOCKET_PATH);
+                }
+                process.exit(0);
+            });
+        });
     }
+}
 
-    let buffer = [];
-
-    const server = net.createServer(client => {
-        console.log('auto-edit.js -> Client connected.');
-    
-        client.on('data', (data) => {
-            buffer.push(data);
-        });
-    
-        client.on('end', () => {
-            console.log('auto-edit.js -> Client disconnected. Processing...');
-            // TODO
-        });
-    });
-
-    server.listen(SOCKET_PATH, () => {
-        console.log(`Daemon listening on ${SOCKET_PATH}`);
-    });
-
-    process.on('SIGINT', () => {
-        console.log('auto-edit.js -> Received SIGINT. Shutting down...');
-        server.close(() => {
-            fs.unlinkSync(SOCKET_PATH);
-            process.exit(0);
-        });
-    });
+if (process.env.DAEMON_MODE) {
+    fs.mkdirSync('var', { recursive: true });
+    const server = new AutoEditServer();
+    server.start();
 } else {
     if (process.argv.length < 4) {
         console.error('Usage: node auto-edit.js src_file.alf out_file.alf')
