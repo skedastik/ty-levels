@@ -119,20 +119,22 @@ const roundTwoDecimals = x => Math.round(x * 100) / 100;
 (async () => {
     console.log(`auto-edit.js -> Processing ${inFile}...`);
     try {
-        const t = performance.now();
         const root = await buildTreeFromInFile();
-        console.log(`auto-edit.js -> buildTreeFromInFile took ${roundTwoDecimals(performance.now() - t)}ms.`);
-        const t2 = performance.now();
+        
+        const t = performance.now();
         let renderedAlf = renderTree(root);
         if (!process.env.NO_SIMPLIFY) {
             renderedAlf = tyl.simplify(renderedAlf);
         }
         console.log(`auto-edit.js -> renderTree ->           Joining chunks: ${roundTwoDecimals(tJoiningChunks)}ms`);
+
         console.log(`auto-edit.js -> renderTree -> Executing edit functions: ${roundTwoDecimals(tEditFunctions)}ms`);
         console.log(`auto-edit.js -> renderTree ->          mathjs.simplify: ${roundTwoDecimals(tyl.tMathJs.simplifyElapsed)}ms`);
         console.log(`auto-edit.js -> renderTree ->    mathjs.simplify calls: ${roundTwoDecimals(tyl.tMathJs.simplifyInvocations)}`);
-        console.log(`auto-edit.js -> renderTree ->       Total time elapsed: ${roundTwoDecimals(performance.now() - t2)}ms`);
+        console.log(`auto-edit.js -> renderTree ->       Total time elapsed: ${roundTwoDecimals(performance.now() - t)}ms`);
+
         fs.writeFileSync(outFile, renderedAlf);
+        
         console.log(`auto-edit.js -> Done. Time elapsed: ${roundTwoDecimals(performance.now() - t)}ms`);
     } catch (e) {
         console.error(`auto-edit.js -> Error: ${e.message}`);
