@@ -14,14 +14,14 @@
 const process = require('process');
 const fs = require('fs');
 const net = require('net');
+const { TransformEdit } = require('node-ty-levels');
 
 const DAEMON_MODE = process.argv.includes('--daemon');
 const DO_SIMPLIFY = process.argv.includes('--simplify');
 
-// node-ty-levels reads NO_SIMPLIFY env var, so set it before importing
-process.env['NO_SIMPLIFY'] = !DO_SIMPLIFY;
-
-const tyl = require('node-ty-levels');
+const transformEdit = new TransformEdit({
+    simplifyExpressions: DO_SIMPLIFY
+});
 
 class EditTreeNode {
     constructor(edits, parent) {
@@ -120,7 +120,7 @@ const renderEditTree = node => {
             }
             const fnName = results[1];
             const args = results[3] ? results[3].split(',') : [];
-            const editFn = tyl[fnName] || tyl[aliases[fnName]];
+            const editFn = transformEdit[fnName] || transformEdit[aliases[fnName]];
             if (!editFn) {
                 throw new Error(`Encountered unrecognized edit command "${fnName}".`);
             }
@@ -130,10 +130,10 @@ const renderEditTree = node => {
     return mergedChunk;
 };
 
-const renderEditTreeWithFinalSimplify = node => {
+const renderEditTreeAfterFinalSimplify = node => {
     const alf = renderEditTree(node);
-    // Apply one final simplification pass to catch attributes unaffected by edits.
-    return DO_SIMPLIFY ? tyl.simplify(alf) : alf;
+    // Apply one final simplification pass to catch attributes unaffected by auto-edits.
+    return DO_SIMPLIFY ? transformEdit.simplify(alf) : alf;
 };
 
 class AutoEditServer {
@@ -178,7 +178,7 @@ class AutoEditServer {
                 if (lineStart < buffer.length) {
                     builder.readLine(buffer.substring(lineStart, buffer.length));
                 }
-                client.write(renderEditTreeWithFinalSimplify(builder.eof()) + AutoEditServer.EOF_STRING);
+                client.write(renderEditTreeAfterFinalSimplify(builder.eof()) + AutoEditServer.EOF_STRING);
             });
         });
 
@@ -215,7 +215,7 @@ if (DAEMON_MODE) {
         console.log(`auto-edit.js -> Processing ${inFile}...`);
         try {
             const root = await buildEditTreeFromFile(inFile);
-            let renderedAlf = renderEditTreeWithFinalSimplify(root);
+            let renderedAlf = renderEditTreeAfterFinalSimplify(root);
             fs.writeFileSync(outFile, renderedAlf);
         } catch (e) {
             console.error(`auto-edit.js -> Error: ${e.message}`);
