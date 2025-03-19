@@ -154,20 +154,20 @@ class AutoEditServer {
             console.log('auto-edit.js -> Processing incoming ALF stream...');
             
             let buffer = [];
+            let boundaryChars = '';
         
             client.on('data', data => {
                 data = data.toString('utf-8');
-                let eof = false;
-                const eofIndex = data.indexOf(AutoEditServer.EOF_STRING);
-                if (eofIndex >= 0) {
-                    data = data.substring(0, eofIndex);
-                    eof = true;
-                }
                 buffer.push(data);
-                if (!eof) {
+                if (
+                    data.indexOf(AutoEditServer.EOF_STRING) === -1
+                    && (boundaryChars + data.substring(0, AutoEditServer.EOF_STRING.length - 1)).indexOf(AutoEditServer.EOF_STRING) === -1
+                ) {
+                    boundaryChars = data.substring(data.length - AutoEditServer.EOF_STRING.length + 1, data.length);
                     return;
                 }
                 buffer = buffer.join('');
+                buffer = buffer.substring(0, buffer.length - AutoEditServer.EOF_STRING.length);
                 const builder = new EditTreeBuilder();
                 let lineStart = 0;
                 for (let i = 0; i < buffer.length; i++) {
