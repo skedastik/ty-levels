@@ -70,7 +70,8 @@ class EditTreeBuilder {
             this.curNode.children.push(newNode);
             this.curNode = newNode;
             return;
-        } else if (EditTreeBuilder.RGX_AUTO_END.test(line)) {
+        }
+        if (EditTreeBuilder.RGX_AUTO_END.test(line)) {
             if (!this.curNode.parent) {
                 throw new Error('Encountered auto-edit end tag without matching start tag.');
             }
