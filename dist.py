@@ -1,9 +1,13 @@
-# python dist.py [--no-trim] src_alf dest_alf
+# python dist.py [options] src_alf dest_alf
 #
 # Render ALF template src_alf to distributable ALF file dest_alf.
 #
-# --no-trim
-#       Don't remove comments or whitespace.
+# The following options are supported:
+#
+# --trim
+#       Remove comments and whitespace.
+# --simplify
+#       Simplify algebraic expressions when applying auto-edit annotations.
 # --strip-etags
 #       Strip etags.
 # --crush_floats
@@ -16,9 +20,10 @@ from alf_globals import alf_globals
 
 args = sys.argv
 
-DO_TRIM = '--no-trim' not in args
+DO_TRIM = '--trim' in args
 DO_STRIP_ETAGS = '--strip-etags' in args
 DO_CRUSH_FLOATS = '--crush-floats' in args
+DO_SIMPLIFY = '--simplify' in args
 DEBUG = '--debug' in args
 
 fin = args[len(args) - 2]
@@ -78,7 +83,8 @@ try:
             fh.write(alf)
 
         # [TODO] Consider using PyMiniRacer to avoid overhead of reloading JavaScript every time
-        autoEditShellCommand = f'node auto-edit.js {tmpPrePath} {tmpPostPath}'
+        opts = '' if DO_SIMPLIFY else 'NO_SIMPLIFY=true'
+        autoEditShellCommand = f'{opts} node auto-edit.js {tmpPrePath} {tmpPostPath}'
         t = time.perf_counter()
         status = os.system(autoEditShellCommand)
         print(f'auto-edit.js took {round((time.perf_counter() - t) * 100) / 100} seconds.')

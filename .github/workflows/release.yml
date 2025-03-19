@@ -16,7 +16,7 @@ jobs:
         run: |
           git config --global --add safe.directory /github/workspace
           pip install -r requirements.txt
-          make bundle OPTS='--strip-etags --crush-floats'
+          make bundle OPTS='--trim --simplify --strip-etags --crush-floats'
       
       - name: Release
         uses: softprops/action-gh-release@v2

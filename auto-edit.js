@@ -123,7 +123,10 @@ const roundTwoDecimals = x => Math.round(x * 100) / 100;
         const root = await buildTreeFromInFile();
         console.log(`auto-edit.js -> buildTreeFromInFile took ${roundTwoDecimals(performance.now() - t)}ms.`);
         const t2 = performance.now();
-        const renderedAlf = renderTree(root);
+        let renderedAlf = renderTree(root);
+        if (!process.env.NO_SIMPLIFY) {
+            renderedAlf = tyl.simplify(renderedAlf);
+        }
         console.log(`auto-edit.js -> renderTree ->           Joining chunks: ${roundTwoDecimals(tJoiningChunks)}ms`);
         console.log(`auto-edit.js -> renderTree -> Executing edit functions: ${roundTwoDecimals(tEditFunctions)}ms`);
         console.log(`auto-edit.js -> renderTree ->          mathjs.simplify: ${roundTwoDecimals(tyl.tMathJs.simplifyElapsed)}ms`);
