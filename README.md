@@ -40,8 +40,6 @@ Now `make` will automatically run in response to source file changes.
 
 #### Options
 
-    --no-trim
-            Disable automatic trimming of unnecessary whitespace and comments from ALF files.
     --debug
             Set `DEBUG` global to `True` across all ALF templates.
 

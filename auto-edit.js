@@ -110,7 +110,10 @@ const renderTree = node => {
     console.log(`auto-edit.js -> Processing ${inFile}...`);
     try {
         const root = await buildTreeFromInFile();
-        const renderedAlf = renderTree(root);
+        let renderedAlf = renderTree(root);
+        if (!process.env.NO_SIMPLIFY) {
+            renderedAlf = tyl.simplify(renderedAlf);
+        }
         fs.writeFileSync(outFile, renderedAlf);
     } catch (e) {
         console.error(`auto-edit.js -> Error: ${e.message}`);
