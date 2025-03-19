@@ -54,12 +54,12 @@ cancel_and_run() {
 node auto-edit.js $opts --daemon &
 add_background_pid $!
 
+echo 'watch -> Watching for changes to source files...'
+
 if  [[ live_reload -eq 1 ]]; then
-    echo 'watch -> Watching for changes to source files (live reload features enabled)...'
     python dispatcher.py &
     add_background_pid $!
     fswatch -o --no-defer -l 0.1 src alf_globals.py | cancel_and_run
 else
-    echo 'watch -> Watching for changes to source files...'
     fswatch -o -0 --no-defer -l 0.1 src alf_globals.py | xargs -0 -n1 sh -c "make OPTS='${opts}'"
 fi
