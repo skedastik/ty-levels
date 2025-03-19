@@ -6,6 +6,12 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ## [2025.03.18]
 
+### Changed
+
+- Optimize dev build process by avoiding simplification of algebraic expressions. Expressions are now only simplified when publishing levels.
+
+## [2025.03.18]
+
 ### Added
 
 - [Auto-edit annotations](./README.md#b-auto-edit-annotations)
