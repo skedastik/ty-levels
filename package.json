@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/skedastik/ty-levels#readme",
   "dependencies": {
-    "node-ty-levels": "^0.0.5"
+    "node-ty-levels": "^0.0.6"
   }
 }
