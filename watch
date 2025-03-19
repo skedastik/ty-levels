@@ -49,6 +49,9 @@ cancel_and_run() {
     done
 }
 
+AUTO_EDIT_DAEMONIZE=true NO_SIMPLIFY=true node auto-edit.js &
+add_background_pid $!
+
 if  [[ live_reload -eq 1 ]]; then
     echo 'Watching for changes to source files (live reload features enabled)...'
     python dispatcher.py &
