@@ -134,7 +134,7 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
 
         <Ramp
             x="{{ xf }}" z="{{ zf }}" y="{{ yf }}"
-            w="{{ wf }}" d="{{ df }}" h="{{ thick }}"
+            w="{{ wf }}" d="{{ df }}" thickness="{{ thick }}"
             deltaY="{{ dyf }}" angle="{{ angle }}"
             color="{{ color }}"
             {% if etag is not none %}
