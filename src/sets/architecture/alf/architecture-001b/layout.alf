@@ -7,7 +7,7 @@
 {% set smallPillarThick = hypotenuseFromLeg(pillarLeg) %}
 {% set centerPillarThick = 8.5 %}
 {% set pillarHeight = 40 %}
-{% set rampThickGround = 0.25 %}
+{% set rampThickGround = 0 %}
 {% set rampThickMezzanine = 0.5 %}
 
 {% set centerPostHeight = 2 %}
@@ -38,9 +38,9 @@
     <WallDoor x="-14" z="48" y="24" w="{{ pillarThick }}" d="{{ pillarThick }}" h="{{ pillarHeight - 24 }}" color="cWall01" midYaw="45" etag="b704vek" />
     <WallDoor x="-14" z="48" y="0" w="{{ pillarThick }}" d="{{ pillarThick }}" h="24" color="cWall01" midYaw="45" etag="rn7xzoq" />
 
-    {{ Ramp(x=0, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThickGround, seam=True, color='cRamp01', etag='efgqk83') }}
+    {{ Ramp(x=0, xx=-14, z=16, zz=28, y=0, deltaY=4, angle=0, thick=rampThickGround, color='cRamp01', etag='efgqk83') }}
     {{ Wall(x=0, xx=-14, z=28, zz=42, y=0, h=4, color='cRamp01', etag='hpw9mzl') }}
-    {{ Ramp(x=0, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThickGround, seam=True, color='cRamp01', etag='711qi2l') }}
+    {{ Ramp(x=0, xx=-14, z=42, zz=54, y=0, deltaY=4, angle=180, thick=rampThickGround, color='cRamp01', etag='711qi2l') }}
 
     {# mezzanine start #}
 

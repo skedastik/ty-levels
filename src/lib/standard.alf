@@ -38,16 +38,46 @@ Expressive Ramp macro supporting definitions using both the original Avara
 convention and bounding boxes. In addition to x/z/y, pass w/d/deltaY for the the
 former or xx/zz/yy for the latter. Mix and match as you please.
 
-The `h` param is now called `thick`.
+The `thickness` param is aliased to `thick`.
 
 Ramps slope down in the direction of `angle` assuming positive `deltaY`.
 
-These ramps behave slightly differently from Avara's original in that the top of
-the ramp is seamless regardless of ramp thickness. That is, there will be no
-visible gap or seam between the ramp and its defined bounds. To make the bottom
-of the ramp behave as it did originally (visible seam), pass `seam=True`.
+These ramps behave slightly differently from normal Avara ramps in that there is
+no visible gap or seam at the top edges of the ramp, regardless of ramp
+thickness:
+
+    The slanted lines are the outer edges of the ramp (the length of each line
+    is the ramp's thickness). The top edge is aligned with Y and Y+deltaY.
+
+                                   _____ y + deltaY
+                                   |\
+                                   | \
+        y _____                    |  \
+              |\                   |
+              | \                  |
+              |  \                 |     
+              x                  x + w
+
+Alternately you can pass `align='bottom'`:
+
+    The bottom edge is aligned with Y and Y+deltaY.
+
+                                 \
+                                  \
+                                   \____ y + deltaY
+            \                      | 
+             \                     |  
+        y ____\                    |   
+              |                    |
+              |                    |
+              |                    |     
+              x                  x + w
+
 #}
-{% macro Ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, xx=None, zz=None, yy=None, seam=False, etag=None)%}
+{% macro Ramp(color, x, z, y, thick, angle, w=None, d=None, deltaY=None, align='top', xx=None, zz=None, yy=None, etag=None)%}
+    {% if align != 'top' and align != 'bottom' %}
+        {{ throw('Ramp `align` value must be "top" or "bottom".') }}
+    {% endif %}
     {{ _validateDimensionArgs(w, d, deltaY, xx, zz, yy, isWall=False) }}
 
     {% if xx is none %}
@@ -74,62 +104,69 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
         {% set dyf = abs(y - yy) %}
     {% endif %}
 
-    {% if angle == 90 or angle == 270 %}
-        {% set beta = math.pi/2 - math.atan(wf/dyf) %}
-    {% else %}
-        {% set beta = math.pi/2 - math.atan(df/dyf) %}
-    {% endif %}
-    {% set deltay = thick * math.cos(beta) %}
-
-    {% if seam %}
-        {% set yf = yf + deltay %}
-        {% set dyf = dyf - deltay %}
-    {% endif %}
-
     {# support arbitrarily large ramps by decimating them just like Avara decimates walls #}
     {% if wf > MAX_WALL_SIZE %}
         {% if angle == 90 %}
-            {{ Ramp(color, xf-wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
-            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, align, etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, align, etag=etag) }}
         {% elif angle == 270 %}
-            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, etag=etag) }}
-            {{ Ramp(color, xf+wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf/2, align, etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf+dyf/2, thick, angle, wf/2, df,   dyf/2, align, etag=etag) }}
         {% else %}
-            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
-            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   etag=etag) }}
+            {{ Ramp(color, xf-wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   align, etag=etag) }}
+            {{ Ramp(color, xf+wf/4, zf,      yf,       thick, angle, wf/2, df,   dyf,   align, etag=etag) }}
         {% endif %}
     {% elif df > MAX_WALL_SIZE %}
         {% if angle == 180 %}
-            {{ Ramp(color, xf,      zf-df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
-            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, align, etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf/2, align, etag=etag) }}
         {% elif angle == 0 %}
-            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf/2, etag=etag) }}
-            {{ Ramp(color, xf,      zf+df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf/2, align, etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf+dyf/2, thick, angle, wf,   df/2, dyf/2, align, etag=etag) }}
         {% else %}
-            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
-            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf,   etag=etag) }}
+            {{ Ramp(color, xf,      zf-df/4, yf,       thick, angle, wf,   df/2, dyf,   align, etag=etag) }}
+            {{ Ramp(color, xf,      zf+df/4, yf,       thick, angle, wf,   df/2, dyf,   align, etag=etag) }}
         {% endif %}
     {% else %} {# ramp is not too large so go ahead and instantiate it #}
-        
-        {# make the ramp seamless #}
         {% if angle == 90 or angle == 270 %}
+            {% set beta = math.pi/2 - math.atan(wf/dyf) %}
             {% set deltax = thick * math.sin(beta) %}
             {% set wf = wf + deltax %}
             {% if angle == 90 %}
-                {% set xf = xf - deltax/2 %}
+                {% if align == 'top' %}
+                    {% set xf = xf - deltax/2 %}
+                {% else %}
+                    {% set xf = xf + deltax/2 %}
+                {% endif %}
             {% else %}
-                {% set xf = xf + deltax/2 %}
+                {% if align == 'top' %}
+                    {% set xf = xf + deltax/2 %}
+                {% else %}
+                    {% set xf = xf - deltax/2 %}
+                {% endif %}
             {% endif %}
         {% else %}
+            {% set beta = math.pi/2 - math.atan(df/dyf) %}
             {% set deltaz = thick * math.sin(beta) %}
             {% set df = df + deltaz %}
             {% if angle == 180 %}
-                {% set zf = zf - deltaz/2 %}
+                {% if align == 'top' %}
+                    {% set zf = zf - deltaz/2 %}
+                {% else %}
+                    {% set zf = zf + deltaz/2 %}
+                {% endif %}
             {% else %}
-                {% set zf = zf + deltaz/2 %}
+                {% if align == 'top' %}
+                    {% set zf = zf + deltaz/2 %}
+                {% else %}
+                    {% set zf = zf - deltaz/2 %}
+                {% endif %}
             {% endif %}
         {% endif %}
-        {% set yf = yf - deltay %}
+        {% set deltay = thick * math.cos(beta) %}
+        {% if align == 'top' %}
+            {% set yf = yf - deltay %}
+        {% endif %}
         {% set dyf = dyf + deltay %}
 
         <Ramp
@@ -225,7 +262,7 @@ of the ramp behave as it did originally (visible seam), pass `seam=True`.
 {% endmacro %}
 
 {% macro WorldAxes() %}
-    <Hologram shape="3000" cx="0" cz="0" y="0" />
+    <Hologram shape="3000" cx="0" cz="0" y="{{ PLANCK }}" />
 {% endmacro %}
 
 {# ------------------------- internal macros below -------------------------- #}
