@@ -4,6 +4,13 @@ All notable changes to this project (and related repos) will be documented in th
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2025.03.22]
+
+### Changed
+
+- Improve lib/standard.alf `Ramp` macro.
+    - The `seam` param wasn't very useful and was producing slightly misaligned ramps when set to True. It has been replaced with an `align` param that has more utility.
+
 ## [2025.03.19]
 
 ### Changed
