@@ -1,0 +1,19 @@
+<!-- autotag -->
+{% from 'lib/standard.alf' import Wall, Ramp %}
+
+{% macro WedgeRamp(x, z, rs) %}
+    <!-- auto: tx({{ x }}), tz({{ z }}) -->
+    {{ Ramp(x=-5, xx=7, z=20, zz=10, y=0, deltaY=10/rs, thick=4, angle=180, color='cWall01', etag='la0cfs8') }}
+    {{ Ramp(x=-3, xx=7, z=20, zz=0, y=0, deltaY=20/rs, thick=0, angle=180, color='cWall01', align='bottom', etag='reywwbn') }}
+    {{ Ramp(x=-7, xx=-3, z=20, zz=4, y=0, deltaY=16/rs, thick=1.25, angle=180, color='cRamp01', etag='cv4icmx') }}
+    {{ Ramp(x=-7, xx=-3, z=20, zz=4, y=0, deltaY=16/rs, thick=1.25, angle=180, color='cRamp01', align='bottom', etag='yu8sd7r') }}
+    {{ Ramp(x=-5, w=1.5, z=20, zz=3, y=-2.7, deltaY=17/rs, thick=6, angle=180, color='cRamp02', etag='6791djw') }}
+    {{ Wall(x=-5, w=1.5, z=3, d=4.5, y=0, h=14, color='cRamp02', etag='ch9j466') }}
+    <!-- /auto -->
+{% endmacro %}
+
+{% macro WedgeRamp180(x, z, rs) %}
+    <!-- auto: mz, mx, tx({{ x }}), tz({{ z }}) -->
+    {{ WedgeRamp(0, 0, rs) }}
+    <!-- /auto -->
+{% endmacro %}

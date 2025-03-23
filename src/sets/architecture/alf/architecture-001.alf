@@ -4,7 +4,7 @@
 {% include 'lib/boilerplate.alf' %}
 {% from 'lib/standard.alf' import WorldAxes %}
 {% include '../common/colors.alf' %}
-{% from './architecture-001a/layout.alf' import Quadrant, Half, Unit %}
+{% from './architecture-001/layout.alf' import Quadrant, Half, Unit %}
 
 {% set leg = 6 %}
 {% set pillarHeight = 28 %}

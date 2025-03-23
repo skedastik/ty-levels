@@ -191,7 +191,7 @@ The following edits (and their shortened aliases) are currently supported:
 
 The true power of annotations emerges when combined with Jinja macro composition. You could, for instance, design one quadrant of your level, place it in a macro, then call the macro four times in your layout, applying rotation each time. Now you have rotational symmetry with changes to the original quadrant being instantly reflected in the others.
 
-See [architecture-001a.alf](./src/sets/architecture/alf/architecture-001a.alf) for a concrete example.
+See [architecture-001.alf](./src/sets/architecture/alf/architecture-001.alf) for a concrete example.
 
 ### C. File structure
 

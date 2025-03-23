@@ -6,6 +6,7 @@
     cWall01='"#ddd"'
 
     cRamp01='"#666"'
+    cRamp02='"#555"'
 />
 
 <SkyColor color="cHorizon" color.1="cSky" />

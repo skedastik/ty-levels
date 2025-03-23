@@ -14,19 +14,8 @@
 <SkyColor color="cHorizon" color.1="cSky" />
 <GroundColor color="cGround" />
 
-<Incarnator cx="-20" cz="-20" y="0" angle="135" />
-
 {{ WorldAxes() }}
 
-{% set rs = 3 %}
-
-{{ Ramp(x=2, xx=20, z=0, zz=10, y=0, deltaY=10/rs, thick=4, angle=0, color='cWall01', etag='uz7t0yd') }}
-{{ Ramp(x=4, xx=20, z=0, zz=20, y=0, deltaY=20/rs, thick=0, align='bottom', angle=0, color='cWall01', etag='ckihczh') }}
-{{ Ramp(x=0, xx=4, z=0, zz=20, y=0, deltaY=20/rs, thick=1.5, align='bottom', angle=0, color='cRamp01', etag='g8qjrvr') }}
-{{ Ramp(x=0, xx=4, z=0, zz=20, y=0, deltaY=20/rs, thick=1, angle=0, color='cRamp01', etag='2ntm2n7') }}
-{{ Ramp(x=2, w=1.5, z=0, zz=16, y=-1.5, deltaY=12/rs, thick=6, angle=0, color='cRamp01', etag='sjtvy9l') }}
-{{ Wall(x=2, w=1.5, z=16, d=2.5, y=0, h=16/rs, color='cRamp01', etag='sp0lz7n') }}
-
-<Hologram cx="0" cz="0" y="0" shape="bspStandardFloor" color="cGround" scale="100" />
+<Incarnator cx="-20" cz="-20" y="0" angle="135" />
 
 </map>

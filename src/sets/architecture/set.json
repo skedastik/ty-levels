@@ -1,12 +1,16 @@
 {
     "LEDI": [
       {
-        "Alf": "architecture-001a.alf",
-        "Name": "architecture-001a"
+        "Alf": "architecture-001.alf",
+        "Name": "architecture-001"
       },
       {
-        "Alf": "architecture-001b.alf",
-        "Name": "architecture-001b"
+        "Alf": "architecture-002.alf",
+        "Name": "architecture-002"
+      },
+      {
+        "Alf": "architecture-003.alf",
+        "Name": "architecture-003"
       }
     ]
 }

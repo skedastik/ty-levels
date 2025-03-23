@@ -3,7 +3,7 @@
 
 {% include 'lib/boilerplate.alf' %}
 {% include '../common/colors.alf' %}
-{% from './architecture-001b/layout.alf' import Center, Half %}
+{% from './architecture-002/layout.alf' import Center, Half %}
 
 <Incarnator cx="0" cz="-20" y="0" angle="180" />
 
